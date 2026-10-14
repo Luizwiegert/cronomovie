@@ -35,9 +35,9 @@ function today(): Date {
   return new Date(n.getFullYear(), n.getMonth(), n.getDate());
 }
 
-/** Quanto falta até a data (meia-noite, horário local), já quebrado em partes. */
-export function countdown(d: { y: number; m: number; d: number }) {
-  const ms = Math.max(0, new Date(d.y, d.m - 1, d.d).getTime() - now());
+/** Quanto falta até a data (meia-noite, ou a hora h, no horário local), já quebrado em partes. */
+export function countdown(d: { y: number; m: number; d: number; h?: number }) {
+  const ms = Math.max(0, new Date(d.y, d.m - 1, d.d, d.h || 0).getTime() - now());
   const s = Math.floor(ms / 1000);
   return { done: ms === 0, d: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 };
 }
@@ -61,6 +61,15 @@ export function rng(seed: number): () => number {
 }
 
 export const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** Troca de tela com uma passagem suave, onde o navegador oferece (e sem ela para quem pediu menos movimento). */
+export function smooth(update: () => void) {
+  const d = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<unknown>; finished: Promise<unknown> } };
+  if (reduced() || document.hidden || !d.startViewTransition) { update(); return; }
+  // Se outra troca começar antes desta acabar, o navegador pula a passagem (a tela já foi atualizada)
+  const t = d.startViewTransition(update);
+  t.ready.catch(() => {}); t.finished.catch(() => {});
+}
 
 export const RLBL = ['', 'Não gostei', 'Mais ou menos', 'Bom', 'Muito bom', 'Obra-prima'];
 

@@ -10,3 +10,7 @@ dist
 node_modules
 .claude
 videos
+.mcp.json
+radar
+client_secret_*.json
+desktop.ini

@@ -2,22 +2,30 @@ import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
 import { S, emit, marksOf } from './state';
 import type { Backend, Friendship, Mark, Person, Watch } from './state';
 import { iso, toast } from './util';
+import { photoVersion } from './avatars';
 import { takeGuest } from './backend-guest';
 import type { GuestData } from './backend-guest';
 
 /** Linhas como vêm do banco */
 interface MarkRow { user_id: string; title_id: string; rating: number | null; comment: string; watched_on: string }
-interface ProfileRow { id: string; name: string; color: string; avatar: string | null; username?: string | null; created_at?: string }
+interface ProfileRow { id: string; name: string; color?: string; avatar: string | null; username?: string | null; favorite?: string | null; created_at?: string }
 interface WatchRow { user_id: string; title_id: string; list: Watch['list']; episodes: string[] }
 interface FriendRow { requester: string; addressee: string; status: 'pending' | 'accepted' }
 
 const toMark = (r: MarkRow): Mark => ({ r: r.rating, c: r.comment || '', d: r.watched_on });
-const toPerson = (r: ProfileRow): Person => ({ id: r.id, name: r.name, color: r.color, avatar: r.avatar ?? null, username: r.username ?? null });
+const toPerson = (r: ProfileRow): Person => ({ id: r.id, name: r.name, color: r.color || '#6A7080', avatar: r.avatar ?? null, username: r.username ?? null, favorite: r.favorite ?? null });
 const toWatch = (r: WatchRow): Watch => ({ list: r.list ?? null, eps: r.episodes || [] });
 const toFriend = (r: FriendRow): Friendship => ({ a: r.requester, b: r.addressee, status: r.status });
-const PROFILE_COLS = 'id,name,color,avatar,username,created_at';
+const PROFILE_COLS = 'id,name,color,avatar,username,favorite,created_at';
 /** Escapa % e _ para busca por nome com ilike */
 const likeSafe = (q: string) => q.replace(/[\\%_]/g, m => '\\' + m);
+
+/** Cartão público de um perfil, pelo @ (serve também pra quem ainda não tem conta) */
+export async function fetchCard(sb: SupabaseClient, username: string): Promise<Person | null> {
+  const { data, error } = await sb.rpc('profile_card', { u: username });
+  const row = Array.isArray(data) ? data[0] : data;
+  return error || !row ? null : toPerson(row as ProfileRow);
+}
 
 export interface LiveHooks {
   showLoading(): void;
@@ -138,6 +146,14 @@ export async function startLive(sb: SupabaseClient, hooks: LiveHooks) {
     queue.set(titleId, next);
   }
 
+  /** Apaga do servidor as fotos enviadas que não são mais a do perfil (keep = valor atual do perfil) */
+  async function cleanPhotos(keep: string | null) {
+    const cur = photoVersion(keep);
+    const { data } = await sb.storage.from('avatars').list(S.me);
+    const old = (data || []).filter(f => f.name !== `${cur}.jpg`).map(f => `${S.me}/${f.name}`);
+    if (old.length) await sb.storage.from('avatars').remove(old);
+  }
+
   const backend: Backend = {
     mode: 'live',
     setMark(titleId, patch) {
@@ -147,17 +163,26 @@ export async function startLive(sb: SupabaseClient, hooks: LiveHooks) {
       emit();
       write(titleId);
     },
-    async updateProfile(name, avatar, username) {
+    async updateProfile(name, avatar, username, favorite) {
       const patch: Record<string, unknown> = { name, avatar };
       if (username !== undefined) patch.username = username;
+      if (favorite !== undefined) patch.favorite = favorite;
       const { error } = await sb.from('profiles').update(patch).eq('id', S.me);
       if (error) {
         toast(/duplicate|unique/i.test(error.message) ? 'Esse nome de usuário já está em uso.' : 'Não foi possível salvar o perfil.');
         throw error;
       }
       const p = S.people.find(x => x.id === S.me);
-      if (p) { p.name = name; p.avatar = avatar; if (username !== undefined) p.username = username; }
+      if (p) { p.name = name; p.avatar = avatar; if (username !== undefined) p.username = username; if (favorite !== undefined) p.favorite = favorite; }
       emit();
+      void cleanPhotos(avatar).catch(() => {});
+    },
+    profileCard: u => fetchCard(sb, u),
+    async uploadPhoto(photo) {
+      const ver = Date.now().toString(36);
+      const { error } = await sb.storage.from('avatars').upload(`${S.me}/${ver}.jpg`, photo, { contentType: 'image/jpeg', cacheControl: '31536000' });
+      if (error) { toast('Não foi possível enviar a foto. Tente de novo.'); throw error; }
+      return `foto:${ver}`;
     },
     setWatch(titleId, patch) {
       const w = (S.watch[S.me] ||= {});
@@ -183,6 +208,8 @@ export async function startLive(sb: SupabaseClient, hooks: LiveHooks) {
     },
     async signOut() { await sb.auth.signOut(); },
     async deleteAccount() {
+      // As fotos enviadas ficam fora do banco: saem antes, enquanto a conta ainda pode apagá-las.
+      await cleanPhotos(null).catch(() => {});
       const { error } = await sb.rpc('delete_my_account');
       if (error) { toast('Não foi possível excluir a conta agora. Tente de novo.'); throw error; }
       await sb.auth.signOut().catch(() => {});

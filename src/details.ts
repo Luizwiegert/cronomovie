@@ -1,4 +1,3 @@
-import D from './details.json';
 import { esc } from './util';
 
 /** Sinopse, onde assistir (Brasil) e episódios de cada título, gerados por scripts/fetch-posters.mjs. */
@@ -8,7 +7,14 @@ export interface Details {
   prov?: { link?: string; s?: [string, string][]; r?: [string, string][]; b?: [string, string][] };
   seasons?: Season[];
 }
-const DETAILS = D as unknown as Record<string, Details>;
+let DETAILS: Record<string, Details> = {};
+let ready = false, loading: Promise<void> | undefined;
+/** Os detalhes pesam mais que o resto dos dados juntos e só aparecem ao abrir um título: são baixados logo depois da primeira tela. */
+export function loadDetails(): Promise<void> {
+  return loading ??= import('./details.json').then(m => { DETAILS = m.default as unknown as Record<string, Details>; ready = true; },
+    e => { loading = undefined; throw e; });
+}
+export const detailsReady = () => ready;
 export const detailsOf = (id: string): Details => DETAILS[id] || {};
 
 /** Total de episódios de uma série (0 se não for série com episódios). */
@@ -24,6 +30,7 @@ const logo = ([n, l]: [string, string]) =>
 
 /** Bloco "Onde assistir" do detalhe. */
 export function whereHTML(id: string): string {
+  if (!ready) return '<p class="muted">Carregando…</p>';
   const p = detailsOf(id).prov;
   const s = clean(p?.s), rb = clean([...(p?.r || []), ...(p?.b || [])].filter((x, i, a) => a.findIndex(y => y[0] === x[0]) === i));
   if (!s.length && !rb.length) return '<p class="muted">Ainda não está em nenhum streaming no Brasil.</p>';

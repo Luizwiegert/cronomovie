@@ -1,4 +1,4 @@
--- Moviegram: cadastro aberto, sem código de convite.
+-- Cronomovie: cadastro aberto, sem código de convite.
 -- Cole este arquivo inteiro em SQL Editor > New query e clique em Run.
 -- Quem já tem conta não é afetado.
 

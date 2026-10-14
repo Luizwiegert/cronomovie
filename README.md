@@ -1,29 +1,29 @@
-# Moviegram
+# Cronomovie
 
 <p>
 <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
 <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
 <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase">
 <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-8b949e?style=flat-square" alt="Licença MIT"></a>
-<a href="https://moviegram-chi.vercel.app"><img src="https://img.shields.io/badge/site-no_ar-e5484d?style=flat-square&logo=vercel&logoColor=white" alt="Site no ar"></a>
+<a href="https://cronomovie.com"><img src="https://img.shields.io/badge/site-no_ar-e5484d?style=flat-square&logo=vercel&logoColor=white" alt="Site no ar"></a>
 </p>
 
-A linha do tempo inteira da Marvel com a sua turma: cada um marca o que já viu, dá de 1 a 5 estrelas, comenta e acompanha quem chega mais pronto em **Vingadores: Doomsday (18/12/2026)**.
+A linha do tempo inteira da Marvel com a sua turma: cada um marca o que já viu, dá de 1 a 5 estrelas, comenta e acompanha quem chega mais pronto em **Vingadores: Doutor Destino (17/12/2026)**.
 
 - **Linha do tempo**: ordem cronológica ou de lançamento, em fileiras (horizontal) ou grade (vertical), com filtro por saga.
 - **Ranking**: pódio, tabela da turma, favoritos e títulos que dividiram opiniões.
-- **Perfil**: seus números, progresso por era, ritmo até Doomsday, favoritos e o que falta.
+- **Perfil**: seus números, progresso por era, ritmo até Doutor Destino, favoritos e o que falta.
 
-**[Ver no ar](https://moviegram-chi.vercel.app)**
+**[Ver no ar](https://cronomovie.com)**
 
-![Linha do tempo do Moviegram: contagem regressiva até Doomsday, progresso e títulos por fase](docs/screenshots/linha-do-tempo.png)
+![Linha do tempo do Cronomovie: contagem regressiva até Doutor Destino, progresso e títulos por fase](docs/screenshots/linha-do-tempo.png)
 
 | Ranking | Perfil |
 |---|---|
 | ![Ranking da turma com pódio e tabela](docs/screenshots/ranking.png) | ![Perfil com números e ritmo até a estreia](docs/screenshots/perfil.png) |
 
 <p align="center">
-  <img src="docs/screenshots/celulares.png" width="840" alt="Linha do tempo, lista de filmes, ranking e perfil do Moviegram no celular">
+  <img src="docs/screenshots/celulares.png" width="840" alt="Linha do tempo, lista de filmes, ranking e perfil do Cronomovie no celular">
 </p>
 
 <sub>Telas capturadas no modo demonstração, com uma turma de exemplo.</sub>
@@ -46,7 +46,7 @@ Abre em http://localhost:5173. **Sem o arquivo `.env.local`, o app roda em modo 
 2. Vá em **SQL Editor > New query**, cole todo o conteúdo de [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**.
    - O cadastro é aberto. Pra fechar por convite, guarde um código: `update app_private.settings set invite_code = 'SEU-CODIGO' where id;`
 3. Vá em **Authentication > Sign In / Providers > Email** e desligue **Confirm email** (assim ninguém precisa confirmar e-mail pra entrar).
-4. Em **Authentication > URL Configuration**, coloque o endereço do site (ex.: `https://moviegram.vercel.app`) em **Site URL**. Enquanto testa, deixe `http://localhost:5173` também em **Redirect URLs**.
+4. Em **Authentication > URL Configuration**, coloque o endereço do site (ex.: `https://cronomovie.com`) em **Site URL**. Enquanto testa, deixe `http://localhost:5173` também em **Redirect URLs**.
 5. Em **Project Settings > API**, copie a **URL do projeto** e a chave **publishable/anon**.
 
 ### 2. Arquivo `.env.local`

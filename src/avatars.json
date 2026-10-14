@@ -1,222 +1,1570 @@
 [
   {
     "id": "homem-aranha-ferro",
-    "name": "Aranha de Ferro",
-    "group": "heroi"
+    "name": "Homem-Aranha: Aranha de Ferro",
+    "char": "Homem-Aranha",
+    "variant": "Aranha de Ferro",
+    "group": "heroi",
+    "team": "Homem-Aranha"
   },
   {
     "id": "capitao-america",
-    "name": "Capitão América",
-    "group": "heroi"
+    "name": "Capitão América: Ilustração",
+    "char": "Capitão América",
+    "variant": "Ilustração",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "capitao-america-2",
-    "name": "Capitão América 2",
-    "group": "heroi"
+    "name": "Capitão América: Filme",
+    "char": "Capitão América",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "capita-carter",
+    "name": "Capitã Carter",
+    "char": "Capitã Carter",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "ciclope",
-    "name": "Ciclope",
-    "group": "heroi"
+    "name": "Ciclope: Rajada",
+    "char": "Ciclope",
+    "variant": "Rajada",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "deadpool",
-    "name": "Deadpool",
-    "group": "heroi"
+    "name": "Deadpool: Máscara",
+    "char": "Deadpool",
+    "variant": "Máscara",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "deadpool-2",
-    "name": "Deadpool 2",
-    "group": "heroi"
+    "name": "Deadpool: Com as pistolas",
+    "char": "Deadpool",
+    "variant": "Com as pistolas",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "demolidor",
-    "name": "Demolidor",
-    "group": "heroi"
+    "name": "Demolidor: Série",
+    "char": "Demolidor",
+    "variant": "Série",
+    "group": "heroi",
+    "team": "Heróis de rua"
   },
   {
     "id": "doutor-estranho",
-    "name": "Doutor Estranho",
-    "group": "heroi"
+    "name": "Doutor Estranho: Retrato",
+    "char": "Doutor Estranho",
+    "variant": "Retrato",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "doutor-estranho-2",
-    "name": "Doutor Estranho 2",
-    "group": "heroi"
+    "name": "Doutor Estranho: Magia",
+    "char": "Doutor Estranho",
+    "variant": "Magia",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "drax",
     "name": "Drax",
-    "group": "heroi"
+    "char": "Drax",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
   },
   {
     "id": "falcao",
-    "name": "Falcão",
-    "group": "heroi"
+    "name": "Falcão: Retrato",
+    "char": "Falcão",
+    "variant": "Retrato",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "gaviao-arqueiro",
-    "name": "Gavião Arqueiro",
-    "group": "heroi"
+    "name": "Gavião Arqueiro: Retrato",
+    "char": "Gavião Arqueiro",
+    "variant": "Retrato",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "gaviao-arqueiro-2",
-    "name": "Gavião Arqueiro 2",
-    "group": "heroi"
+    "name": "Gavião Arqueiro: Com o arco",
+    "char": "Gavião Arqueiro",
+    "variant": "Com o arco",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "groot",
-    "name": "Groot",
-    "group": "heroi"
+    "name": "Groot: Retrato",
+    "char": "Groot",
+    "variant": "Retrato",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
   },
   {
     "id": "homem-de-ferro",
-    "name": "Homem de Ferro",
-    "group": "heroi"
+    "name": "Homem de Ferro: Armadura",
+    "char": "Homem de Ferro",
+    "variant": "Armadura",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "homem-de-ferro-2",
-    "name": "Homem de Ferro 2",
-    "group": "heroi"
+    "name": "Homem de Ferro: Repulsor",
+    "char": "Homem de Ferro",
+    "variant": "Repulsor",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "homem-aranha",
-    "name": "Homem-Aranha",
-    "group": "heroi"
+    "name": "Homem-Aranha: Aranhaverso",
+    "char": "Homem-Aranha",
+    "variant": "Aranhaverso",
+    "group": "heroi",
+    "team": "Homem-Aranha"
   },
   {
     "id": "homem-aranha-2",
-    "name": "Homem-Aranha 2",
-    "group": "heroi"
+    "name": "Homem-Aranha: Traje preto",
+    "char": "Homem-Aranha",
+    "variant": "Traje preto",
+    "group": "heroi",
+    "team": "Homem-Aranha"
   },
   {
     "id": "homem-aranha-3",
-    "name": "Homem-Aranha 3",
-    "group": "heroi"
+    "name": "Homem-Aranha: Filme",
+    "char": "Homem-Aranha",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Homem-Aranha"
   },
   {
     "id": "homem-aranha-superior",
-    "name": "Homem-Aranha Superior",
-    "group": "heroi"
+    "name": "Homem-Aranha: Superior",
+    "char": "Homem-Aranha",
+    "variant": "Superior",
+    "group": "heroi",
+    "team": "Homem-Aranha"
   },
   {
     "id": "homem-formiga",
-    "name": "Homem-Formiga",
-    "group": "heroi"
+    "name": "Homem-Formiga: Capacete",
+    "char": "Homem-Formiga",
+    "variant": "Capacete",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "hulk",
-    "name": "Hulk",
-    "group": "heroi"
+    "name": "Hulk: Filme",
+    "char": "Hulk",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "hulk-2",
-    "name": "Hulk 2",
-    "group": "heroi"
+    "name": "Hulk: Quadrinhos",
+    "char": "Hulk",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "pantera-negra",
-    "name": "Pantera Negra",
-    "group": "heroi"
+    "name": "Pantera Negra: Traje",
+    "char": "Pantera Negra",
+    "variant": "Traje",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "pantera-negra-2",
-    "name": "Pantera Negra 2",
-    "group": "heroi"
+    "name": "Pantera Negra: T’Challa",
+    "char": "Pantera Negra",
+    "variant": "T’Challa",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "rocket",
-    "name": "Rocket",
-    "group": "heroi"
+    "name": "Rocket: Rosnando",
+    "char": "Rocket",
+    "variant": "Rosnando",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
   },
   {
     "id": "rocket-2",
-    "name": "Rocket 2",
-    "group": "heroi"
+    "name": "Rocket: Vol. 3",
+    "char": "Rocket",
+    "variant": "Vol. 3",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
   },
   {
     "id": "senhor-das-estrelas",
-    "name": "Senhor das Estrelas",
-    "group": "heroi"
+    "name": "Senhor das Estrelas: Capacete",
+    "char": "Senhor das Estrelas",
+    "variant": "Capacete",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
   },
   {
     "id": "shang-chi",
     "name": "Shang-Chi",
-    "group": "heroi"
+    "char": "Shang-Chi",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "soldado-invernal",
-    "name": "Soldado Invernal",
-    "group": "heroi"
+    "name": "Soldado Invernal: Ilustração",
+    "char": "Soldado Invernal",
+    "variant": "Ilustração",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "thor",
-    "name": "Thor",
-    "group": "heroi"
+    "name": "Thor: Trovão",
+    "char": "Thor",
+    "variant": "Trovão",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "thor-2",
-    "name": "Thor 2",
-    "group": "heroi"
+    "name": "Thor: Ragnarok",
+    "char": "Thor",
+    "variant": "Ragnarok",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "tony-stark",
-    "name": "Tony Stark",
-    "group": "heroi"
+    "name": "Tony Stark: Reator",
+    "char": "Tony Stark",
+    "variant": "Reator",
+    "group": "heroi",
+    "team": "Vingadores"
   },
   {
     "id": "wolverine",
-    "name": "Wolverine",
-    "group": "heroi"
+    "name": "Wolverine: Filme",
+    "char": "Wolverine",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "wolverine-2",
-    "name": "Wolverine 2",
-    "group": "heroi"
+    "name": "Wolverine: Garras",
+    "char": "Wolverine",
+    "variant": "Garras",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "wolverine-3",
-    "name": "Wolverine 3",
-    "group": "heroi"
+    "name": "Wolverine: Clássico",
+    "char": "Wolverine",
+    "variant": "Clássico",
+    "group": "heroi",
+    "team": "X-Men"
   },
   {
     "id": "caveira-vermelha",
     "name": "Caveira Vermelha",
-    "group": "vilao"
+    "char": "Caveira Vermelha",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "doutor-destino",
-    "name": "Doutor Destino",
-    "group": "vilao"
+    "name": "Doutor Destino: Sombrio",
+    "char": "Doutor Destino",
+    "variant": "Sombrio",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "duende-verde",
-    "name": "Duende Verde",
-    "group": "vilao"
+    "name": "Duende Verde: Máscara",
+    "char": "Duende Verde",
+    "variant": "Máscara",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "loki",
-    "name": "Loki",
-    "group": "vilao"
+    "name": "Loki: Retrato",
+    "char": "Loki",
+    "variant": "Retrato",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "magneto",
     "name": "Magneto",
-    "group": "vilao"
+    "char": "Magneto",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "thanos",
     "name": "Thanos",
-    "group": "vilao"
+    "char": "Thanos",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "ultron",
     "name": "Ultron",
-    "group": "vilao"
+    "char": "Ultron",
+    "group": "vilao",
+    "team": "Vilões"
   },
   {
     "id": "venom",
     "name": "Venom",
-    "group": "vilao"
+    "char": "Venom",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "ronan",
+    "name": "Ronan",
+    "char": "Ronan",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "falcao-traje-de-voo",
+    "name": "Falcão: Traje de voo",
+    "char": "Falcão",
+    "variant": "Traje de voo",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "abutre-mascara",
+    "name": "Abutre: Máscara",
+    "char": "Abutre",
+    "variant": "Máscara",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "abutre-adrian-toomes",
+    "name": "Abutre: Adrian Toomes",
+    "char": "Abutre",
+    "variant": "Adrian Toomes",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "guardiao-vermelho",
+    "name": "Guardião Vermelho",
+    "char": "Guardião Vermelho",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "homem-aranha-peter-andrew",
+    "name": "Homem-Aranha: Peter (Andrew)",
+    "char": "Homem-Aranha",
+    "variant": "Peter (Andrew)",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "fantasma",
+    "name": "Fantasma",
+    "char": "Fantasma",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "groot-com-a-manopla",
+    "name": "Groot: Com a Manopla",
+    "char": "Groot",
+    "variant": "Com a Manopla",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "fera-x-men-97",
+    "name": "Fera: X-Men '97",
+    "char": "Fera",
+    "variant": "X-Men '97",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "fera-filme",
+    "name": "Fera: Filme",
+    "char": "Fera",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "viuva-negra-quadrinhos",
+    "name": "Viúva Negra: Quadrinhos",
+    "char": "Viúva Negra",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "blade-filme",
+    "name": "Blade: Filme",
+    "char": "Blade",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "blade-quadrinhos",
+    "name": "Blade: Quadrinhos",
+    "char": "Blade",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "homem-aranha-peter-tobey",
+    "name": "Homem-Aranha: Peter (Tobey)",
+    "char": "Homem-Aranha",
+    "variant": "Peter (Tobey)",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "capita-marvel-binaria",
+    "name": "Capitã Marvel: Binária",
+    "char": "Capitã Marvel",
+    "variant": "Binária",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "professor-xavier-classico",
+    "name": "Professor Xavier: Clássico",
+    "char": "Professor Xavier",
+    "variant": "Clássico",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "colossus",
+    "name": "Colossus",
+    "char": "Colossus",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "cosmo",
+    "name": "Cosmo",
+    "char": "Cosmo",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "deadpool-surpreso",
+    "name": "Deadpool: Surpreso",
+    "char": "Deadpool",
+    "variant": "Surpreso",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "demolidor-quadrinhos",
+    "name": "Demolidor: Quadrinhos",
+    "char": "Demolidor",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "doutor-estranho-quadrinhos",
+    "name": "Doutor Estranho: Quadrinhos",
+    "char": "Doutor Estranho",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "capita-marvel-filme",
+    "name": "Capitã Marvel: Filme",
+    "char": "Capitã Marvel",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "cavaleiro-da-lua-traje",
+    "name": "Cavaleiro da Lua: Traje",
+    "char": "Cavaleiro da Lua",
+    "variant": "Traje",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "ciclope-anos-90",
+    "name": "Ciclope: Anos 90",
+    "char": "Ciclope",
+    "variant": "Anos 90",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "coisa-quadrinhos",
+    "name": "Coisa: Quadrinhos",
+    "char": "Coisa",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "deadpool-filme",
+    "name": "Deadpool: Filme",
+    "char": "Deadpool",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "demolidor-traje-preto",
+    "name": "Demolidor: Traje preto",
+    "char": "Demolidor",
+    "variant": "Traje preto",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "motoqueiro-fantasma-quadrinhos",
+    "name": "Motoqueiro Fantasma: Quadrinhos",
+    "char": "Motoqueiro Fantasma",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "groot-baby-groot",
+    "name": "Groot: Baby Groot",
+    "char": "Groot",
+    "variant": "Baby Groot",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "groot-dia-de-spa",
+    "name": "Groot: Dia de spa",
+    "char": "Groot",
+    "variant": "Dia de spa",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "groot-adulto",
+    "name": "Groot: Adulto",
+    "char": "Groot",
+    "variant": "Adulto",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "homem-de-ferro-no-escuro",
+    "name": "Homem de Ferro: No escuro",
+    "char": "Homem de Ferro",
+    "variant": "No escuro",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-aranha-classico",
+    "name": "Homem-Aranha: Clássico",
+    "char": "Homem-Aranha",
+    "variant": "Clássico",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-aranha-salto",
+    "name": "Homem-Aranha: Salto",
+    "char": "Homem-Aranha",
+    "variant": "Salto",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "justiceiro-frank-castle",
+    "name": "Justiceiro: Frank Castle",
+    "char": "Justiceiro",
+    "variant": "Frank Castle",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "justiceiro-quadrinhos",
+    "name": "Justiceiro: Quadrinhos",
+    "char": "Justiceiro",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "motoqueiro-fantasma-na-moto",
+    "name": "Motoqueiro Fantasma: Na moto",
+    "char": "Motoqueiro Fantasma",
+    "variant": "Na moto",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "motoqueiro-fantasma-filme",
+    "name": "Motoqueiro Fantasma: Filme",
+    "char": "Motoqueiro Fantasma",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "punho-de-ferro-quadrinhos",
+    "name": "Punho de Ferro: Quadrinhos",
+    "char": "Punho de Ferro",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "senhor-fantastico-primeiros-passos",
+    "name": "Senhor Fantástico: Primeiros Passos",
+    "char": "Senhor Fantástico",
+    "variant": "Primeiros Passos",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "surfista-prateado",
+    "name": "Surfista Prateado",
+    "char": "Surfista Prateado",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "tocha-humana-quadrinhos",
+    "name": "Tocha Humana: Quadrinhos",
+    "char": "Tocha Humana",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "visao-visao-branco",
+    "name": "Visão: Visão Branco",
+    "char": "Visão",
+    "variant": "Visão Branco",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "carnificina",
+    "name": "Carnificina",
+    "char": "Carnificina",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "dentes-de-sabre-filme",
+    "name": "Dentes-de-Sabre: Filme",
+    "char": "Dentes-de-Sabre",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "galactus-quadrinhos",
+    "name": "Galactus: Quadrinhos",
+    "char": "Galactus",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "rei-do-crime-serie",
+    "name": "Rei do Crime: Série",
+    "char": "Rei do Crime",
+    "variant": "Série",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "doutor-destino-quadrinhos",
+    "name": "Doutor Destino: Quadrinhos",
+    "char": "Doutor Destino",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "doutor-destino-armadura",
+    "name": "Doutor Destino: Armadura",
+    "char": "Doutor Destino",
+    "variant": "Armadura",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "duende-verde-quadrinhos",
+    "name": "Duende Verde: Quadrinhos",
+    "char": "Duende Verde",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "elektra-serie",
+    "name": "Elektra: Série",
+    "char": "Elektra",
+    "variant": "Série",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "elektra-quadrinhos",
+    "name": "Elektra: Quadrinhos",
+    "char": "Elektra",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "feiticeira-escarlate-fantasia-classica",
+    "name": "Feiticeira Escarlate: Fantasia clássica",
+    "char": "Feiticeira Escarlate",
+    "variant": "Fantasia clássica",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "feiticeira-escarlate-quadrinhos",
+    "name": "Feiticeira Escarlate: Quadrinhos",
+    "char": "Feiticeira Escarlate",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "justiceiro-serie",
+    "name": "Justiceiro: Série",
+    "char": "Justiceiro",
+    "variant": "Série",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "gambit-filme",
+    "name": "Gambit: Filme",
+    "char": "Gambit",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "gambit-anos-90",
+    "name": "Gambit: Anos 90",
+    "char": "Gambit",
+    "variant": "Anos 90",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "gamora",
+    "name": "Gamora",
+    "char": "Gamora",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "duende-verde-filme",
+    "name": "Duende Verde: Filme",
+    "char": "Duende Verde",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "groot-adolescente",
+    "name": "Groot: Adolescente",
+    "char": "Groot",
+    "variant": "Adolescente",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "gaviao-arqueiro-classico",
+    "name": "Gavião Arqueiro: Clássico",
+    "char": "Gavião Arqueiro",
+    "variant": "Clássico",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "hela",
+    "name": "Hela",
+    "char": "Hela",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "hulk-professor-hulk",
+    "name": "Hulk: Professor Hulk",
+    "char": "Hulk",
+    "variant": "Professor Hulk",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "jean-grey-anos-90",
+    "name": "Jean Grey: Anos 90",
+    "char": "Jean Grey",
+    "variant": "Anos 90",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "mulher-invisivel",
+    "name": "Mulher Invisível",
+    "char": "Mulher Invisível",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "homem-de-ferro-quadrinhos",
+    "name": "Homem de Ferro: Quadrinhos",
+    "char": "Homem de Ferro",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-de-ferro-em-voo",
+    "name": "Homem de Ferro: Em voo",
+    "char": "Homem de Ferro",
+    "variant": "Em voo",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "ciclope-filme",
+    "name": "Ciclope: Filme",
+    "char": "Ciclope",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "maquina-de-combate",
+    "name": "Máquina de Combate",
+    "char": "Máquina de Combate",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "jean-grey-filme",
+    "name": "Jean Grey: Filme",
+    "char": "Jean Grey",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "jessica-jones",
+    "name": "Jessica Jones",
+    "char": "Jessica Jones",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "agente-americano",
+    "name": "Agente Americano",
+    "char": "Agente Americano",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "tocha-humana-filme",
+    "name": "Tocha Humana: Filme",
+    "char": "Tocha Humana",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "knull",
+    "name": "Knull",
+    "char": "Knull",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "kraven-quadrinhos",
+    "name": "Kraven: Quadrinhos",
+    "char": "Kraven",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "kraven-filme",
+    "name": "Kraven: Filme",
+    "char": "Kraven",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "wolverine-x-men",
+    "name": "Wolverine: X-Men",
+    "char": "Wolverine",
+    "variant": "X-Men",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "wolverine-logan",
+    "name": "Wolverine: Logan",
+    "char": "Wolverine",
+    "variant": "Logan",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "loki-deus-das-historias",
+    "name": "Loki: Deus das Histórias",
+    "char": "Loki",
+    "variant": "Deus das Histórias",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "luke-cage",
+    "name": "Luke Cage",
+    "char": "Luke Cage",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "mantis",
+    "name": "Mantis",
+    "char": "Mantis",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "miles-morales-aranhaverso",
+    "name": "Miles Morales: Aranhaverso",
+    "char": "Miles Morales",
+    "variant": "Aranhaverso",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "demolidor-ilustracao",
+    "name": "Demolidor: Ilustração",
+    "char": "Demolidor",
+    "variant": "Ilustração",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "demolidor-matt-murdock",
+    "name": "Demolidor: Matt Murdock",
+    "char": "Demolidor",
+    "variant": "Matt Murdock",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "mercurio-quadrinhos",
+    "name": "Mercúrio: Quadrinhos",
+    "char": "Mercúrio",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "miles-morales-sem-mascara",
+    "name": "Miles Morales: Sem máscara",
+    "char": "Miles Morales",
+    "variant": "Sem máscara",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "miles-morales-civil",
+    "name": "Miles Morales: Civil",
+    "char": "Miles Morales",
+    "variant": "Civil",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "cavaleiro-da-lua-sr-knight",
+    "name": "Cavaleiro da Lua: Sr. Knight",
+    "char": "Cavaleiro da Lua",
+    "variant": "Sr. Knight",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "ms-marvel",
+    "name": "Ms. Marvel",
+    "char": "Ms. Marvel",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "mysterio-quentin-beck",
+    "name": "Mysterio: Quentin Beck",
+    "char": "Mysterio",
+    "variant": "Quentin Beck",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "mysterio-capacete",
+    "name": "Mysterio: Capacete",
+    "char": "Mysterio",
+    "variant": "Capacete",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "mistica-filme",
+    "name": "Mística: Filme",
+    "char": "Mística",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "mistica-quadrinhos",
+    "name": "Mística: Quadrinhos",
+    "char": "Mística",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "viuva-negra-homem-de-ferro-2",
+    "name": "Viúva Negra: Homem de Ferro 2",
+    "char": "Viúva Negra",
+    "variant": "Homem de Ferro 2",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "viuva-negra-vingadores",
+    "name": "Viúva Negra: Vingadores",
+    "char": "Viúva Negra",
+    "variant": "Vingadores",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "nebulosa",
+    "name": "Nebulosa",
+    "char": "Nebulosa",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "nick-fury-retrato",
+    "name": "Nick Fury: Retrato",
+    "char": "Nick Fury",
+    "variant": "Retrato",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "odin",
+    "name": "Odin",
+    "char": "Odin",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "tempestade-quadrinhos",
+    "name": "Tempestade: Quadrinhos",
+    "char": "Tempestade",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "doutor-octopus-quadrinhos",
+    "name": "Doutor Octopus: Quadrinhos",
+    "char": "Doutor Octopus",
+    "variant": "Quadrinhos",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "homem-aranha-o-espetacular",
+    "name": "Homem-Aranha: O Espetacular",
+    "char": "Homem-Aranha",
+    "variant": "O Espetacular",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-aranha-aranha-de-ferro-ii",
+    "name": "Homem-Aranha: Aranha de Ferro II",
+    "char": "Homem-Aranha",
+    "variant": "Aranha de Ferro II",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "mercurio-era-de-ultron",
+    "name": "Mercúrio: Era de Ultron",
+    "char": "Mercúrio",
+    "variant": "Era de Ultron",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "senhor-fantastico-quadrinhos",
+    "name": "Senhor Fantástico: Quadrinhos",
+    "char": "Senhor Fantástico",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "dentes-de-sabre-anos-90",
+    "name": "Dentes-de-Sabre: Anos 90",
+    "char": "Dentes-de-Sabre",
+    "variant": "Anos 90",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "aranha-escarlate-kaine",
+    "name": "Aranha Escarlate: Kaine",
+    "char": "Aranha Escarlate",
+    "variant": "Kaine",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-formiga-scott-lang-de-traje",
+    "name": "Homem-Formiga: Scott Lang de traje",
+    "char": "Homem-Formiga",
+    "variant": "Scott Lang de traje",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-formiga-scott-lang",
+    "name": "Homem-Formiga: Scott Lang",
+    "char": "Homem-Formiga",
+    "variant": "Scott Lang",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "sentinela-quadrinhos",
+    "name": "Sentinela: Quadrinhos",
+    "char": "Sentinela",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "mulher-hulk",
+    "name": "Mulher-Hulk",
+    "char": "Mulher-Hulk",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "soldado-invernal-quadrinhos",
+    "name": "Soldado Invernal: Quadrinhos",
+    "char": "Soldado Invernal",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-aranha-guerra-civil",
+    "name": "Homem-Aranha: Guerra Civil",
+    "char": "Homem-Aranha",
+    "variant": "Guerra Civil",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "doutor-octopus-filme",
+    "name": "Doutor Octopus: Filme",
+    "char": "Doutor Octopus",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "homem-aranha-noir",
+    "name": "Homem-Aranha: Noir",
+    "char": "Homem-Aranha",
+    "variant": "Noir",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-aranha-andrew-sem-mascara",
+    "name": "Homem-Aranha: Andrew sem máscara",
+    "char": "Homem-Aranha",
+    "variant": "Andrew sem máscara",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-aranha-simbionte",
+    "name": "Homem-Aranha: Simbionte",
+    "char": "Homem-Aranha",
+    "variant": "Simbionte",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "aranha-escarlate-ben-reilly",
+    "name": "Aranha Escarlate: Ben Reilly",
+    "char": "Aranha Escarlate",
+    "variant": "Ben Reilly",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "tempestade-filme",
+    "name": "Tempestade: Filme",
+    "char": "Tempestade",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "coisa-primeiros-passos",
+    "name": "Coisa: Primeiros Passos",
+    "char": "Coisa",
+    "variant": "Primeiros Passos",
+    "group": "heroi",
+    "team": "Quarteto Fantástico"
+  },
+  {
+    "id": "thor-classico",
+    "name": "Thor: Clássico",
+    "char": "Thor",
+    "variant": "Clássico",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "thor-vingadores",
+    "name": "Thor: Vingadores",
+    "char": "Thor",
+    "variant": "Vingadores",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "thor-raios",
+    "name": "Thor: Raios",
+    "char": "Thor",
+    "variant": "Raios",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-aranha-tobey-sem-mascara",
+    "name": "Homem-Aranha: Tobey sem máscara",
+    "char": "Homem-Aranha",
+    "variant": "Tobey sem máscara",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "homem-de-ferro-mark-1",
+    "name": "Homem de Ferro: Mark 1",
+    "char": "Homem de Ferro",
+    "variant": "Mark 1",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "tony-stark-de-armadura",
+    "name": "Tony Stark: De armadura",
+    "char": "Tony Stark",
+    "variant": "De armadura",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "tony-stark-de-terno",
+    "name": "Tony Stark: De terno",
+    "char": "Tony Stark",
+    "variant": "De terno",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "visao-filme",
+    "name": "Visão: Filme",
+    "char": "Visão",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "visao-quadrinhos",
+    "name": "Visão: Quadrinhos",
+    "char": "Visão",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "feiticeira-escarlate-wanda",
+    "name": "Feiticeira Escarlate: Wanda",
+    "char": "Feiticeira Escarlate",
+    "variant": "Wanda",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "feiticeira-escarlate-coroa",
+    "name": "Feiticeira Escarlate: Coroa",
+    "char": "Feiticeira Escarlate",
+    "variant": "Coroa",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "vespa",
+    "name": "Vespa",
+    "char": "Vespa",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "wolverine-quadrinhos",
+    "name": "Wolverine: Quadrinhos",
+    "char": "Wolverine",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "yondu",
+    "name": "Yondu",
+    "char": "Yondu",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "professor-xavier-jovem",
+    "name": "Professor Xavier: Jovem",
+    "char": "Professor Xavier",
+    "variant": "Jovem",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "gwen-aranha-sem-mascara",
+    "name": "Gwen-Aranha: Sem máscara",
+    "char": "Gwen-Aranha",
+    "variant": "Sem máscara",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "tony-stark-bracos-abertos",
+    "name": "Tony Stark: Braços abertos",
+    "char": "Tony Stark",
+    "variant": "Braços abertos",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "yelena-belova",
+    "name": "Yelena Belova",
+    "char": "Yelena Belova",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "galactus-filme",
+    "name": "Galactus: Filme",
+    "char": "Galactus",
+    "variant": "Filme",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "nick-fury-sombrio",
+    "name": "Nick Fury: Sombrio",
+    "char": "Nick Fury",
+    "variant": "Sombrio",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "rei-do-crime-aranhaverso",
+    "name": "Rei do Crime: Aranhaverso",
+    "char": "Rei do Crime",
+    "variant": "Aranhaverso",
+    "group": "vilao",
+    "team": "Vilões"
+  },
+  {
+    "id": "punho-de-ferro-serie",
+    "name": "Punho de Ferro: Série",
+    "char": "Punho de Ferro",
+    "variant": "Série",
+    "group": "heroi",
+    "team": "Heróis de rua"
+  },
+  {
+    "id": "capita-marvel-ultimato",
+    "name": "Capitã Marvel: Ultimato",
+    "char": "Capitã Marvel",
+    "variant": "Ultimato",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "miles-morales-quadrinhos",
+    "name": "Miles Morales: Quadrinhos",
+    "char": "Miles Morales",
+    "variant": "Quadrinhos",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "ciclope-x-men-97",
+    "name": "Ciclope: X-Men '97",
+    "char": "Ciclope",
+    "variant": "X-Men '97",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "mercurio-x-men",
+    "name": "Mercúrio: X-Men",
+    "char": "Mercúrio",
+    "variant": "X-Men",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "senhor-das-estrelas-ilustracao",
+    "name": "Senhor das Estrelas: Ilustração",
+    "char": "Senhor das Estrelas",
+    "variant": "Ilustração",
+    "group": "heroi",
+    "team": "Guardiões da Galáxia"
+  },
+  {
+    "id": "gwen-aranha-mascara",
+    "name": "Gwen-Aranha: Máscara",
+    "char": "Gwen-Aranha",
+    "variant": "Máscara",
+    "group": "heroi",
+    "team": "Homem-Aranha"
+  },
+  {
+    "id": "sentinela-filme",
+    "name": "Sentinela: Filme",
+    "char": "Sentinela",
+    "variant": "Filme",
+    "group": "heroi",
+    "team": "Thunderbolts"
+  },
+  {
+    "id": "tony-stark-capacete-aberto",
+    "name": "Tony Stark: Capacete aberto",
+    "char": "Tony Stark",
+    "variant": "Capacete aberto",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "visao-disfarce-humano",
+    "name": "Visão: Disfarce humano",
+    "char": "Visão",
+    "variant": "Disfarce humano",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "hulk-bruce-banner",
+    "name": "Hulk: Bruce Banner",
+    "char": "Hulk",
+    "variant": "Bruce Banner",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "jean-grey-fenix-negra",
+    "name": "Jean Grey: Fênix Negra",
+    "char": "Jean Grey",
+    "variant": "Fênix Negra",
+    "group": "heroi",
+    "team": "X-Men"
+  },
+  {
+    "id": "gaviao-arqueiro-vingadores",
+    "name": "Gavião Arqueiro: Vingadores",
+    "char": "Gavião Arqueiro",
+    "variant": "Vingadores",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "capitao-america-sam-wilson",
+    "name": "Capitão América: Sam Wilson",
+    "char": "Capitão América",
+    "variant": "Sam Wilson",
+    "group": "heroi",
+    "team": "Vingadores"
+  },
+  {
+    "id": "homem-areia",
+    "name": "Homem-Areia",
+    "char": "Homem-Areia",
+    "group": "vilao",
+    "team": "Vilões"
   }
 ]

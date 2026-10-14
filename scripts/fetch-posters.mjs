@@ -23,7 +23,7 @@ if (!TOKEN && !KEY) {
   process.exit(1);
 }
 
-// id no app -> [tipo, título em inglês, ano, temporada]
+// id no app -> [tipo, título em inglês (ou o número do título no TMDB), ano, temporada]
 const Q = {
   'olhos-wakanda': ['tv', 'Eyes of Wakanda', 2025],
   cap1: ['movie', 'Captain America: The First Avenger', 2011],
@@ -103,6 +103,40 @@ const Q = {
   wonderman: ['tv', 'Wonder Man', 2026],
   quarteto: ['movie', 'The Fantastic Four: First Steps', 2025],
   aranha4: ['movie', 'Spider-Man: Brand New Day', 2026],
+  visionquest: ['tv', 'VisionQuest', 2026],
+  inumanos: ['tv', "Marvel's Inhumans", 2017],
+  fugitivos: ['tv', "Marvel's Runaways", 2017],
+  'manto-adaga': ['tv', "Marvel's Cloak & Dagger", 2018],
+  shield67: ['tv', "Marvel's Agents of S.H.I.E.L.D.", 2013, 6],
+  helstrom: ['tv', 'Helstrom', 2020],
+  dd03: ['movie', 'Daredevil', 2003],
+  venom1: ['movie', 'Venom', 2018],
+  venom2: ['movie', 'Venom: Let There Be Carnage', 2021],
+  morbius: ['movie', 'Morbius', 2022],
+  'madame-teia': ['movie', 'Madame Web', 2024],
+  venom3: ['movie', 'Venom: The Last Dance', 2024],
+  kraven: ['movie', 'Kraven the Hunter', 2024],
+  'xmen-tas': ['tv', 'X-Men', 1992],
+  xmen97: ['tv', "X-Men '97", 2024],
+  aranhaverso1: ['movie', 'Spider-Man: Into the Spider-Verse', 2018],
+  aranhaverso2: ['movie', 'Spider-Man: Across the Spider-Verse', 2023],
+  amigao: ['tv', 'Your Friendly Neighborhood Spider-Man', 2025],
+  hulk03: ['movie', 'Hulk', 2003],
+  pun04: ['movie', 'The Punisher', 2004],
+  gr07: ['movie', 'Ghost Rider', 2007],
+  pun08: ['movie', 'Punisher: War Zone', 2008],
+  gr12: ['movie', 'Ghost Rider: Spirit of Vengeance', 2012],
+  legion: ['tv', 'Legion', 2017],
+  gifted: ['tv', 'The Gifted', 2017],
+  ff94: ['tv', 2901], aranha94: ['tv', 888], hulk96: ['tv', 6332], surfista98: ['tv', 1130], 'aranha-ilimitado': ['tv', 10079],
+  'xmen-evolution': ['tv', 668], 'ff-wgh': ['tv', 132], espetacular: ['tv', 3854], 'wolverine-xmen': ['tv', 6549],
+  'hdf-armored': ['tv', 7330], esquadrao: ['tv', 21781], emh: ['tv', 33623], 'marvel-anime': ['tv', 45418], ultimate: ['tv', 34391],
+  'vingadores-unidos': ['tv', 59427], 'hulk-smash': ['tv', 40044], 'gotg-anim': ['tv', 63181], aranha2017: ['tv', 72705],
+  modok: ['tv', 111312], 'hit-monkey': ['tv', 133903],
+  supremos1: ['movie', 'Ultimate Avengers', 2006], supremos2: ['movie', 14611], 'hdf-invencivel': ['movie', 13647], estranho07: ['movie', 14830],
+  'novos-vingadores': ['movie', 14613], 'hulk-wolverine': ['movie', 15257], 'hulk-thor': ['movie', 101907], 'planeta-hulk': ['movie', 30675],
+  'thor-asgard': ['movie', 63686], 'ferro-hulk': ['movie', 230896], 'ferro-cap': ['movie', 284274], 'hulk-monstros': ['movie', 422153],
+  rising: ['movie', 491633],
   doomsday: ['movie', 'Avengers: Doomsday', 2026],
   x1: ['movie', 'X-Men', 2000],
   x2: ['movie', 'X2', 2003],
@@ -144,6 +178,8 @@ async function tmdb(path, params = {}) {
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 async function find(type, title, year) {
+  // Número = id do próprio TMDB: vai direto, sem depender da busca pelo nome
+  if (typeof title === 'number') return tmdb(`/${type}/${title}`).catch(() => null);
   const yearKey = type === 'movie' ? 'year' : 'first_air_date_year';
   let { results } = await tmdb(`/search/${type}`, { query: title, [yearKey]: year });
   if (!results?.length) ({ results } = await tmdb(`/search/${type}`, { query: title }));
@@ -154,6 +190,11 @@ async function find(type, title, year) {
 
 // Próximo grande filme depois de Doomsday (a contagem troca pra ele na estreia).
 Q.secretwars = ['movie', 'Avengers: Secret Wars', 2027];
+// Lançamentos que aparecem na faixa "Lançamentos" e ainda não estão na lista de títulos
+Q.aranhaverso3 = ['movie', 911916];
+Q.xmen2028 = ['movie', 1293690];
+Q.gr2028 = ['movie', 1738010];
+Q.bp3 = ['movie', 1386618];
 
 // Temporadas de cada série, pra marcar episódio por episódio.
 // Número = temporada da própria série; [título, ano, temporada, rótulo] = temporada de outra série (pacotes).
@@ -161,7 +202,14 @@ const SEASONS = {
   'olhos-wakanda': [1], 'agent-carter': [1, 2], shield1: [1], groot: [1, 2], shield2: [2], dd1: [1], jj: [1],
   dd2: [2], shield35: [3, 4, 5], loki1: [1], whatif1: [1], wandavision: [1], falcao: [1], gaviao: [1], eco: [1],
   cavaleiro: [1], msmarvel: [1], mulherhulk: [1], invasao: [1], loki2: [2], whatif23: [2, 3], zombies: [1],
-  agatha: [1], ironheart: [1], ddr1: [1], ddr2: [2], wonderman: [1],
+  agatha: [1], ironheart: [1], ddr1: [1], ddr2: [2], wonderman: [1], visionquest: [1],
+  inumanos: [1], fugitivos: [1, 2, 3], 'manto-adaga': [1, 2], shield67: [6, 7], helstrom: [1],
+  'xmen-tas': [1, 2, 3, 4, 5], xmen97: [1, 2], amigao: [1, 2], legion: [1, 2, 3], gifted: [1, 2],
+  ff94: [1, 2], aranha94: [1, 2, 3, 4, 5], hulk96: [1, 2], surfista98: [1], 'aranha-ilimitado': [1], 'xmen-evolution': [1, 2, 3, 4],
+  'ff-wgh': [1], espetacular: [1, 2], 'wolverine-xmen': [1], 'hdf-armored': [1, 2], esquadrao: [1, 2], emh: [1, 2],
+  ultimate: [1, 2, 3, 4], 'vingadores-unidos': [1, 2, 3, 4, 5], 'hulk-smash': [1, 2], 'gotg-anim': [1, 2, 3], aranha2017: [1, 2, 3],
+  modok: [1], 'hit-monkey': [1, 2],
+  'marvel-anime': [[45418, 2010, 1, 'Homem de Ferro'], [38247, 2011, 1, 'Wolverine'], [43146, 2011, 1, 'X-Men'], [62798, 2011, 1, 'Blade']],
   lc1: [1], if1: [1], defensores: [1], pun1: [1], jj2: [2], lc2: [2], if2: [2], dd3: [3], pun2: [2], jj3: [3],
 };
 
@@ -212,7 +260,10 @@ for (const [id, [type, title, year, season]] of Object.entries(Q)) {
     if (SEASONS[id]) {
       d.seasons = [];
       for (const sn of SEASONS[id]) {
-        if (typeof sn === 'number') d.seasons.push({ label: `Temporada ${sn}`, eps: await episodes(hit.id, sn) });
+        if (typeof sn === 'number') {
+          const eps = await episodes(hit.id, sn);
+          if (eps.length) d.seasons.push({ label: `Temporada ${sn}`, eps });
+        }
         else {
           const other = await find('tv', sn[0], sn[1]);
           if (other) d.seasons.push({ label: sn[3], eps: await episodes(other.id, sn[2]) });

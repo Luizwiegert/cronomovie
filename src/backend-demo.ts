@@ -79,7 +79,7 @@ function buildMock() {
     caio: { falcao: { list: 'assistindo', eps: ['0:1', '0:2', '0:3', '0:4'] }, aranha4: { list: 'quero', eps: [] } },
     tercio: { ddr2: { list: 'assistindo', eps: ['0:1', '0:2'] } },
   };
-  return { me: 'voce', marks, watch, prof: {} as Record<string, { name: string; avatar: string | null; username?: string | null }>, friends: FRIENDS.map(f => ({ ...f })) };
+  return { me: 'voce', marks, watch, prof: {} as Record<string, { name: string; avatar: string | null; username?: string | null; favorite?: string | null }>, friends: FRIENDS.map(f => ({ ...f })) };
 }
 
 const KEY = 'moviegram-demo-v4';
@@ -107,17 +107,25 @@ export function startDemo() {
       else m[titleId] = { ...(m[titleId] || { r: null, c: '', d: iso(new Date()) }), ...patch };
       save(); apply(); emit();
     },
-    async updateProfile(name, avatar, username) {
+    async updateProfile(name, avatar, username, favorite) {
       const cur = S.people.find(p => p.id === data.me);
-      data.prof[data.me] = { name, avatar, username: username ?? cur?.username ?? null };
+      data.prof[data.me] = { name, avatar, username: username ?? cur?.username ?? null, favorite: favorite === undefined ? cur?.favorite ?? null : favorite };
       save(); apply(); emit();
     },
+    // Sem servidor: a foto vai embutida no próprio perfil, guardado neste navegador
+    uploadPhoto: photo => new Promise<string>((ok, fail) => {
+      const r = new FileReader();
+      r.onload = () => ok(String(r.result));
+      r.onerror = () => fail(r.error);
+      r.readAsDataURL(photo);
+    }),
     setWatch(titleId, patch) {
       const w = data.watch[data.me] || (data.watch[data.me] = {});
       const next: Watch = { ...(w[titleId] || { list: null, eps: [] }), ...(patch || { list: null, eps: [] }) };
       if (!next.list && !next.eps.length) delete w[titleId]; else w[titleId] = next;
       save(); apply(); emit();
     },
+    async profileCard(u) { return S.people.find(p => (p.username || '').toLowerCase() === u.toLowerCase()) || null; },
     async usernameAvailable(u) { return !S.people.some(p => p.id !== data.me && (p.username || '').toLowerCase() === u.toLowerCase()); },
     async signOut() { /* não existe na demonstração */ },
     async deleteAccount() { /* não existe na demonstração */ },

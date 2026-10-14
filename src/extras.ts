@@ -157,7 +157,7 @@ export function compareHTML(fid: string): string {
 /* ---------------- @ ---------------- */
 export const usernameFieldHTML = (id: string, value: string) =>
   `<div class="at-input"><span aria-hidden="true">@</span><input type="text" id="${id}" value="${esc(value)}" maxlength="20" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="seu.nome" aria-describedby="${id}-hint"></div>
-  <p class="hint" id="${id}-hint">De 3 a 20 caracteres: letras minúsculas, números, ponto ou _. É por ele que os seus amigos encontram você.</p>`;
+  <p class="hint" id="${id}-hint">É por ele que os amigos encontram você. Use letras minúsculas, números, ponto ou _.</p>`;
 
 /** Deixa o @ no formato aceito enquanto a pessoa digita. */
 export const cleanUsername = (v: string) => v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9_.]/g, '').slice(0, 20);
