@@ -1,11 +1,13 @@
 <!-- Supabase: Authentication > Emails > Templates > Reset password
-     Assunto (Subject): Crie uma senha nova no Moviegram -->
+     Assunto (Subject): Crie uma senha nova no Cronomovie -->
 <div style="margin:0;padding:32px 16px;background:#0B0B0C;font-family:Arial,Helvetica,sans-serif;color:#F2F1EE">
   <div style="max-width:480px;margin:0 auto">
-    <p style="margin:0 0 28px;font-size:26px;font-weight:900;letter-spacing:.01em">Movie<span style="color:#E5484D">gram</span></p>
-    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2">Senha nova</h1>
-    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#C9C8C4">Recebemos um pedido para trocar a senha da sua conta. Clique no botão para escolher a nova.</p>
+    <p style="margin:0 0 28px"><a href="https://cronomovie.com" style="text-decoration:none"><img src="https://cronomovie.com/email-logo.png" width="220" height="60" alt="Cronomovie" style="display:block;border:0;font-size:26px;font-weight:900;color:#F2F1EE"></a></p>
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;color:#F2F1EE">Crie uma senha nova</h1>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#C9C8C4">Recebemos um pedido para trocar a senha da sua conta. Clique no botão abaixo para escolher a nova.</p>
     <p style="margin:0 0 28px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 22px;border-radius:8px;background:#F2F1EE;color:#0B0B0C;font-weight:700;font-size:15px;text-decoration:none">Criar senha nova</a></p>
-    <p style="margin:0;font-size:13px;line-height:1.6;color:#8E8D89">Se não foi você que pediu, pode ignorar: sua senha continua a mesma.</p>
+    <p style="margin:0 0 20px;font-size:13px;line-height:1.6;color:#8E8D89">Se o botão não funcionar, copie e cole este endereço no navegador:<br><a href="{{ .ConfirmationURL }}" style="color:#C9C8C4;word-break:break-all">{{ .ConfirmationURL }}</a></p>
+    <p style="margin:0 0 28px;font-size:13px;line-height:1.6;color:#8E8D89">Se não foi você que pediu, pode ignorar este e-mail: a sua senha continua a mesma.</p>
+    <p style="margin:0;padding-top:20px;border-top:1px solid #2A2A2D;font-size:12px;line-height:1.6;color:#8E8D89">Cronomovie · <a href="https://cronomovie.com" style="color:#8E8D89">cronomovie.com</a> · <a href="mailto:contato@cronomovie.com" style="color:#8E8D89">contato@cronomovie.com</a></p>
   </div>
 </div>

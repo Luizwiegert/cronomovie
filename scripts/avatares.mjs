@@ -2,6 +2,10 @@
 // em quadrado, tira a borda das que já vêm em círculo e grava em public/avatars/<id>.webp.
 // Também gera src/avatars.json, que o site usa pra montar a lista.
 // Rode depois de adicionar ou trocar uma foto: npm run avatares
+//
+// Cada linha da lista: "personagem" é a seção em que a foto aparece (ex.: "Homem-Aranha") e "variacao",
+// opcional, é o nome daquela versão (ex.: "Traje preto"). "grupo" é "heroi" ou "vilao".
+// "equipe" é a fileira em que o personagem aparece no seletor (ex.: "Vingadores", "X-Men", "Vilões").
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import sharp from 'sharp';
@@ -17,7 +21,8 @@ const saida = [];
 
 for (const a of LISTA) {
   const src = `avatares/${a.arquivo}`;
-  if (!existsSync(src)) { console.log(`falta  ${a.arquivo} (${a.nome})`); continue; }
+  const nome = a.variacao ? `${a.personagem}: ${a.variacao}` : a.personagem;
+  if (!existsSync(src)) { console.log(`falta  ${a.arquivo} (${nome})`); continue; }
   if (ids.has(a.id)) { console.log(`repetido  id ${a.id}`); continue; }
   ids.add(a.id); usados.add(a.arquivo);
 
@@ -42,8 +47,8 @@ for (const a of LISTA) {
     .resize(SIZE, SIZE, { fit: 'cover' })
     .webp({ quality: 82 })
     .toFile(`${OUT}/${a.id}.webp`);
-  saida.push({ id: a.id, name: a.nome, group: a.grupo === 'vilao' ? 'vilao' : 'heroi' });
-  console.log(`ok     ${a.id.padEnd(22)} ${a.nome}`);
+  saida.push({ id: a.id, name: nome, char: a.personagem, ...(a.variacao ? { variant: a.variacao } : {}), group: a.grupo === 'vilao' ? 'vilao' : 'heroi', team: a.equipe || (a.grupo === 'vilao' ? 'Vilões' : 'Outros heróis') });
+  console.log(`ok     ${a.id.padEnd(22)} ${nome}`);
 }
 
 writeFileSync('src/avatars.json', JSON.stringify(saida, null, 2) + '\n');

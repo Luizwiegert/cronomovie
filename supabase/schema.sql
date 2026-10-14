@@ -1,4 +1,4 @@
--- Moviegram: banco de dados no Supabase.
+-- Cronomovie: banco de dados no Supabase.
 -- Cole este arquivo inteiro em SQL Editor > New query e clique em Run.
 -- Pode rodar de novo sem problema: ele não apaga dados.
 

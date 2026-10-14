@@ -127,20 +127,26 @@ function splitTitle(t: string): [string, string] {
 }
 
 const cache: Record<string, string> = {};
+/** Cartazes que já carregaram nesta visita (título + tamanho): ao redesenhar a tela, não surgem de novo */
+const shown = new Set<string>();
 
 /** Cartaz do título: o oficial do TMDB quando existe, com a ilustração gerada por baixo (reserva se a imagem falhar). */
 export function posterHTML(it: Item, size: 'sm' | 'lg' = 'sm'): string {
   const key = it.id + size;
-  if (cache[key]) return cache[key];
+  if (cache[key]) return shown.has(key) ? cache[key].replace('class="p-img"', 'class="p-img ok"') : cache[key];
   const st = styleOf(it), [kick, main] = splitTitle(it.t), L = main.length;
   const sz = L <= 9 ? 'xl' : L <= 15 ? 'l' : L <= 24 ? 'm' : 's';
   const path = REAL[it.id];
-  const img = path ? `<img class="p-img" src="https://image.tmdb.org/t/p/${size === 'lg' ? 'w500' : 'w342'}${path}" alt="" loading="lazy" decoding="async">` : '';
+  const img = path ? `<img class="p-img" data-k="${key}" src="https://image.tmdb.org/t/p/${size === 'lg' ? 'w500' : 'w342'}${path}" alt="" loading="lazy" decoding="async">` : '';
   return cache[key] = `<span class="poster" style="--pa:${st.a};--pb:${st.b}"><svg class="motif" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">${motif(st, hash(it.id))}</svg><span class="p-title">${kick ? `<small>${esc(kick)}</small>` : ''}<b class="${sz}">${esc(main)}</b></span>${img}</span>`;
 }
 
 /** Se um cartaz do TMDB falhar, some com ele e fica a ilustração. */
 export function installPosterFallback() {
+  document.addEventListener('load', e => {
+    const t = e.target;
+    if (t instanceof HTMLImageElement && t.classList.contains('p-img')) { t.classList.add('ok'); if (t.dataset.k) shown.add(t.dataset.k); }
+  }, true);
   document.addEventListener('error', e => {
     const t = e.target;
     if (t instanceof HTMLImageElement && t.classList.contains('p-img')) {

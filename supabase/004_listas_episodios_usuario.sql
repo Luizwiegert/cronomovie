@@ -1,4 +1,4 @@
--- Moviegram: listas (quero ver / assistindo agora), episódios vistos e nome de usuário único.
+-- Cronomovie: listas (quero ver / assistindo agora), episódios vistos e nome de usuário único.
 -- Rode UMA vez no SQL Editor do Supabase (New query > colar > Run). Não apaga nada.
 
 -- ---------------------------------------------------------------------------

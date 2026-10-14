@@ -1,13 +1,14 @@
-import { avatarPickerHTML, markAvatarPicked } from './avatars';
+import { NEW_PHOTO, avatarFieldHTML, isPhoto, openAvatarChooser, photoURL, preparePhoto, setAvatarField } from './avatars';
 import { BUCKETS, BYID, DOOMSDAY, ERAS, ESS, FILTERS, FILTER_LIST, GROUPS, ITEMS, KIND, MAIN, TRILHA } from './data';
-import type { Item } from './data';
+import type { Item, Release } from './data';
 import { posterHTML } from './posters';
-import { P, S, TABS, UI, USERNAME_RE, av, crowd, eraOf, eventItem, friendIds, incomingIds, isGuest, marksOf, nav, nextEvent, nextUp, onState, orderedAll, orderedMain, outgoingIds, passes, pids, ranked, relation, released, savePrefs, starsHTML, stats, trailProgress, trailSeq, watchOf } from './state';
-import { detailsOf, whereHTML } from './details';
+import BACKDROPS from './backdrops.json';
+import { P, S, TABS, UI, USERNAME_RE, av, crowd, eraOf, eventItem, friendIds, upcoming, incomingIds, isGuest, marksOf, nav, nextEvent, nextUp, onState, orderedAll, orderedMain, outgoingIds, passes, pids, ranked, relation, released, savePrefs, starsHTML, stats, trailProgress, trailSeq, watchOf } from './state';
+import { detailsOf, detailsReady, loadDetails, whereHTML } from './details';
 import { guestCount } from './backend-guest';
 import { applyEpisodes, cleanUsername, compareHTML, episodesHTML, listButtonsHTML, listSectionHTML, rememberSeason, usernameFieldHTML, watchLabel, watchingStripHTML } from './extras';
 import type { Person, Tab } from './state';
-import { IC, RLBL, buzz, countdown, daysTo, dur, esc, fmt, fmtDate, hours, reduced, toast } from './util';
+import { IC, RLBL, buzz, countdown, daysTo, dur, esc, fmt, fmtDate, hours, norm, reduced, smooth, toast } from './util';
 
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector(sel) as T | null;
 const isMe = (pid: string) => pid === S.me;
@@ -15,6 +16,10 @@ const demo = () => S.backend?.mode === 'demo';
 const pad = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 let editAvatar: string | null = null;
+/** Favorito escolhido na edição do perfil, ainda não salvo */
+let editFav: string | null = null;
+/** Foto escolhida na edição do perfil, ainda não enviada */
+let editPhoto: { blob: Blob; url: string } | null = null;
 
 /* ================= VISITANTE (sem conta) ================= */
 const joinBtns = '<div class="row-btns"><button class="btn primary" data-auth="criar">Criar conta grátis</button><button class="btn" data-auth="entrar">Já tenho conta</button></div>';
@@ -85,7 +90,7 @@ function cardHTML(it: Item): string {
   const meta = [`<span>${it.r.slice(0, 4)}</span>`];
   if (it.k !== 'f') meta.push(`<span>${KIND[it.k]}</span>`);
   if (it.star) meta.push('<span class="ess">Essencial</span>');
-  if (locked) meta.push('<span class="ess">Estreia 18/12</span>');
+  if (locked) meta.push('<span class="ess">Estreia 17/12</span>');
   const wl = watchLabel(S.me, it.id, true);
   if (wl) meta.push(`<span class="wl">${esc(wl.replace(/ episódios$/, ' ep.'))}</span>`);
   return `<article class="card${mine ? ' seen' : ''}" data-id="${it.id}">
@@ -146,24 +151,85 @@ function erasHTML(): string {
   });
   const subs = GROUPS.map(g => ({ g, all: ITEMS.filter(it => it.g === g.key && scope(it)) })).map(x => ({ ...x, vis: x.all.filter(passes) })).filter(x => x.vis.length);
   if (subs.length) {
-    html += `<section class="era extras"><div class="era-head"><h2 class="era-name">Universos paralelos</h2></div><p class="era-note">${UI.trail ? 'Outro universo, mas os atores voltam em Doomsday. Contam na trilha, não no placar.' : 'Fora da linha do tempo principal. Não contam no placar.'}</p>${subs.map(x => `<div class="sub">${eraHead((UI.trail && 'trail' in x.g && x.g.trail) || x.g.name, x.all, 'alma-' + x.g.key, 'h3')}<p class="era-note">${esc(x.g.hint)}</p>${container('alma-' + x.g.key, x.vis)}</div>`).join('')}</section>`;
+    html += `<section class="era extras"><div class="era-head"><h2 class="era-name">Universos paralelos</h2></div><p class="era-note">${UI.trail ? 'Outro universo, mas os atores voltam em Doutor Destino. Contam na trilha, não no placar.' : 'Fora da linha do tempo principal. Não contam no placar.'}</p>${subs.map(x => `<div class="sub">${eraHead((UI.trail && 'trail' in x.g && x.g.trail) || x.g.name, x.all, 'alma-' + x.g.key, 'h3')}<p class="era-note">${esc(x.g.hint)}</p>${container('alma-' + x.g.key, x.vis)}</div>`).join('')}</section>`;
   }
   return html || '<div class="empty"><p>Nada encontrado com esses filtros.</p><button class="btn" data-clear>Limpar filtros</button></div>';
 }
 
-/** Contagem para próxima grande estreia, com o cartaz dela. Depois de Doomsday, troca sozinha para o próximo filme. */
+/* Faixa "Lançamentos": passa pelos próximos lançamentos da Marvel, um a cada 4 segundos, começando pela próxima grande estreia. */
+const REL_EVERY = 4000;
+/** Imagens largas do TMDB, usadas de fundo no cartão de lançamentos */
+const BACK = BACKDROPS as Record<string, string>;
+let relIdx = 0, relPaused = false, relHeld = false, relElapsed = 0, relLast = 0, relTimer: number | undefined;
+/** O lançamento que está na tela agora */
+function currentRelease() {
+  const list = upcoming();
+  if (relIdx >= list.length) relIdx = 0;
+  return list[relIdx] || null;
+}
+const relSeen = new Set<string>();
+/** Baixa antes as imagens do lançamento seguinte, pra troca não piscar */
+function preloadRelease(ev?: Release) {
+  if (!ev || relSeen.has(ev.id)) return;
+  relSeen.add(ev.id);
+  const urls = [BACK[ev.id] && `https://image.tmdb.org/t/p/w780${BACK[ev.id]}`, /src="([^"]+)"/.exec(posterHTML(eventItem(ev), 'lg'))?.[1]];
+  for (const u of urls) if (u) new Image().src = u;
+}
 function countHTML(): string {
-  const ev = nextEvent();
+  const list = upcoming(), ev = currentRelease();
   if (!ev) return '';
-  const c = countdown(ev.date), it = eventItem(ev);
-  return `<div class="cdown" role="timer" aria-label="Tempo até a estreia de ${esc(ev.t)}">
-    <div class="count-poster">${posterHTML(it)}</div>
+  const c = countdown(ev.date), it = eventItem(ev), bg = BACK[ev.id], auto = list.length > 1;
+  const art = posterHTML(it, 'lg').replace('loading="lazy"', 'fetchpriority="high"');
+  if (auto) preloadRelease(list[(relIdx + 1) % list.length]);
+  // Cartão novo na tela: os 4 segundos (e a barrinha do ponto) começam de novo
+  relElapsed = 0;
+  const dots = auto ? `<div class="rel-dots" role="group" aria-label="Escolher lançamento">${list.map((r, i) =>
+    `<button type="button" data-rel="${i}" aria-pressed="${i === relIdx}" aria-label="${esc(r.t)}"></button>`).join('')}</div>` : '';
+  const poster = BYID[ev.id]
+    ? `<button class="count-poster" type="button" data-open="${ev.id}" aria-label="Abrir ${esc(ev.t)}">${art}</button>`
+    : `<div class="count-poster">${art}</div>`;
+  return `<div class="cdown${auto ? ' rel-auto' : ''}${relHeld ? ' rel-hold' : ''}" role="group" aria-roledescription="carrossel" aria-label="Lançamentos da Marvel">
+    ${bg ? `<div class="rel-bg" aria-hidden="true"><img src="https://image.tmdb.org/t/p/w780${bg}" alt="" decoding="async"></div>` : ''}
+    <p class="rel-kicker">Lançamentos</p>
+    ${poster}
     <div class="count-body">
       <div class="count-days"><b data-cd="d">${c.d}</b><span data-cd="dl">${c.d === 1 ? 'dia' : 'dias'}</span></div>
-      <div class="count-clock"><b data-cd="h">${pad(c.h)}</b><span>h</span><b data-cd="m">${pad(c.m)}</b><span>min</span><b data-cd="s">${pad(c.s)}</b><span>s</span></div>
-      <p>até ${esc(ev.t)}, ${esc(ev.label)}</p>
+      ${ev.approx ? '<div class="count-clock rel-approx">Data a confirmar</div>'
+        : `<div class="count-clock"><b data-cd="h">${pad(c.h)}</b><span>h</span><b data-cd="m">${pad(c.m)}</b><span>min</span><b data-cd="s">${pad(c.s)}</b><span>s</span></div>`}
+      <p class="rel-t"><b>${esc(ev.t)}</b><span>${esc(ev.what)}, ${ev.approx ? 'previsto para ' : ''}${esc(ev.label)}</span></p>
     </div>
+    ${dots}
   </div>`;
+}
+/** Troca o lançamento mostrado sem redesenhar o resto da página */
+function showRelease(i: number) {
+  const list = upcoming();
+  if (!list.length) return;
+  relIdx = ((i % list.length) + list.length) % list.length;
+  const el = document.querySelector<HTMLElement>('#top .cdown');
+  if (!el) return;
+  const focused = el.contains(document.activeElement);
+  el.outerHTML = countHTML();
+  const fresh = document.querySelector<HTMLElement>('#top .cdown');
+  fresh?.classList.add('rel-in');
+  if (focused) fresh?.querySelector<HTMLElement>('[data-rel][aria-pressed="true"]')?.focus();
+}
+/** A faixa só anda à vista: sem mouse ou teclado nela, sem janela por cima e fora da tela de entrar */
+const relBlocked = () => relPaused || document.hidden || UI.tab !== 'linha' || !!UI.modal || reduced() || upcoming().length < 2
+  || !document.querySelector('#top .cdown') || !!document.querySelector('.avx') || document.body.classList.contains('logged-out');
+function startReleases() {
+  if (relTimer) return;
+  relLast = performance.now();
+  // Conta só o tempo em que a faixa está andando, pra barrinha do ponto e a troca ficarem juntas
+  relTimer = window.setInterval(() => {
+    const now = performance.now(), dt = now - relLast;
+    relLast = now;
+    const hold = relBlocked();
+    if (hold !== relHeld) { relHeld = hold; document.querySelector('#top .cdown')?.classList.toggle('rel-hold', hold); }
+    if (hold) return;
+    relElapsed += Math.min(dt, 400);
+    if (relElapsed >= REL_EVERY) showRelease(relIdx + 1);
+  }, 200);
 }
 
 function topHTML(): string {
@@ -175,15 +241,15 @@ function topHTML(): string {
   const pct = Math.round(seen / total * 100);
   const next = nx
     ? `<div class="next"><button class="next-poster" data-open="${nx.id}" aria-label="Abrir ${esc(nx.t)}">${posterHTML(nx)}</button><div><p class="muted">Próximo na ordem</p><h3><button data-open="${nx.id}">${esc(nx.t)}</button></h3><button class="btn" data-toggle="${nx.id}">Marcar como visto</button></div></div>`
-    : `<div class="next"><div><p class="muted">Linha principal completa</p><h3>${released() ? 'Vingadores: Doomsday já estreou.' : 'Agora é aguardar a estreia de Doomsday.'}</h3></div></div>`;
+    : `<div class="next"><div><p class="muted">Linha principal completa</p><h3>${released() ? 'Vingadores: Doutor Destino já estreou.' : 'Agora é aguardar a estreia de Doutor Destino.'}</h3></div></div>`;
   return `${countHTML()}
   <div class="top-side">
     <div class="prog">
-      <p class="muted">${who ? 'Progresso de ' + who : 'Seu progresso'}${tr ? ' na Trilha Vingadores' : ''}</p>
+      <p class="muted">${who ? 'Progresso de ' + who : 'Seu progresso'}${tr ? ' na Trilha Avengers' : ''}</p>
       <div class="prog-num"><b>${seen}</b><span>de ${total}</span></div>
       <div class="meter" role="img" aria-label="${pct}% ${tr ? 'da trilha' : 'da linha principal'}"><i style="width:${pct}%"></i></div>
       <p class="muted">${st.seenEss} de ${ESS.length} essenciais</p>
-      ${isGuest() ? `<div class="guest-save"><p>Sem conta, o seu progresso não fica salvo.</p>${joinBtns}</div>` : ''}
+      ${isGuest() ? '<p class="guest-save">Sem conta, o seu progresso não fica salvo.</p>' : ''}
     </div>
     ${next}
   </div>`;
@@ -192,13 +258,13 @@ function topHTML(): string {
 /** O botão "Filtros" abre as opções: um painel no computador, uma gaveta no celular. */
 let filtersOpen = false;
 
-/** O filtro tem pelo menos 2 títulos da Trilha Vingadores? Se não tiver, escolher ele desliga a trilha. */
+/** O filtro tem pelo menos 2 títulos da Trilha Avengers? Se não tiver, escolher ele desliga a trilha. */
 const inTrail = (key: string) => [...(FILTERS[key]?.ids || [])].filter(id => TRILHA.has(id)).length >= 2;
 
 function toolsHTML(): string {
   const chips = FILTER_LIST.map(f => `<button class="chip" data-saga-chip="${f.key}" aria-pressed="false">${esc(f.label)}</button>`).join('');
   return `<div class="tools${filtersOpen ? ' open' : ''}">
-    <button class="trail" type="button" data-trail aria-pressed="${UI.trail}"><span class="trail-name">Trilha Vingadores</span><span class="trail-sub">Só o que leva a Doomsday. <span data-trail-count></span></span><span class="trail-sw" aria-hidden="true"></span></button>
+    <button class="trail" type="button" data-trail aria-pressed="${UI.trail}">${BACK.ultimato ? `<span class="trail-bg" aria-hidden="true"><img src="https://image.tmdb.org/t/p/w780${BACK.ultimato}" alt="" loading="lazy" decoding="async"></span>` : ''}<span class="trail-kicker">Trilha</span><span class="trail-name"><img src="/avengers-logo.webp" alt="Avengers" width="1017" height="435" decoding="async"></span><span class="trail-sub">Só o que leva a Doutor Destino. <span data-trail-count></span></span><span class="trail-sw" aria-hidden="true"></span></button>
     <div class="tools-row">
       <label class="search">${IC.search}<input id="q" type="search" placeholder="Buscar título" aria-label="Buscar título" autocomplete="off" enterkeyhint="search"></label>
       <button class="btn filters-btn" type="button" data-filters aria-expanded="${filtersOpen}" aria-controls="tools-more">Filtros<span class="fcount" hidden></span></button>
@@ -277,7 +343,7 @@ function updateLinha() {
   document.querySelectorAll<HTMLElement>('.rail[data-rail]').forEach(r => { pos[r.dataset.rail!] = r.scrollLeft; });
   const top = $('#top')!;
   top.innerHTML = topHTML();
-  top.classList.toggle('no-count', !nextEvent());
+  top.classList.toggle('no-count', !upcoming().length);
   const wa = $('#watching');
   if (wa) wa.innerHTML = watchingStripHTML();
   const res = $('#result')!;
@@ -322,13 +388,14 @@ function perfilHTML(): string {
   compareWith = null;
   const p = P(pid), s = stats(pid), mine = isMe(pid), m = marksOf(pid);
   const pos = ranked('main').findIndex(x => x.pid === pid) + 1;
+  const favIt = p.favorite ? BYID[p.favorite] : null;
   const d = Math.max(0, daysTo(DOOMSDAY));
   const miss = ESS.filter(it => !m[it.id]);
   const perWeek = d > 0 ? miss.length / (d / 7) : miss.length;
   const quem = mine ? 'você' : esc(p.name);
   const pace = released()
-    ? `Doomsday já estreou. ${miss.length ? `Ainda ${miss.length === 1 ? 'falta 1 essencial' : `faltam ${miss.length} essenciais`}.` : 'Todos os essenciais vistos.'}`
-    : miss.length ? `Para ${quem} chegar pronto em 18/12, são ${fmt(perWeek)} essenciais por semana.` : 'Todos os essenciais vistos. Tudo em dia para a estreia.';
+    ? `Doutor Destino já estreou. ${miss.length ? `Ainda ${miss.length === 1 ? 'falta 1 essencial' : `faltam ${miss.length} essenciais`}.` : 'Todos os essenciais vistos.'}`
+    : miss.length ? `Para ${quem} chegar pronto em 17/12, são ${fmt(perWeek)} essenciais por semana.` : 'Todos os essenciais vistos. Tudo em dia para a estreia.';
   const eras = ERAS.map((e, idx) => {
     const all = ITEMS.filter(it => it.e === idx && it.id !== 'doomsday'), k = all.filter(it => m[it.id]).length;
     return `<div class="er"><span>${esc(e.name)}</span><span class="n">${k} de ${all.length}</span><span class="meter"><i style="width:${k / all.length * 100}%"></i></span></div>`;
@@ -344,14 +411,17 @@ function perfilHTML(): string {
     <input type="text" id="pf-name" maxlength="20" value="${esc(p.name)}" required>
     <label class="lbl" for="pf-user">Nome de usuário</label>
     ${usernameFieldHTML('pf-user', p.username || '')}
+    <span class="lbl">Filme ou série favorita</span>
+    ${favFieldHTML(editFav)}
     <span class="lbl">Foto de perfil</span>
-    ${avatarPickerHTML(editAvatar)}
+    ${avatarFieldHTML(editAvatar, editPhoto?.url ?? photoURL(S.me, p.avatar))}
     <div class="row-btns"><button class="btn primary" type="submit">Salvar</button><button class="btn" type="button" data-edit>Cancelar</button></div>
   </form>${demo() ? '' : `<div class="danger-zone">${confirmDelete
     ? '<p>Excluir a conta apaga suas marcações, notas, comentários, listas e amizades. Essa ação não pode ser desfeita.</p><div class="row-btns"><button class="btn danger" type="button" data-delete-yes>Sim, excluir minha conta</button><button class="btn" type="button" data-delete-no>Cancelar</button></div>'
     : '<button class="linkish" type="button" data-delete-ask>Excluir minha conta</button>'}</div>`}` : '';
   return `<div class="pf-pick" role="group" aria-label="Perfis">${pids().map(x => `<button data-profile="${x}" aria-pressed="${x === pid}" title="${esc(P(x).name)}">${av(x, 'md')}<span>${esc(P(x).name)}</span></button>`).join('')}</div>
-  <header class="pf-head">${av(pid, 'xl')}<div class="pf-id"><h1>${esc(p.name)}</h1>${p.username ? `<p class="uname">@${esc(p.username)}</p>` : ''}<p class="muted">${pos}º no ranking${s.first ? `, na maratona desde ${fmtDate(s.first)}` : ''}</p></div>${mine ? `<button class="btn" data-edit>${UI.editing ? 'Fechar' : 'Editar perfil'}</button>` : `<button class="btn" data-compare="${pid}">Comparar comigo</button>`}</header>
+  <header class="pf-head">${av(pid, 'xl')}<div class="pf-id"><h1>${esc(p.name)}</h1>${p.username ? `<p class="uname">@${esc(p.username)}</p>` : ''}<p class="muted">${pos}º no ranking${s.first ? `, na maratona desde ${fmtDate(s.first)}` : ''}</p></div><div class="pf-acts">${mine ? `<button class="btn" data-edit>${UI.editing ? 'Fechar' : 'Editar perfil'}</button>${demo() ? '' : '<button class="btn" data-share>Compartilhar perfil</button>'}` : `<button class="btn" data-compare="${pid}">Comparar comigo</button>`}</div></header>
+  ${favIt ? `<button class="pf-fav" data-open="${favIt.id}">${posterHTML(favIt)}<span><span class="pf-fav-l">${favIt.k === 'f' ? 'Filme favorito' : 'Série favorita'}</span><b>${esc(favIt.t)}</b></span></button>` : ''}
   ${edit}
   <div class="stats">
     <div><b>${s.seenMain}</b><span>de ${MAIN.length} vistos</span></div>
@@ -365,6 +435,155 @@ function perfilHTML(): string {
   <section class="section"><h2>Favoritos</h2>${favs ? `<div class="row-scroll minis">${favs}</div>` : '<p class="muted">Nenhuma nota ainda.</p>'}</section>
   <section class="section"><h2>Vistos recentemente</h2>${recent ? `<ul class="recent">${recent}</ul>` : '<p class="muted">Nada marcado ainda.</p>'}</section>
   <section class="section"><h2>Essenciais que faltam</h2>${miss.length ? `<div class="row-scroll minis">${miss.map(it => miniCard(it, null)).join('')}</div>` : '<p class="muted">Nenhum. Tudo em dia para a estreia.</p>'}</section>`;
+}
+
+/** No formulário: o favorito atual e o botão que abre a lista com busca */
+function favFieldHTML(cur: string | null): string {
+  const it = cur ? BYID[cur] : null;
+  return `<div class="fav-field">${it ? `<span class="fav-field-p">${posterHTML(it)}</span>` : ''}<div class="av-field-txt"><span class="av-field-name">${it ? esc(it.t) : 'Nenhum escolhido'}</span><button type="button" class="btn sm" data-fav-open>${it ? 'Trocar' : 'Escolher'}</button></div></div>`;
+}
+
+/** Lista em tela cheia pra escolher o favorito: busca pelo nome e uma fileira por fase (e por universo). */
+function openTitleChooser(selected: string | null, onPick: (id: string | null) => void) {
+  const can = (it: Item) => it.id !== 'doomsday' || released();
+  const tile = (it: Item) => `<button type="button" class="tix-tile" data-pick="${it.id}" aria-pressed="${it.id === selected}">${posterHTML(it)}<span class="avx-name">${esc(it.t)}</span></button>`;
+  const row = (name: string, items: Item[]) => items.length ? `<section class="avx-row"><h3>${esc(name)}</h3><div class="avx-wrap"><div class="avx-rail">${items.map(tile).join('')}</div></div></section>` : '';
+  const rows = ERAS.slice(0, 5).map((e, i) => row(e.name, ITEMS.filter(it => it.e === i && can(it)))).join('')
+    + GROUPS.map(g => row(g.name, ITEMS.filter(it => it.g === g.key))).join('');
+  const el = document.createElement('div');
+  el.className = 'avx tix';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  el.setAttribute('aria-label', 'Escolher filme ou série favorita');
+  el.innerHTML = `<header class="avx-head"><h2>Escolher favorito</h2><button type="button" class="btn" data-tix-close>Cancelar</button></header>
+    <div class="avx-body">
+      <div class="tix-tools"><label class="search avx-search">${IC.search}<input class="tix-q" type="search" placeholder="Buscar filme ou série" aria-label="Buscar filme ou série" autocomplete="off" enterkeyhint="search"></label>${selected ? '<button type="button" class="btn" data-pick="">Ficar sem favorito</button>' : ''}</div>
+      <div class="avx-rows">${rows}</div>
+      <section class="avx-found" hidden><h3>Resultados</h3><div class="avx-grid tix-grid"></div><p class="muted avx-none" hidden>Nenhum título com esse nome.</p></section>
+    </div>`;
+
+  const root = document.documentElement, prev = root.style.overflow, back = document.activeElement as HTMLElement | null;
+  let open = true, pushed = false;
+  try { history.pushState({ ...(history.state || {}), avx: true }, ''); pushed = true; } catch { /* sem histórico, segue sem */ }
+  const finish = () => {
+    if (!open) return;
+    open = false;
+    removeEventListener('popstate', onPopState);
+    removeEventListener('keydown', onKey, true);
+    el.remove();
+    root.style.overflow = prev;
+    back?.focus?.();
+  };
+  const onPopState = () => { pushed = false; finish(); };
+  const close = () => { if (pushed) { pushed = false; finish(); history.back(); } else finish(); };
+  const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+
+  const rowsEl = el.querySelector<HTMLElement>('.avx-rows')!, found = el.querySelector<HTMLElement>('.avx-found')!;
+  const grid = found.querySelector<HTMLElement>('.avx-grid')!, none = found.querySelector<HTMLElement>('.avx-none')!;
+  el.addEventListener('input', e => {
+    const t = e.target as HTMLInputElement;
+    if (!t.classList.contains('tix-q')) return;
+    const k = norm(t.value).trim();
+    rowsEl.hidden = !!k; found.hidden = !k;
+    if (!k) return;
+    const hits = ITEMS.filter(it => can(it) && norm(it.t).includes(k));
+    grid.innerHTML = hits.map(tile).join('');
+    none.hidden = hits.length > 0;
+  });
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.target as HTMLElement).classList.contains('tix-q')) e.preventDefault(); });
+  el.addEventListener('click', e => {
+    const t = e.target as HTMLElement;
+    if (t.closest('[data-tix-close]')) { close(); return; }
+    const p = t.closest<HTMLElement>('[data-pick]');
+    if (p) { close(); onPick(p.dataset.pick || null); }
+  });
+
+  document.body.append(el);
+  root.style.overflow = 'hidden';
+  addEventListener('popstate', onPopState);
+  addEventListener('keydown', onKey, true);
+  const cur = el.querySelector<HTMLElement>('.tix-tile[aria-pressed="true"]'), rail = cur?.closest<HTMLElement>('.avx-rail');
+  if (cur && rail) { rail.scrollLeft = Math.max(0, cur.offsetLeft - rail.offsetLeft - 24); cur.closest('.avx-row')?.scrollIntoView({ block: 'center' }); }
+  el.querySelector<HTMLElement>('[data-tix-close]')?.focus();
+}
+
+/* ---------- link de perfil: compartilhar e convidar ---------- */
+const INVITE = 'cronomovie-convite';
+const INVITE_SEEN = 'cronomovie-convite-visto';
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+let inviteCard: Person | null = null;
+
+/** Chegou por um link de perfil (?u=nome): guarda o @ e limpa o endereço. Fica guardado por 7 dias, pra sobreviver ao cadastro. */
+export function captureInvite() {
+  const u = cleanUsername(new URLSearchParams(location.search).get('u') || '');
+  if (!u) return;
+  try { localStorage.setItem(INVITE, JSON.stringify({ u, t: Date.now() })); } catch { /* sem armazenamento, o convite só não sobrevive ao cadastro */ }
+  try { history.replaceState(history.state, '', location.pathname + location.hash); } catch { /* ignorado */ }
+}
+function pendingInvite(): string | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(INVITE) || 'null') as { u?: string; t?: number } | null;
+    return v?.u && Date.now() - (v.t || 0) < WEEK_MS ? v.u : null;
+  } catch { return null; }
+}
+function clearInvite() {
+  inviteCard = null;
+  try { localStorage.removeItem(INVITE); } catch { /* ignorado */ }
+}
+/** Mostra de quem é o link: o visitante é chamado pra criar conta; quem já tem conta pode adicionar aos amigos. */
+async function checkInvite() {
+  const u = pendingInvite();
+  if (!u || demo() || UI.modal) return;
+  const guest = isGuest();
+  if (!guest && (P(S.me).username || '').toLowerCase() === u) { clearInvite(); return; }
+  // Pro visitante o cartão aparece uma vez por visita; o convite continua guardado pra depois do cadastro.
+  if (guest) { try { if (sessionStorage.getItem(INVITE_SEEN) === u) return; sessionStorage.setItem(INVITE_SEEN, u); } catch { /* segue */ } }
+  const me = S.me;
+  const card = await S.backend?.profileCard(u).catch(() => null);
+  if (S.me !== me || !$('#gate')?.hidden) return;
+  if (!card) { clearInvite(); return; }
+  if (!guest) {
+    const r = relation(card.id);
+    if (r === 'friend' || r === 'sent') { clearInvite(); if (r === 'friend') toast(`Você e ${card.name} já são amigos`); return; }
+  }
+  if (!S.people.some(x => x.id === card.id)) S.people.push(card);
+  inviteCard = card;
+  const fav = card.favorite ? BYID[card.favorite] : null;
+  const el = $('#gate')!;
+  el.innerHTML = `<div class="m-back" data-gate-close></div>
+  <div class="sheet small invite" role="dialog" aria-modal="true" aria-labelledby="gate-t">
+    ${av(card.id, 'lg')}
+    <h2 id="gate-t">${esc(card.name)}</h2>
+    ${card.username ? `<p class="uname">@${esc(card.username)}</p>` : ''}
+    ${fav ? `<p class="muted">${fav.k === 'f' ? 'Filme favorito' : 'Série favorita'}: ${esc(fav.t)}</p>` : ''}
+    <p class="muted">${guest
+      ? `${esc(card.name)} está acompanhando a linha do tempo da Marvel no Cronomovie. Crie a sua conta gratuita para adicionar aos amigos e comparar o que vocês já assistiram.`
+      : 'Adicione aos amigos para comparar o que vocês já assistiram e aparecer no ranking um do outro.'}</p>
+    ${guest ? `${joinBtns}<button class="linkish gate-later" type="button" data-gate-close>Agora não</button>`
+      : '<div class="row-btns"><button class="btn primary" data-invite-add>Adicionar aos amigos</button><button class="btn" data-gate-close>Agora não</button></div>'}
+  </div>`;
+  el.hidden = false;
+}
+
+/** Abre o compartilhamento do celular (ou copia o link) com o endereço do seu perfil */
+async function shareProfile(invite: boolean) {
+  const me = P(S.me);
+  if (!me.username) { toast('Escolha um nome de usuário no perfil para ter o seu link.'); return; }
+  const url = `${location.origin}/?u=${encodeURIComponent(me.username)}`;
+  const text = invite
+    ? `Estou acompanhando a linha do tempo da Marvel no Cronomovie. Me adicione por lá: @${me.username}`
+    : `Meu perfil no Cronomovie: @${me.username}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Cronomovie', text, url }); return; }
+    catch (e) { if ((e as DOMException)?.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(url); toast('Link copiado'); }
+  catch { toast(url); }
+}
+
+function dropEditPhoto() {
+  if (editPhoto) URL.revokeObjectURL(editPhoto.url);
+  editPhoto = null;
 }
 
 /* ================= AMIGOS ================= */
@@ -417,6 +636,7 @@ function friendsSectionsHTML(): string {
 function amigosHTML(): string {
   return `<div class="page-head"><h1>Amigos</h1></div>
   <p class="lead-note">O seu progresso é visível apenas para os amigos que você aceitar. Busque alguém pelo nome ou pelo @ e envie um pedido; quando a pessoa aceitar, vocês passam a aparecer um para o outro no ranking e na linha do tempo.</p>
+  ${demo() ? '' : '<p class="invite-line"><button class="btn" data-invite>Convidar por link</button><span class="muted">Envie o seu link: quem abrir já pode adicionar você.</span></p>'}
   <label class="search find">${IC.search}<input id="fq" type="search" placeholder="Buscar pelo nome ou @" aria-label="Buscar pessoas pelo nome ou @" autocomplete="off" value="${esc(UI.fq)}"></label>
   <div id="fresults" class="fresults" aria-live="polite">${UI.fq.trim() ? resultsHTML() : ''}</div>
   <div id="fsections">${friendsSectionsHTML()}</div>`;
@@ -451,7 +671,7 @@ function modalHTML(it: Item): string {
   const seq = UI.trail && TRILHA.has(it.id) ? trailSeq() : orderedAll(), ix = seq.findIndex(x => x.id === it.id), prev = seq[ix - 1], next = seq[ix + 1];
   const group = it.g ? GROUPS.find(g => g.key === it.g) : null;
   const meta = [KIND[it.k], it.r.slice(0, 4), it.m ? dur(it) + (it.k === 's' ? ' no total' : '') : ''].filter(Boolean).join(', ');
-  const notes = [it.star ? 'Essencial para Doomsday.' : '', it.n && it.id !== 'doomsday' ? esc(it.n) + '.' : '', group ? esc(group.hint) + '.' : ''].filter(Boolean).join(' ');
+  const notes = [it.star ? 'Essencial para Doutor Destino.' : '', it.n && it.id !== 'doomsday' ? esc(it.n) + '.' : '', group ? esc(group.hint) + '.' : ''].filter(Boolean).join(' ');
   const others = pids().filter(pid => !isMe(pid)).map(pid => {
     const x = marksOf(pid)[it.id], wl = watchLabel(pid, it.id, false);
     return `<li>${av(pid, 'md')}<div><span class="fn">${esc(P(pid).name)}</span><span class="fs">${x ? (x.r != null ? `${starsHTML(x.r)}<span>${RLBL[x.r]}</span>` : '<span>Viu, sem nota</span>') : `<span>${wl ? esc(wl) : 'Ainda não viu'}</span>`}</span>${x && x.c ? `<p class="fc">${esc(x.c)}</p>` : ''}</div></li>`;
@@ -469,7 +689,7 @@ function modalHTML(it: Item): string {
       <button class="btn" data-save-c="${it.id}" data-fk="save">Salvar comentário</button></section>`;
   const crowdTxt = c.avg != null
     ? `<b>${fmt(c.avg)}</b>${starsHTML(c.avg, 'lg')}<span class="muted">média entre amigos, ${plural(c.rs.length, 'nota', 'notas')}</span>`
-    : `<span class="muted">${locked ? 'Estreia em 18 de dezembro.' : c.who.length ? `${plural(c.who.length, 'pessoa viu', 'pessoas viram')}, sem nota ainda.` : 'Ainda sem avaliações.'}</span>`;
+    : `<span class="muted">${locked ? 'Estreia em 17 de dezembro.' : c.who.length ? `${plural(c.who.length, 'pessoa viu', 'pessoas viram')}, sem nota ainda.` : 'Ainda sem avaliações.'}</span>`;
   return `<div class="m-back" data-close></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-title">
     <div class="m-head"><span class="m-grab" aria-hidden="true"></span><p class="m-htitle" aria-hidden="true">${esc(it.t)}</p><button class="m-x" data-close data-fk="close" aria-label="Fechar">${IC.close}</button></div>
@@ -484,7 +704,7 @@ function modalHTML(it: Item): string {
         ${mineSec}
         ${isGuest() && !locked ? '<p class="guest-note">Sem conta, isso não fica salvo. <button class="linkish" data-auth="criar">Criar conta grátis</button></p>' : ''}
         ${locked ? '' : episodesHTML(it.id)}
-        <section class="m-sec"><h3>Onde assistir</h3>${locked ? '<p class="muted">Nos cinemas a partir de 18 de dezembro.</p>' : whereHTML(it.id)}</section>
+        <section class="m-sec"><h3>Onde assistir</h3>${locked ? '<p class="muted">Nos cinemas a partir de 17 de dezembro.</p>' : whereHTML(it.id)}</section>
         ${others ? `<section class="m-sec"><h3>Amigos</h3><ul class="friends">${others}</ul></section>` : ''}
         <nav class="m-nav" aria-label="Títulos vizinhos">${prev ? `<button data-open="${prev.id}" data-fk="prev"><span>Anterior</span><b>${esc(prev.t)}</b></button>` : '<span></span>'}${next ? `<button class="nx" data-open="${next.id}" data-fk="next"><span>Próximo</span><b>${esc(next.t)}</b></button>` : ''}</nav>
       </div>
@@ -529,6 +749,7 @@ function openModal(id: string, push = true) {
   const wasOpen = !!UI.modal;
   if (!wasOpen) lastFocusId = id;
   UI.modal = id; UI.menu = false;
+  if (!detailsReady()) void loadDetails().then(() => { if (UI.modal) renderModal(true); }, () => {});
   renderModal(false);
   const el = $('#modal')!;
   el.hidden = false;
@@ -608,12 +829,15 @@ let wasReleased = released();
 let lastEvent = nextEvent()?.id || '';
 function tick() {
   // Doomsday estreou: destrava marcar e avaliar.
-  if (!wasReleased && released()) { wasReleased = true; refresh(); toast('Vingadores: Doomsday estreou. Agora é possível marcar e avaliar.'); }
+  if (!wasReleased && released()) { wasReleased = true; refresh(); toast('Vingadores: Doutor Destino estreou. Agora é possível marcar e avaliar.'); }
   // A próxima grande estreia mudou (ou acabaram): redesenha a contagem com o filme novo.
   const ev = nextEvent();
   if ((ev?.id || '') !== lastEvent) { lastEvent = ev?.id || ''; refresh(); return; }
-  if (!ev) return;
-  const c = countdown(ev.date);
+  const rel = currentRelease();
+  if (!rel) return;
+  // O lançamento da faixa chegou: sai da fila e entra o próximo
+  if (countdown(rel.date).done) { refresh(); return; }
+  const c = countdown(rel.date);
   const set = (k: string, v: string) => document.querySelectorAll<HTMLElement>(`[data-cd="${k}"]`).forEach(el => { if (el.textContent !== v) el.textContent = v; });
   set('d', String(c.d)); set('dl', c.d === 1 ? 'dia' : 'dias');
   set('h', pad(c.h)); set('m', pad(c.m)); set('s', pad(c.s));
@@ -628,7 +852,7 @@ function renderBanner() {
   const n = isGuest() ? guestCount() : 0;
   // Quem chega sem conta vê, na linha do tempo, o que é o site
   const hero = isGuest() && UI.tab === 'linha'
-    ? '<section class="hero"><h1>A linha do tempo da Marvel, na ordem certa.</h1><p>Acompanhe o que você já assistiu, monte a lista do que falta ver e saiba onde assistir cada filme e série até Vingadores: Doomsday.</p></section>'
+    ? `<section class="hero"><h1>A linha do tempo da Marvel, na ordem certa.</h1><p>Marque o que você já viu e saiba o que falta.</p>${joinBtns}</section>`
     : '';
   const html = demo()
     ? '<p class="demo-note">Demonstração com dados de exemplo. Nada aqui é salvo no banco.</p>'
@@ -638,7 +862,7 @@ function renderBanner() {
 
 function renderChrome() {
   renderBanner();
-  $('#foot')!.innerHTML = `<span>Moviegram é um projeto de fãs, sem ligação com a Marvel ou a Disney. Os nomes, personagens e cartazes pertencem aos seus donos.</span><span class="foot-links"><a href="/privacidade.html">Privacidade</a><a href="/termos.html">Termos de uso</a></span>`;
+  $('#foot')!.innerHTML = `<span>Cronomovie é um projeto de fãs, sem ligação com a Marvel ou a Disney. Os nomes, personagens e cartazes pertencem aos seus donos.</span><span class="foot-links"><a href="/privacidade.html">Privacidade</a><a href="/termos.html">Termos de uso</a></span>`;
 }
 
 function renderView() {
@@ -682,7 +906,8 @@ function go(tab: Tab, push = true) {
       } else history.replaceState(st, '', '#' + tab);
     } catch { /* ignorado */ }
   }
-  renderBar(); renderView(); window.scrollTo(0, 0);
+  const draw = () => { renderBar(); renderView(); window.scrollTo(0, 0); };
+  if (push) smooth(draw); else draw();
 }
 
 /* ================= AÇÕES ================= */
@@ -743,7 +968,23 @@ function wire() {
     const t = e.target as HTMLElement, q = (s: string) => t.closest<HTMLElement>(s);
     let el: HTMLElement | null;
     if (UI.menu && !q('.me')) { UI.menu = false; renderBar(); }
-    if (q('[data-gate-close]')) { closeGate(); return; }
+    if (q('[data-gate-close]')) { if (!isGuest()) clearInvite(); closeGate(); return; }
+    if ((el = q('[data-rel]'))) { showRelease(+el.dataset.rel!); return; }
+    if (q('[data-fav-open]') && q('#editForm')) {
+      openTitleChooser(editFav, id => { editFav = id; const f = $('#editForm .fav-field'); if (f) f.outerHTML = favFieldHTML(editFav); });
+      return;
+    }
+    if (q('[data-share]')) { void shareProfile(false); return; }
+    if (q('[data-invite]')) { void shareProfile(true); return; }
+    if (q('[data-invite-add]')) {
+      const card = inviteCard;
+      clearInvite(); closeGate();
+      if (card) {
+        const theirs = relation(card.id) === 'received';
+        void S.backend?.requestFriend(card).then(() => toast(theirs ? `Agora você e ${card.name} são amigos` : `Pedido de amizade enviado para ${card.name}`), () => {});
+      }
+      return;
+    }
     if ((el = q('[data-auth]'))) {
       // Vai para tela de entrar/criar conta: fecha o que estiver aberto por cima
       closeGate();
@@ -768,7 +1009,7 @@ function wire() {
       if (UI.trail && UI.saga && !inTrail(UI.saga)) UI.saga = null;
       const y = window.scrollY;
       renderView(); window.scrollTo(0, y);
-      toast(UI.trail ? 'Trilha Vingadores ligada' : 'Mostrando tudo');
+      toast(UI.trail ? 'Trilha Avengers ligada' : 'Mostrando tudo');
       return;
     }
     if ((el = q('[data-saga-chip]'))) {
@@ -779,7 +1020,7 @@ function wire() {
       if (UI.saga && UI.trail && !inTrail(UI.saga)) {
         UI.trail = false; savePrefs();
         $('[data-trail]')?.setAttribute('aria-pressed', 'false');
-        toast(`Trilha Vingadores desligada para mostrar ${FILTERS[UI.saga].label}`);
+        toast(`Trilha Avengers desligada para mostrar ${FILTERS[UI.saga].label}`);
       }
       updateLinha();
       return;
@@ -801,7 +1042,19 @@ function wire() {
       toast(c ? 'Comentário salvo' : 'Comentário apagado');
       return;
     }
-    if ((el = q('[data-av]')) && q('#editForm')) { editAvatar = el.dataset.av!; markAvatarPicked($('#editForm')!, editAvatar); return; }
+    if (q('[data-av-open]') && q('#editForm')) {
+      const own = () => editPhoto?.url ?? photoURL(S.me, P(S.me).avatar);
+      const show = () => { const f = $('#editForm'); if (f) setAvatarField(f, editAvatar, own()); };
+      openAvatarChooser({
+        selected: editAvatar, upload: true, photo: own(),
+        onPick: id => { editAvatar = id; show(); },
+        // Volta pra foto da pessoa: a recém-escolhida ou a que já estava no perfil
+        onOwn: () => { const cur = P(S.me).avatar; editAvatar = editPhoto ? NEW_PHOTO : isPhoto(cur) ? cur : editAvatar; show(); },
+        onFile: file => void preparePhoto(file).then(photo => { dropEditPhoto(); editPhoto = photo; editAvatar = NEW_PHOTO; show(); },
+          () => toast('Não foi possível usar essa imagem. Tente outra.')),
+      });
+      return;
+    }
     if ((el = q('[data-open]'))) { e.preventDefault(); openModal(el.dataset.open!); return; }
     if ((el = q('[data-profile]'))) { UI.profile = el.dataset.profile!; UI.editing = false; go('perfil'); return; }
     if ((el = q('[data-person]'))) {
@@ -853,7 +1106,7 @@ function wire() {
     }
     if (q('[data-menu]')) { UI.menu = !UI.menu; renderBar(); return; }
     if (q('[data-edit]')) {
-      UI.editing = !UI.editing; editAvatar = P(S.me).avatar; renderView();
+      UI.editing = !UI.editing; editAvatar = P(S.me).avatar; editFav = P(S.me).favorite ?? null; dropEditPhoto(); renderView();
       if (UI.editing) $<HTMLInputElement>('#pf-name')?.focus();
       return;
     }
@@ -878,6 +1131,19 @@ function wire() {
     if (r instanceof HTMLElement && r.classList.contains('m-scroll')) updateStuck(r);
   }, true);
   wireTouch();
+  const overRel = (e: Event) => !!(e.target instanceof Element && e.target.closest('#top .cdown'));
+  document.addEventListener('pointerover', e => { if (overRel(e)) relPaused = true; });
+  document.addEventListener('pointerout', e => { if (overRel(e)) relPaused = false; });
+  document.addEventListener('focusin', e => { relPaused = overRel(e) && (e.target as Element).matches(':focus-visible'); });
+  let relX = NaN, relY = 0;
+  document.addEventListener('touchstart', e => { relX = overRel(e) && e.touches.length === 1 ? e.touches[0].clientX : NaN; relY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (Number.isNaN(relX)) return;
+    const dx = e.changedTouches[0].clientX - relX, dy = e.changedTouches[0].clientY - relY;
+    relX = NaN;
+    if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.5) showRelease(relIdx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  startReleases();
   window.addEventListener('resize', () => document.querySelectorAll<HTMLElement>('.rail[data-rail]').forEach(updateRailEdges));
 
   document.addEventListener('input', e => {
@@ -926,11 +1192,16 @@ function wire() {
     const hint = $('#pf-user-hint');
     const err = u || P(S.me).username ? await checkUsername(u) : '';
     if (err) { if (hint) { hint.textContent = err; hint.classList.add('bad'); } return; }
+    const btn = f.querySelector<HTMLButtonElement>('button[type=submit]');
     try {
-      await S.backend?.updateProfile(name, editAvatar, u || null);
-      UI.editing = false; renderBar(); renderView();
+      if (btn) btn.disabled = true;
+      const avatar = editAvatar === NEW_PHOTO && editPhoto ? await S.backend!.uploadPhoto(editPhoto.blob) : editAvatar;
+      await S.backend?.updateProfile(name, avatar, u || null, editFav);
+      UI.editing = false; dropEditPhoto(); renderBar(); renderView();
       toast('Perfil atualizado');
-    } catch { /* o backend já avisou */ }
+    } catch { /* o backend já avisou */ } finally {
+      if (btn) btn.disabled = false;
+    }
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
@@ -1004,7 +1275,7 @@ function wireTouch() {
 export function showApp() {
   document.body.classList.remove('logged-out');
   closeGate();
-  UI.profile = null; UI.editing = false; UI.menu = false; compareWith = null; confirmDelete = false;
+  UI.profile = null; UI.editing = false; UI.menu = false; compareWith = null; confirmDelete = false; dropEditPhoto();
   const h = location.hash.slice(1) as Tab;
   if (TABS.includes(h)) UI.tab = h;
   // Começa limpo: um recarregar não deixa "camadas" velhas no histórico
@@ -1016,7 +1287,9 @@ export function showApp() {
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') tick(); });
   }
   renderChrome(); renderBar(); renderView();
+  void loadDetails().then(refresh, () => {});
   askUsername();
+  void checkInvite();
 }
 
 export function showMessage(title: string, text: string) {

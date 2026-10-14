@@ -1,7 +1,7 @@
 -- ATENÇÃO: arquivo antigo, já aplicado. NÃO rode de novo: ele recria a função de cadastro numa versão
 -- anterior (sem o @). A versão atual está em 006_site_aberto.sql e em schema.sql.
 
--- Moviegram: foto de perfil (personagem).
+-- Cronomovie: foto de perfil (personagem).
 -- Rode UMA vez no SQL Editor do Supabase (New query > colar > Run).
 -- Não apaga nada: só acrescenta o campo da foto e ensina o cadastro a guardar ela.
 

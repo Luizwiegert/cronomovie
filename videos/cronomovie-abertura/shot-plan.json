@@ -1,0 +1,27 @@
+{
+  "category": "logo-reveal",
+  "duration_s": 3.6,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080, "aspect": "16:9" },
+  "variants": [{ "file": "compositions/vertical.html", "w": 1080, "h": 1920, "aspect": "9:16" }],
+  "style": "Sala de cinema escura, sóbria e precisa. Identidade própria do Cronomovie: uma linha do tempo que chega na estreia. Nada de bloco prateado nem de páginas de quadrinhos.",
+  "palette": ["#0B0B0C", "#F2F1EE", "#E5484D"],
+  "font": "Big Shoulders Display",
+  "beats": [1.0, 1.5],
+  "export": "mp4",
+  "asset_needs": [],
+  "customize": {},
+  "content": {
+    "logo": "inline SVG (símbolo: linha + dois pontos claros + ponto vermelho da estreia) + wordmark 'Cronomovie' com 'movie' em vermelho",
+    "tagline": "",
+    "url": ""
+  },
+  "brief": "Sobre o fundo escuro, uma linha do tempo se desenha da esquerda pra direita, entre os anos 2008 e 2026 de uma régua discreta. Dois pontos claros acendem quando a linha passa por eles. No fim, o ponto vermelho da estreia surge com um pulso e um brilho suave. O símbolo então recua pra esquerda e o nome Cronomovie sobe de trás de uma máscara, com 'movie' em vermelho. O logo segura no centro, com o ponto vermelho respirando uma vez. Ideia dominante: a linha chega na estreia.",
+  "motion": {
+    "0.15-1.05": "linha: draw-on (stroke-dashoffset), power2.inOut",
+    "0.45/0.70": "pontos claros: scale_punch, back.out, 0.32s",
+    "1.00": "ponto vermelho: scale 0 -> 1, expo.out, 0.5s + anel que expande e some + brilho de fundo",
+    "1.50-2.20": "símbolo vai pra posição do logo (power3.inOut); 'Crono' e 'movie' sobem da máscara (expo.out, defasados)",
+    "2.40-3.60": "segura; o ponto vermelho respira uma vez (sine.inOut)"
+  }
+}

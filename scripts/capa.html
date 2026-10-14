@@ -1,0 +1,31 @@
+<!doctype html>
+<!-- Fonte da imagem de capa da marca (marca/cronomovie-capa.png), 1500x500.
+     Serve de cabeçalho em perfis (Gravatar, redes): a logo fica no centro, com folga pros cortes laterais.
+     Gerar: msedge --headless=new --window-size=1500,500 --virtual-time-budget=8000
+            --screenshot=marca/cronomovie-capa.png scripts/capa.html -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&display=block" rel="stylesheet">
+<style>
+  html,body{margin:0}
+  body{
+    width:1500px;height:500px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    /* o mesmo fundo liso da abertura (src/style.css, .intro) */
+    background:#0B0B0C radial-gradient(ellipse 62% 72% at 50% 47%,rgba(122,36,40,.34) 0%,rgba(122,36,40,.17) 36%,rgba(122,36,40,.05) 68%,rgba(122,36,40,0) 100%);
+    color:#F2F1EE;
+  }
+  .brand{display:flex;align-items:center;gap:.2em;font-size:118px}
+  .mark{flex:none;width:1.36em;height:.68em;color:#F2F1EE}
+  .wordmark{font:900 1em/1 "Big Shoulders Display","Arial Narrow",Impact,sans-serif;letter-spacing:.005em}
+  .wordmark span{color:#E5484D}
+</style>
+</head>
+<body>
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 64 32" aria-hidden="true"><line x1="8" y1="16" x2="48" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".42"/><circle cx="8" cy="16" r="4" fill="currentColor"/><circle cx="24" cy="16" r="4" fill="currentColor"/><circle cx="48" cy="16" r="11" fill="#E5484D"/></svg>
+    <span class="wordmark">Crono<span>movie</span></span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&display=block" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /*
+        Revelação da logo do Cronomovie (9:16, celular em pé e Reels). Só a logo: sem cartazes e sem frase.
+        1. A câmera passa colada nas letras gigantes do nome, inclinadas em 3D, com um brilho metálico correndo por dentro.
+        2. Ela recua e assenta de frente; as letras ganham as cores da marca.
+        3. As bolinhas do símbolo entram: a vermelha corre pela linha, as brancas pulam quando ela passa, e ela estoura no fim.
+        4. Um brilho varre o nome, as bolinhas fazem uma onda e a logo segura.
+        Fundo liso, só com um brilho vermelho suave no centro (sem granulado, vinheta ou poeira).
+        O site (src/intro.ts) toca esta mesma animação ao vivo. A versão horizontal está em ../cronomovie-abertura.
+      */
+      :root {
+        --bg: #0b0b0c;
+        --ink: #f2f1ee;
+        --accent: #e5484d;
+        --track: rgba(242, 241, 238, 0.42);
+        /* tamanho do nome; o símbolo e os espaços saem dele */
+        --type: 138px;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        /* fundo liso, só com um brilho vermelho bem suave no centro */
+        background: var(--bg) radial-gradient(ellipse 62% 72% at 50% 47%, rgba(122, 36, 40, 0.34) 0%, rgba(122, 36, 40, 0.17) 36%, rgba(122, 36, 40, 0.05) 68%, rgba(122, 36, 40, 0) 100%);
+        color: var(--ink);
+        font-family: "Big Shoulders Display", sans-serif;
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* a logo em 3D: a câmera começa colada nas letras e assenta de frente */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px;
+        perspective: 1500px;
+      }
+      .rig {
+        transform-style: preserve-3d;
+      }
+      .lockup {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: calc(var(--type) * 0.2);
+        transform-style: preserve-3d;
+      }
+      .markbox {
+        position: relative;
+        flex: none;
+        width: calc(var(--type) * 1.36);
+        height: calc(var(--type) * 0.68);
+      }
+      .mark {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .mark .line {
+        fill: none;
+        stroke: var(--track);
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+      .mark .node {
+        fill: var(--ink);
+      }
+      .mark .premiere {
+        fill: var(--accent);
+      }
+      .mark .ring {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 1.2;
+      }
+      /* clarão horizontal que atravessa o ponto vermelho */
+      .flare {
+        position: absolute;
+        left: 75%;
+        top: 50%;
+        width: calc(var(--type) * 5);
+        height: 6px;
+        margin: -3px 0 0 calc(var(--type) * -2.5);
+        background: linear-gradient(90deg, rgba(229, 72, 77, 0) 0%, rgba(229, 72, 77, 0.85) 38%, #ffd9da 50%, rgba(229, 72, 77, 0.85) 62%, rgba(229, 72, 77, 0) 100%);
+        box-shadow: 0 0 40px 8px rgba(229, 72, 77, 0.45);
+      }
+      .wordmark {
+        position: relative;
+        font-weight: 900;
+        font-size: var(--type);
+        line-height: 0.9;
+        letter-spacing: 0.005em;
+        white-space: nowrap;
+      }
+      /* o nome tem três camadas com as mesmas letras, uma em cima da outra */
+      .word {
+        display: block;
+      }
+      .word.over {
+        position: absolute;
+        top: -0.2em;
+        right: -0.1em;
+        bottom: -0.3em;
+        left: -0.1em;
+        padding: 0.2em 0.1em 0.3em;
+        color: transparent;
+        background-repeat: no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        pointer-events: none;
+      }
+      /* 1. cores da marca (aparece quando a câmera assenta) */
+      .solid .b {
+        color: var(--accent);
+      }
+      /* 2. brilho metálico que corre por dentro das letras durante o voo */
+      .chrome {
+        background-image: linear-gradient(
+          105deg,
+          #3a3a3c 0%,
+          #8e8d8a 7%,
+          #f2f1ee 14%,
+          #ffffff 18%,
+          #a3a29f 26%,
+          #48484a 36%,
+          #e5484d 44%,
+          #ffb3b5 48%,
+          #e5484d 52%,
+          #58585a 60%,
+          #f2f1ee 72%,
+          #ffffff 76%,
+          #9b9a97 85%,
+          #3a3a3c 100%
+        );
+        background-size: 260% 100%;
+        background-position: 100% 50%;
+      }
+      /* 3. brilho que varre o nome no fim */
+      .shine {
+        background-image: linear-gradient(110deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 42%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0) 100%);
+        background-size: 300% 100%;
+        background-position: 100% 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="4.3" data-fps="30" data-width="1080" data-height="1920">
+      <div class="scene">
+        <div class="rig" id="rig">
+          <div class="lockup" id="lockup">
+            <div class="markbox" id="markbox">
+              <svg class="mark" viewBox="0 0 64 32" aria-hidden="true">
+                <line class="line" id="line" x1="8" y1="16" x2="48" y2="16" />
+                <circle class="node" id="n1" cx="8" cy="16" r="4" />
+                <circle class="node" id="n2" cx="24" cy="16" r="4" />
+                <circle class="ring" id="ring" cx="48" cy="16" r="11" />
+                <circle class="premiere" id="n3" cx="48" cy="16" r="11" />
+              </svg>
+              <div class="flare" id="flare"></div>
+            </div>
+            <div class="wordmark" id="wordmark">
+              <span class="word solid" id="solid" data-layout-allow-overflow="true" data-layout-allow-occlusion="true"><span class="a">Crono</span><span class="b">movie</span></span>
+              <span class="word over chrome" id="chrome" aria-hidden="true" data-layout-allow-overflow="true" data-layout-allow-occlusion="true">Cronomovie</span>
+              <span class="word over shine" id="shine" aria-hidden="true" data-layout-allow-overflow="true" data-layout-allow-occlusion="true">Cronomovie</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      // A linha do tempo só é montada depois da fonte carregar: as posições dependem da largura do nome.
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+        const stage = document.getElementById("stage");
+        const W = +stage.dataset.width;
+
+        // Medidas da logo no estado final (de frente), em pixels do palco.
+        const sr = stage.getBoundingClientRect();
+        const k = sr.width / W;
+        const lr = document.getElementById("lockup").getBoundingClientRect();
+        const wr = document.getElementById("wordmark").getBoundingClientRect();
+        const cx = lr.left + lr.width / 2;
+        // A câmera começa colada no começo do nome e viaja até o fim dele.
+        const BIG = 3.8;
+        const X0 = (-BIG * (wr.left + wr.width * 0.27 - cx)) / k;
+        const X1 = (-BIG * (wr.left + wr.width * 0.78 - cx)) / k;
+
+        const line = document.getElementById("line");
+        const len = line.getTotalLength();
+        line.style.strokeDasharray = `${len}`;
+
+        // Momentos (s)
+        const RUN = 0.52; // quanto a bolinha vermelha leva pra correr a linha
+        const T = { fly: 0.12, settle: 1.25, colors: 1.7, mark: 1.82, premiere: 1.82 + RUN, shine: 2.9, end: 4.3 };
+
+        /* 1. voo colado nas letras, com o brilho metálico correndo por dentro */
+        tl.set("#rig", { x: X0, scale: BIG, rotationX: 56, rotationY: -16, rotationZ: -9 }, 0);
+        tl.fromTo("#lockup", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, T.fly);
+        tl.to("#rig", { x: X1, rotationY: 9, rotationZ: -5, duration: T.settle - T.fly, ease: "power1.inOut" }, T.fly);
+        tl.to("#chrome", { backgroundPosition: "0% 50%", duration: 2.1, ease: "none" }, T.fly);
+
+        /* 2. a câmera recua e assenta de frente; as letras ganham as cores da marca */
+        tl.to("#rig", { x: 0, scale: 1, rotationX: 0, rotationY: 0, rotationZ: 0, duration: 1.1, ease: "power3.inOut" }, T.settle);
+        tl.fromTo("#solid", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.45, ease: "power1.inOut" }, T.colors);
+        tl.to("#chrome", { autoAlpha: 0, duration: 0.5, ease: "power1.inOut" }, T.colors + 0.05);
+
+        /* 3. as bolinhas: a vermelha nasce pequena na ponta e corre pela linha; as brancas pulam quando ela passa;
+              no fim da linha ela cresce e estoura */
+        tl.fromTo(line, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: RUN, ease: "power3.inOut" }, T.mark);
+        tl.fromTo("#n3", { x: -40, scale: 0, transformOrigin: "50% 50%" }, { scale: 0.36, duration: 0.11, ease: "expo.out" }, T.mark - 0.11);
+        tl.to("#n3", { x: 0, duration: RUN, ease: "power3.inOut" }, T.mark);
+        tl.to("#n3", { scale: 1, duration: 0.42, ease: "expo.out" }, T.premiere);
+        tl.fromTo("#n1", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.32, ease: "back.out(2.6)" }, T.mark + 0.06);
+        tl.to("#n1", { y: -4, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1 }, T.mark + 0.06);
+        tl.fromTo("#n2", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.32, ease: "back.out(2.6)" }, T.mark + 0.23);
+        tl.to("#n2", { y: -5, duration: 0.17, ease: "power2.out", yoyo: true, repeat: 1 }, T.mark + 0.23);
+        tl.set("#ring", { autoAlpha: 0 }, 0);
+        tl.fromTo("#ring", { scale: 1, autoAlpha: 0.85, transformOrigin: "50% 50%" }, { scale: 3.2, autoAlpha: 0, duration: 0.85, ease: "power1.out", immediateRender: false }, T.premiere + 0.04);
+        tl.set("#flare", { autoAlpha: 0 }, 0);
+        tl.fromTo("#flare", { scaleX: 0.05, autoAlpha: 1 }, { scaleX: 1, autoAlpha: 0, duration: 0.75, ease: "power2.out", immediateRender: false }, T.premiere);
+
+        /* 4. um brilho varre o nome, as três bolinhas fazem uma onda, e a logo segura com uma aproximação leve */
+        tl.to("#shine", { backgroundPosition: "0% 50%", duration: 0.85, ease: "sine.inOut" }, T.shine);
+        ["#n1", "#n2", "#n3"].forEach((n, i) => tl.to(n, { y: -4.5, duration: 0.17, ease: "sine.inOut", yoyo: true, repeat: 1 }, T.shine + 0.2 + i * 0.09));
+        tl.fromTo("#wordmark", { scale: 1 }, { scale: 1.02, duration: T.end - T.settle - 1.1, ease: "sine.out", transformOrigin: "0% 50%" }, T.settle + 1.1);
+
+        window.__timelines["main"] = tl;
+        tl.seek(0);
+      });
+    </script>
+  </body>
+</html>

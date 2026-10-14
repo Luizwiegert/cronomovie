@@ -1,0 +1,28 @@
+<!doctype html>
+<!-- Fonte da foto de perfil da marca (marca/cronomovie-perfil.png), 1024x1024.
+     É o símbolo do favicon, com folga pra caber no recorte redondo dos perfis (e-mail, redes).
+     Gerar: msedge --headless=new --window-size=1024,1024 --screenshot=marca/cronomovie-perfil.png scripts/avatar.html -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0}
+  body{
+    width:1024px;height:1024px;overflow:hidden;
+    /* o mesmo fundo liso da abertura (src/style.css, .intro) */
+    background:#0B0B0C radial-gradient(ellipse 62% 72% at 50% 47%,rgba(122,36,40,.34) 0%,rgba(122,36,40,.17) 36%,rgba(122,36,40,.05) 68%,rgba(122,36,40,0) 100%);
+  }
+  svg{display:block;width:1024px;height:1024px}
+</style>
+</head>
+<body>
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <g transform="translate(32 32) scale(.83) translate(-31.65 -32)">
+      <line x1="12" y1="32" x2="45" y2="32" stroke="#F2F1EE" stroke-width="2.6" stroke-linecap="round" opacity=".45"/>
+      <circle cx="12" cy="32" r="4.2" fill="#F2F1EE"/>
+      <circle cx="26" cy="32" r="4.2" fill="#F2F1EE"/>
+      <circle cx="45" cy="32" r="10.5" fill="#E5484D"/>
+    </g>
+  </svg>
+</body>
+</html>

@@ -1,4 +1,4 @@
--- Moviegram: amizades.
+-- Cronomovie: amizades.
 -- Rode UMA vez no SQL Editor do Supabase (New query > colar > Run).
 -- Depois disso, cada um só vê o progresso de quem é amigo. Não apaga nada.
 

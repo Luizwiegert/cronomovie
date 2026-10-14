@@ -1,0 +1,17 @@
+# Cronomovie
+
+> Linha do tempo da Marvel na ordem certa, em português do Brasil. Reúne 162 filmes e séries, do Universo Cinematográfico Marvel às adaptações antigas e animações, até Vingadores: Doutor Destino (Avengers: Doomsday), que estreia nos cinemas do Brasil em 17 de dezembro de 2026.
+
+O Cronomovie é um site gratuito para quem quer assistir à Marvel em ordem e não se perder. Cada título mostra em que ponto da história ele acontece, onde assistir no Brasil e, nas séries, a lista de episódios. Com uma conta, a pessoa marca o que já viu, dá nota de 1 a 5, escreve um comentário curto, monta as listas "quero ver" e "assistindo", adiciona amigos e compara o progresso no ranking. Também dá para usar sem conta, só para consultar a ordem.
+
+O site é um projeto de fãs, sem ligação com a Marvel ou a Disney.
+
+## Páginas
+
+- [Linha do tempo](https://cronomovie.com/): todos os títulos em ordem cronológica ou de lançamento, com busca, filtros por saga e por tipo (filmes, séries, essenciais), a Trilha Avengers (só o que leva a Doutor Destino) e a contagem regressiva dos próximos lançamentos
+- [Termos de uso](https://cronomovie.com/termos.html): regras de uso do site
+- [Política de privacidade](https://cronomovie.com/privacidade.html): quais dados o site guarda, quem vê e como excluir a conta
+
+## Contato
+
+- E-mail: contato@cronomovie.com

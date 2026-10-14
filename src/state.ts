@@ -1,6 +1,6 @@
-import { BUCKETS, BYID, DOOMSDAY, ESS, EVENTS, EXTRAS_ORDER, FILTERS, ITEMS, MAIN, TRILHA } from './data';
-import type { Item } from './data';
-import { avatarById, avatarStyle } from './avatars';
+import { BUCKETS, BYID, DOOMSDAY, ESS, EVENTS, EXTRAS_ORDER, FILTERS, ITEMS, MAIN, RELEASES, TRILHA } from './data';
+import type { Item, Release } from './data';
+import { avatarById, avatarStyle, photoStyle, photoURL } from './avatars';
 import { countdown, esc, fmt, norm } from './util';
 
 /** Doomsday já estreou? Antes disso ele não pode ser marcado. */
@@ -9,8 +9,18 @@ export const released = () => countdown(DOOMSDAY).done;
 /** Próxima grande estreia que ainda não aconteceu (ou nenhuma). */
 export const nextEvent = () => EVENTS.find(e => !countdown(e.date).done) || null;
 
+const stamp = (r: Release) => new Date(r.date.y, r.date.m - 1, r.date.d, r.date.h || 0).getTime();
+/** Lançamentos que ainda vão acontecer: a próxima grande estreia primeiro, depois os outros por data (um por título). */
+export function upcoming(): Release[] {
+  const main = nextEvent(), seen = new Set(main ? [main.id] : []);
+  const rest = RELEASES.filter(r => !countdown(r.date).done).sort((a, b) => stamp(a) - stamp(b))
+    .filter(r => !seen.has(r.id) && !!seen.add(r.id));
+  return main ? [main, ...rest] : rest;
+}
+
 export interface Mark { r: number | null; c: string; d: string }
-export interface Person { id: string; name: string; color: string; avatar: string | null; username?: string | null }
+/** favorite = id do filme ou série favorita (ou null) */
+export interface Person { id: string; name: string; color: string; avatar: string | null; username?: string | null; favorite?: string | null }
 /** Listas e episódios de um título: quero ver, assistindo agora, e episódios vistos ("temporada:episódio") */
 export interface Watch { list: 'quero' | 'assistindo' | null; eps: string[] }
 /** Pedido de amizade (pending) ou amizade aceita (accepted). a pediu, b recebeu. */
@@ -21,7 +31,12 @@ export interface Backend {
   /** guest = visitante sem conta: vê tudo, mas não marca nada */
   mode: 'demo' | 'live' | 'guest';
   setMark(titleId: string, patch: Partial<Mark> | null): void;
-  updateProfile(name: string, avatar: string | null, username?: string | null): Promise<void>;
+  /** username e favorite: sem passar (undefined), ficam como estão */
+  updateProfile(name: string, avatar: string | null, username?: string | null, favorite?: string | null): Promise<void>;
+  /** O que é público de um perfil (nome, @, foto e favorito), buscado pelo @. Funciona sem conta: é o que o link de perfil mostra. */
+  profileCard(username: string): Promise<Person | null>;
+  /** Guarda a foto que a pessoa enviou e devolve o valor que vai no perfil (ainda sem salvar o perfil) */
+  uploadPhoto(photo: Blob): Promise<string>;
   /** Muda listas/episódios de um título (null apaga) */
   setWatch(titleId: string, patch: Partial<Watch> | null): void;
   /** O @ está livre? */
@@ -127,10 +142,11 @@ export function P(pid: string): Person {
   return S.people.find(p => p.id === pid) || { id: pid, name: 'Alguém', color: '#6A7080', avatar: null };
 }
 
-/** Foto de perfil: o personagem escolhido, ou a inicial do nome se ainda não escolheu. */
+/** Foto de perfil: o personagem escolhido ou a foto enviada; sem nenhum dos dois, a inicial do nome. */
 export function av(pid: string, size = ''): string {
-  const p = P(pid), a = avatarById(p.avatar);
-  if (a) return `<span class="av pic ${size}" style="${avatarStyle(a)}" title="${esc(p.name)}" aria-hidden="true"></span>`;
+  const p = P(pid), a = avatarById(p.avatar), photo = a ? null : photoURL(pid, p.avatar);
+  const style = a ? avatarStyle(a) : photo ? photoStyle(photo) : '';
+  if (style) return `<span class="av pic ${size}" style="${style}" title="${esc(p.name)}" aria-hidden="true"></span>`;
   return `<span class="av ${size}" title="${esc(p.name)}" aria-hidden="true">${esc((p.name.trim()[0] || '?').toUpperCase())}</span>`;
 }
 
@@ -202,8 +218,8 @@ export function passes(it: Item): boolean {
 }
 
 /** Título de uma grande estreia: o item da lista ou, se não estiver nela (ex.: Guerras Secretas), um item só para o cartaz. */
-export function eventItem(ev: { id: string; t: string; date: { y: number } }): Item {
-  return BYID[ev.id] || { id: ev.id, t: ev.t, k: 'f', r: `${ev.date.y}-12`, star: false, opt: false, n: '', e: 4, fr: ['vingadores'], m: null, i: 9999 };
+export function eventItem(ev: { id: string; t: string; k?: Item['k']; date: { y: number; m?: number } }): Item {
+  return BYID[ev.id] || { id: ev.id, t: ev.t, k: ev.k || 'f', r: `${ev.date.y}-${String(ev.date.m || 12).padStart(2, '0')}`, star: false, opt: false, n: '', e: 4, fr: ['vingadores'], m: null, i: 9999 };
 }
 
 /** A trilha na ordem de ver: a linha principal, com os X-Men e o Quarteto antigo da Fox logo antes de Deadpool & Wolverine. */

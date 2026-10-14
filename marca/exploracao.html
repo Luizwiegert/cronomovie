@@ -1,4 +1,4 @@
-<title>Marca Moviegram</title>
+<title>Marca Cronomovie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,100..900&family=Big+Shoulders+Display:wght@700;900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Unbounded:wght@300..900&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
@@ -76,7 +76,7 @@ h2{font:700 13px/1 var(--body);color:var(--muted);margin:0 0 20px;letter-spacing
 </style>
 
 <div class="wrap">
-  <h1>Marca Moviegram</h1>
+  <h1>Marca Cronomovie</h1>
   <p class="lead">Escolha a fonte do nome, o símbolo e a cor de destaque. Tudo aqui é desenhado em código: o mesmo símbolo aparece igual no ícone do celular, na aba do navegador e no topo do site.</p>
 
   <div class="controls" role="group" aria-label="Escolhas">
@@ -88,7 +88,7 @@ h2{font:700 13px/1 var(--body);color:var(--muted);margin:0 0 20px;letter-spacing
     </div>
     <div class="ctl"><span>Letras</span>
       <button class="opt" data-case="uppercase" aria-pressed="true">MAIÚSCULAS</button>
-      <button class="opt" data-case="none" aria-pressed="false">Moviegram</button>
+      <button class="opt" data-case="none" aria-pressed="false">Cronomovie</button>
       <button class="opt" data-case="lowercase" aria-pressed="false">minúsculas</button>
     </div>
   </div>
@@ -143,11 +143,11 @@ const MARKS={
 };
 
 const S={font:'poster',mark:'grade',accent:'#E8B04B',on:'#1A1204',accentName:'Âmbar de letreiro',case:'uppercase'};
-try{Object.assign(S,JSON.parse(localStorage.getItem('moviegram-marca')||'{}'))}catch(e){}
-const save=()=>{try{localStorage.setItem('moviegram-marca',JSON.stringify(S))}catch(e){}};
+try{Object.assign(S,JSON.parse(localStorage.getItem('cronomovie-marca')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('cronomovie-marca',JSON.stringify(S))}catch(e){}};
 
 const root=document.documentElement;
-const wmHTML=()=>'Movie<span class="g">gram</span>';
+const wmHTML=()=>'Crono<span class="g">movie</span>';
 const initial=(size)=>`<span class="wm" style="font-size:${size}px;line-height:1;color:var(--accent)">M</span>`;
 
 function applyVars(){
@@ -172,7 +172,7 @@ function render(){
   document.querySelectorAll('[data-accent]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.accent===S.accent)));
   document.querySelectorAll('[data-case]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.case===S.case)));
   const f=FONTS.find(x=>x.id===S.font);
-  const caseName={uppercase:'maiúsculas',none:'Moviegram',lowercase:'minúsculas'}[S.case];
+  const caseName={uppercase:'maiúsculas',none:'Cronomovie',lowercase:'minúsculas'}[S.case];
   const txt=`Fonte ${f.name}, símbolo ${m.name}, cor ${S.accentName}, letras ${caseName}`;
   document.getElementById('pick').innerHTML=`<span>Sua escolha: <b>${txt}</b></span><button class="opt copy" id="copy">Copiar escolha</button>`;
   document.getElementById('copy').dataset.txt=txt;

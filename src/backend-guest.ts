@@ -1,5 +1,5 @@
 import { S, emit, marksOf, watchOf } from './state';
-import type { Backend, Mark, Watch } from './state';
+import type { Backend, Mark, Person, Watch } from './state';
 import { iso } from './util';
 
 /**
@@ -7,7 +7,7 @@ import { iso } from './util';
  * Nada vai para o banco: ao fechar ou recarregar, as marcações se perdem. A conta serve para salvar,
  * acompanhar depois e adicionar amigos. O que precisa de conta (amigos) chama `ask`.
  */
-export function guestBackend(ask: () => void): Backend {
+export function guestBackend(ask: () => void, card: (username: string) => Promise<Person | null> = async () => null): Backend {
   const later = async () => { ask(); };
   return {
     mode: 'guest',
@@ -24,6 +24,8 @@ export function guestBackend(ask: () => void): Backend {
       emit();
     },
     updateProfile: later,
+    profileCard: card,
+    uploadPhoto: async () => { ask(); throw new Error('sem conta'); },
     usernameAvailable: async () => false,
     signOut: async () => {},
     deleteAccount: later,
@@ -70,9 +72,11 @@ export function takeGuest(email: string | undefined): GuestData | null {
     const raw = localStorage.getItem(STASH);
     if (raw) {
       const s = JSON.parse(raw) as GuestData & { email: string; t: number };
-      const mine = !!email && s.email === email.trim().toLowerCase() && Date.now() - s.t < WEEK;
+      // "*" = foi entrar pelo Google neste navegador: vale para a conta que voltar de lá em até meia hora
+      const viaGoogle = s.email === '*' && Date.now() - s.t < 30 * 60 * 1000;
+      const mine = viaGoogle || (!!email && s.email === email.trim().toLowerCase() && Date.now() - s.t < WEEK);
       if (mine && !out) out = { marks: s.marks || {}, watch: s.watch || {} };
-      if (mine || Date.now() - s.t >= WEEK) localStorage.removeItem(STASH);
+      if (mine || Date.now() - s.t >= WEEK || (s.email === '*' && !viaGoogle)) localStorage.removeItem(STASH);
     }
   } catch { /* ignorado */ }
   delete S.marks[''];

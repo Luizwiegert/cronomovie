@@ -1,4 +1,4 @@
--- Moviegram: ajustes pro site aberto ao público.
+-- Cronomovie: ajustes pro site aberto ao público.
 -- Cole este arquivo inteiro em SQL Editor > New query e clique em Run.
 -- Pode rodar de novo sem problema.
 

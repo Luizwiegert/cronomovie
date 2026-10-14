@@ -20,24 +20,48 @@ export interface Item {
   num?: number;
 }
 
-export const DOOMSDAY = { y: 2026, m: 12, d: 18 };
+// Datas de estreia no Brasil (aqui os filmes chegam na quinta, um dia antes dos EUA)
+export const DOOMSDAY = { y: 2026, m: 12, d: 17 };
 export const ENCORE = { y: 2026, m: 9, d: 25 };
 
 /**
- * Grandes estreias em sequência: a contagem regressiva mira a próxima que ainda não aconteceu.
- * Depois de Doomsday, ela passa sozinha pra Guerras Secretas (com o cartaz dele).
+ * Lançamentos da Marvel que já têm data (as do Brasil). A faixa "Lançamentos" passa por eles, um de cada vez,
+ * sempre começando pelo principal (main) que ainda não estreou.
+ *  - date.h: hora de Brasília, quando o lançamento não é à meia-noite (ex.: episódio que entra às 22h);
+ *  - approx: só o mês é certo (mostra os dias que faltam, sem relógio);
+ *  - o mesmo id pode aparecer mais de uma vez (ex.: episódios de uma série): só o próximo entra na faixa.
  */
-export const EVENTS = [
-  { id: 'doomsday', t: 'Vingadores: Doomsday', date: DOOMSDAY, label: '18 de dezembro' },
-  { id: 'secretwars', t: 'Vingadores: Guerras Secretas', date: { y: 2027, m: 12, d: 17 }, label: '17 de dezembro de 2027' },
+export interface Release {
+  id: string; t: string; k: Kind;
+  date: { y: number; m: number; d: number; h?: number };
+  /** Quando, do jeito que aparece na tela */
+  label: string;
+  /** O que é e onde */
+  what: string;
+  main?: boolean; approx?: boolean;
+}
+export const RELEASES: Release[] = [
+  { id: 'visionquest', t: 'VisionQuest', k: 's', date: { y: 2026, m: 10, d: 20, h: 22 }, label: '20 de outubro, às 22h', what: 'Episódios 3 e 4 no Disney+' },
+  { id: 'visionquest', t: 'VisionQuest', k: 's', date: { y: 2026, m: 10, d: 27, h: 22 }, label: '27 de outubro, às 22h', what: 'Episódios 5 e 6 no Disney+' },
+  { id: 'visionquest', t: 'VisionQuest', k: 's', date: { y: 2026, m: 11, d: 3, h: 22 }, label: '3 de novembro, às 22h', what: 'Episódio 7 no Disney+' },
+  { id: 'visionquest', t: 'VisionQuest', k: 's', date: { y: 2026, m: 11, d: 10, h: 22 }, label: '10 de novembro, às 22h', what: 'Último episódio no Disney+' },
+  { id: 'doomsday', t: 'Vingadores: Doutor Destino', k: 'f', date: DOOMSDAY, label: '17 de dezembro', what: 'Nos cinemas', main: true },
+  { id: 'amigao', t: 'Seu Amigão da Vizinhança: Homem-Aranha', k: 's', date: { y: 2027, m: 1, d: 13 }, label: '13 de janeiro de 2027', what: '2ª temporada no Disney+' },
+  { id: 'aranhaverso3', t: 'Homem-Aranha: Além do Aranhaverso', k: 'f', date: { y: 2027, m: 6, d: 17 }, label: '17 de junho de 2027', what: 'Nos cinemas' },
+  { id: 'secretwars', t: 'Vingadores: Guerras Secretas', k: 'f', date: { y: 2027, m: 12, d: 16 }, label: '16 de dezembro de 2027', what: 'Nos cinemas', main: true },
+  { id: 'xmen2028', t: 'X-Men', k: 'f', date: { y: 2028, m: 5, d: 4 }, label: 'maio de 2028', what: 'Nos cinemas', approx: true },
+  { id: 'gr2028', t: 'Motoqueiro Fantasma', k: 'f', date: { y: 2028, m: 7, d: 27 }, label: 'julho de 2028', what: 'Nos cinemas', approx: true },
+  { id: 'bp3', t: 'Pantera Negra 3', k: 'f', date: { y: 2028, m: 12, d: 14 }, label: 'dezembro de 2028', what: 'Nos cinemas', approx: true },
 ];
+/** Grandes estreias: é a próxima delas que abre a faixa de lançamentos e fecha a colagem da tela de entrada. */
+export const EVENTS = RELEASES.filter(r => r.main);
 
 export const ERAS = [
   { key: 'tempo', name: 'Passado', stone: 'Joia do Tempo' },
   { key: 'espaco', name: 'Formação dos Vingadores', stone: 'Joia do Espaço' },
   { key: 'poder', name: 'Guerra Civil até Ultimato', stone: 'Joia do Poder' },
   { key: 'realidade', name: 'Depois do Blip', stone: 'Joia da Realidade' },
-  { key: 'mente', name: 'Fase 5 até Doomsday', stone: 'Joia da Mente' },
+  { key: 'mente', name: 'Fase 5 até Doutor Destino', stone: 'Joia da Mente' },
   { key: 'alma', name: 'Universos paralelos', stone: 'Joia da Alma' },
 ];
 
@@ -52,7 +76,11 @@ export const BUCKETS = [
 export const GROUPS = [
   { key: 'xmen', name: 'X-Men da Fox', hint: 'Encaixe antes de Deadpool & Wolverine' },
   { key: 'sony', name: 'Homem-Aranha da Sony', hint: 'Encaixe antes de Sem Volta para Casa' },
-  { key: 'outros', name: 'Quarteto antigo, Blade e Elektra', trail: 'Quarteto Fantástico antigo', hint: 'Opcionais: aparecem em Deadpool & Wolverine' },
+  { key: 'outros', name: 'Quarteto antigo, Blade, Demolidor e Elektra', trail: 'Quarteto Fantástico antigo', hint: 'Opcionais: aparecem em Deadpool & Wolverine' },
+  { key: 'venom', name: 'Universo do Venom (Sony)', hint: 'Venom aparece nos créditos de Sem Volta para Casa' },
+  { key: 'anim', name: 'Séries animadas', hint: 'Histórias próprias, fora da linha principal' },
+  { key: 'animf', name: 'Filmes animados', hint: 'Histórias próprias, fora da linha principal' },
+  { key: 'legado', name: 'Adaptações antigas', hint: 'Filmes e séries de antes do universo compartilhado' },
 ];
 
 export const KIND: Record<Kind, string> = { f: 'Filme', s: 'Série', e: 'Especial' };
@@ -98,6 +126,10 @@ export const ITEMS: Item[] = [
   I('pun2', 'O Justiceiro (T2)', 's', '2019-01', 'o', 'Netflix', 2, 'netflix', 689),
   I('jj3', 'Jessica Jones (T3)', 's', '2019-06', 'o', 'Netflix', 2, 'netflix', 689),
   I('shield35', 'Agents of S.H.I.E.L.D. (T3 a T5)', 's', '2015-09', 'o', '', 2, 'shield', 2838),
+  I('inumanos', 'Inumanos', 's', '2017-09', 'o', 'Marvel Television', 2, 'shield', 344),
+  I('fugitivos', 'Fugitivos (T1 a T3)', 's', '2017-11', 'o', 'Marvel Television', 2, 'outros', 1650),
+  I('manto-adaga', 'Manto e Adaga (T1 e T2)', 's', '2018-06', 'o', 'Marvel Television', 2, 'outros', 860),
+  I('shield67', 'Agents of S.H.I.E.L.D. (T6 e T7)', 's', '2019-05', 'o', 'Não leva em conta o estalo de Thanos', 2, 'shield', 1118),
   I('guerracivil', 'Capitão América: Guerra Civil', 'f', '2016-05', '*', '', 2, 'cap ferro vingadores aranha pantera formiga viuva wanda', 147),
   I('viuva', 'Viúva Negra', 'f', '2021-07', '', '', 2, 'viuva thunder', 134),
   I('pantera1', 'Pantera Negra', 'f', '2018-02', '*', '', 2, 'pantera', 134),
@@ -124,6 +156,7 @@ export const ITEMS: Item[] = [
   I('cavaleiro', 'Cavaleiro da Lua', 's', '2022-03', '', '', 3, 'outros', 300),
   I('msmarvel', 'Ms. Marvel', 's', '2022-06', '', '', 3, 'capita', 270),
   I('thor4', 'Thor: Amor e Trovão', 'f', '2022-07', '', '', 3, 'thor', 119),
+  I('helstrom', 'Helstrom', 's', '2020-10', 'o', 'Marvel Television', 3, 'outros', 500),
   I('lobisomem', 'Lobisomem na Noite', 'e', '2022-10', 'o', '', 3, 'outros', 53),
   I('mulherhulk', 'Mulher-Hulk', 's', '2022-08', '', '', 3, 'hulk', 297),
   I('wakanda', 'Pantera Negra: Wakanda para Sempre', 'f', '2022-11', '*', '', 3, 'pantera', 161),
@@ -146,7 +179,8 @@ export const ITEMS: Item[] = [
   I('wonderman', 'Wonder Man', 's', '2026-01', 'o', '', 4, 'outros', 280),
   I('quarteto', 'Quarteto Fantástico: Primeiros Passos', 'f', '2025-07', '*', 'Se passa na Terra-828', 4, 'quarteto multiverso', 115),
   I('aranha4', 'Homem-Aranha: Um Novo Dia', 'f', '2026-07', '', '', 4, 'aranha', null),
-  I('doomsday', 'Vingadores: Doomsday', 'f', '2026-12', '', 'Estreia em 18 de dezembro de 2026', 4, 'vingadores multiverso quarteto xmen thunder', null),
+  I('visionquest', 'VisionQuest', 's', '2026-10', '', 'Continua WandaVision e Agatha Desde Sempre', 4, 'wanda', null),
+  I('doomsday', 'Vingadores: Doutor Destino', 'f', '2026-12', '', 'Estreia em 17 de dezembro de 2026', 4, 'vingadores multiverso quarteto xmen thunder', null),
 
   I('x1', 'X-Men: O Filme', 'f', '2000-07', '*', '', 5, 'xmen', 104, 'xmen'),
   I('x2', 'X-Men 2', 'f', '2003-05', '*', '', 5, 'xmen', 134, 'xmen'),
@@ -169,10 +203,62 @@ export const ITEMS: Item[] = [
   I('blade1', 'Blade: O Caçador de Vampiros', 'f', '1998-08', 'o', '', 5, 'outros', 120, 'outros'),
   I('blade2', 'Blade II', 'f', '2002-03', 'o', '', 5, 'outros', 117, 'outros'),
   I('blade3', 'Blade: Trinity', 'f', '2004-12', 'o', '', 5, 'outros', 113, 'outros'),
+  I('dd03', 'Demolidor: O Homem Sem Medo', 'f', '2003-02', 'o', 'Elektra é a continuação', 5, 'outros', 103, 'outros'),
   I('elektra', 'Elektra', 'f', '2005-01', 'o', '', 5, 'outros', 97, 'outros'),
   I('ff05', 'Quarteto Fantástico (2005)', 'f', '2005-07', 'o', '', 5, 'quarteto', 106, 'outros'),
   I('ff07', 'Quarteto Fantástico e o Surfista Prateado', 'f', '2007-06', 'o', '', 5, 'quarteto', 92, 'outros'),
   I('ff15', 'Quarteto Fantástico (2015)', 'f', '2015-08', 'o', '', 5, 'quarteto', 100, 'outros'),
+  I('venom1', 'Venom', 'f', '2018-10', 'o', '', 5, 'outros', 112, 'venom'),
+  I('venom2', 'Venom: Tempo de Carnificina', 'f', '2021-10', 'o', 'A cena pós-créditos liga com Sem Volta para Casa', 5, 'outros', 97, 'venom'),
+  I('morbius', 'Morbius', 'f', '2022-03', 'o', '', 5, 'outros', 104, 'venom'),
+  I('madame-teia', 'Madame Teia', 'f', '2024-02', 'o', '', 5, 'outros', 116, 'venom'),
+  I('venom3', 'Venom: A Última Rodada', 'f', '2024-10', 'o', '', 5, 'outros', 109, 'venom'),
+  I('kraven', 'Kraven: O Caçador', 'f', '2024-12', 'o', '', 5, 'outros', 127, 'venom'),
+  I('xmen-tas', 'X-Men: A Série Animada', 's', '1992-10', 'o', "A série dos anos 90 que X-Men '97 continua", 5, 'xmen', 1672, 'anim'),
+  I('ff94', 'Quarteto Fantástico: A Série Animada', 's', '1994-09', 'o', '', 5, 'quarteto', 546, 'anim'),
+  I('aranha94', 'Homem-Aranha: A Série Animada', 's', '1994-11', 'o', '', 5, 'aranha', 1365, 'anim'),
+  I('hulk96', 'O Incrível Hulk: A Série Animada', 's', '1996-09', 'o', '', 5, 'hulk', 441, 'anim'),
+  I('surfista98', 'O Surfista Prateado', 's', '1998-02', 'o', '', 5, 'quarteto', 273, 'anim'),
+  I('aranha-ilimitado', 'Homem-Aranha: Ação Sem Limites', 's', '1999-10', 'o', '', 5, 'aranha', 273, 'anim'),
+  I('xmen-evolution', 'X-Men: Evolution', 's', '2000-11', 'o', '', 5, 'xmen', 1092, 'anim'),
+  I('ff-wgh', 'Quarteto Fantástico: Os Maiores Heróis da Terra', 's', '2006-09', 'o', '', 5, 'quarteto', 572, 'anim'),
+  I('espetacular', 'O Espetacular Homem-Aranha: A Série Animada', 's', '2008-03', 'o', '', 5, 'aranha', 572, 'anim'),
+  I('wolverine-xmen', 'Wolverine e os X-Men', 's', '2009-01', 'o', '', 5, 'xmen', 572, 'anim'),
+  I('hdf-armored', 'Homem de Ferro: Série Animada', 's', '2009-04', 'o', '', 5, 'ferro', 1144, 'anim'),
+  I('esquadrao', 'Esquadrão de Heróis', 's', '2009-09', 'o', '', 5, 'outros', 1144, 'anim'),
+  I('emh', 'Os Vingadores: Os Super-Heróis Mais Poderosos da Terra', 's', '2010-09', 'o', '', 5, 'vingadores', 1144, 'anim'),
+  I('marvel-anime', 'Marvel Anime (Homem de Ferro, Wolverine, X-Men e Blade)', 's', '2010-10', 'o', 'Quatro séries japonesas de 12 episódios', 5, 'outros', 1150, 'anim'),
+  I('ultimate', 'Ultimate Homem-Aranha', 's', '2012-04', 'o', '', 5, 'aranha', 2288, 'anim'),
+  I('vingadores-unidos', 'Os Vingadores Unidos', 's', '2013-05', 'o', '', 5, 'vingadores', 2794, 'anim'),
+  I('hulk-smash', 'Hulk e os Agentes de S.M.A.S.H.', 's', '2013-08', 'o', '', 5, 'hulk', 1144, 'anim'),
+  I('gotg-anim', 'Guardiões da Galáxia: A Série Animada', 's', '2015-09', 'o', '', 5, 'gotg', 1694, 'anim'),
+  I('aranha2017', 'Marvel: Homem-Aranha', 's', '2017-08', 'o', '', 5, 'aranha', 1276, 'anim'),
+  I('modok', 'M.O.D.O.K.', 's', '2021-05', 'o', '', 5, 'outros', 240, 'anim'),
+  I('hit-monkey', 'Hit-Monkey', 's', '2021-11', 'o', '', 5, 'outros', 460, 'anim'),
+  I('xmen97', "X-Men '97 (T1 e T2)", 's', '2024-03', 'o', 'Continua a série animada dos anos 90', 5, 'xmen', 627, 'anim'),
+  I('amigao', 'Seu Amigão da Vizinhança: Homem-Aranha', 's', '2025-01', 'o', '', 5, 'aranha', 300, 'anim'),
+  I('supremos1', 'Os Supremos: O Filme', 'f', '2006-02', 'o', '', 5, 'vingadores', 71, 'animf'),
+  I('supremos2', 'Os Supremos 2', 'f', '2006-08', 'o', '', 5, 'vingadores pantera', 73, 'animf'),
+  I('hdf-invencivel', 'O Invencível Homem de Ferro', 'f', '2007-01', 'o', '', 5, 'ferro', 83, 'animf'),
+  I('estranho07', 'Doutor Estranho: O Mago Supremo', 'f', '2007-08', 'o', '', 5, 'estranho', 76, 'animf'),
+  I('novos-vingadores', 'Os Novos Vingadores: Heróis do Amanhã', 'f', '2008-09', 'o', '', 5, 'vingadores', 78, 'animf'),
+  I('hulk-wolverine', 'Hulk vs. Wolverine', 'f', '2009-01', 'o', '', 5, 'hulk xmen', 37, 'animf'),
+  I('hulk-thor', 'Hulk vs. Thor', 'f', '2009-01', 'o', '', 5, 'hulk thor', 45, 'animf'),
+  I('planeta-hulk', 'Planeta Hulk', 'f', '2010-02', 'o', '', 5, 'hulk', 81, 'animf'),
+  I('thor-asgard', 'Thor: O Filho de Asgard', 'f', '2011-05', 'o', '', 5, 'thor loki', 77, 'animf'),
+  I('ferro-hulk', 'Homem de Ferro e Hulk: Super-Heróis Unidos', 'f', '2013-12', 'o', '', 5, 'ferro hulk', 71, 'animf'),
+  I('ferro-cap', 'Homem de Ferro e Capitão América: Super-Heróis Unidos', 'f', '2014-07', 'o', '', 5, 'ferro cap', 71, 'animf'),
+  I('hulk-monstros', 'Hulk: Onde os Monstros Habitam', 'f', '2016-10', 'o', '', 5, 'hulk estranho', 75, 'animf'),
+  I('rising', 'Marvel Rising: Guerreiros Secretos', 'f', '2018-09', 'o', '', 5, 'capita', 80, 'animf'),
+  I('aranhaverso1', 'Homem-Aranha no Aranhaverso', 'f', '2019-01', 'o', '', 5, 'aranha', 117, 'animf'),
+  I('aranhaverso2', 'Homem-Aranha: Através do Aranhaverso', 'f', '2023-06', 'o', '', 5, 'aranha', 140, 'animf'),
+  I('hulk03', 'Hulk', 'f', '2003-06', 'o', '', 5, 'hulk', 138, 'legado'),
+  I('pun04', 'O Justiceiro', 'f', '2004-04', 'o', '', 5, 'outros', 124, 'legado'),
+  I('gr07', 'Motoqueiro Fantasma', 'f', '2007-02', 'o', '', 5, 'outros', 110, 'legado'),
+  I('pun08', 'O Justiceiro: Em Zona de Guerra', 'f', '2008-12', 'o', '', 5, 'outros', 103, 'legado'),
+  I('gr12', 'Motoqueiro Fantasma: Espírito de Vingança', 'f', '2012-02', 'o', '', 5, 'outros', 96, 'legado'),
+  I('legion', 'Legion (T1 a T3)', 's', '2017-02', 'o', 'Série ligada aos X-Men', 5, 'xmen', 1350, 'legado'),
+  I('gifted', 'The Gifted (T1 e T2)', 's', '2017-10', 'o', 'Série ligada aos X-Men', 5, 'xmen', 1247, 'legado'),
 ];
 
 ITEMS.forEach((it, i) => { it.i = i; });
@@ -229,6 +315,6 @@ export const FILTER_LIST: Filter[] = [
   // O universo do Demolidor: as séries da Netflix e o que veio depois delas
   F('netflix', 'Saga dos Defensores', tag('netflix')),
   F('shield', 'S.H.I.E.L.D.', [...tag('shield'), 'cap2', 'invasao']),
-  F('animacao', 'Animações', ['whatif1', 'groot', 'whatif23', 'zombies', 'olhos-wakanda']),
+  F('animacao', 'Animações', [...['whatif1', 'groot', 'whatif23', 'zombies', 'olhos-wakanda'], ...ITEMS.filter(it => it.g === 'anim' || it.g === 'animf').map(it => it.id)]),
 ];
 export const FILTERS: Record<string, Filter> = Object.fromEntries(FILTER_LIST.map(f => [f.key, f]));
