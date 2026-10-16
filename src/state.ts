@@ -32,8 +32,9 @@ export interface PersonHit extends Person { mutual: number; mutualIds: string[] 
 export interface ProfileInfo { person: Person; friends: number | null; mutual: number; mutualIds: string[] }
 /** Uma página da lista de amigos de alguém. common = também é seu amigo (ou é você) */
 export interface FriendsPage { people: (Person & { common: boolean })[]; total: number }
-/** Notificação: pedido recebido, pedido aceito ou curtida no seu comentário */
-export interface Notif { id: number; kind: 'request' | 'accepted' | 'like'; titleId: string | null; at: string; read: boolean; actor: Person }
+/** Notificação: pedido recebido, pedido aceito, curtida no seu comentário ou aviso do próprio site
+ *  (estreia do dia, contagem até Doutor Destino, lembrete semanal), que vem sem autor e com o texto pronto */
+export interface Notif { id: number; kind: 'request' | 'accepted' | 'like' | 'release' | 'countdown' | 'weekly'; titleId: string | null; at: string; read: boolean; actor: Person | null; info: string | null }
 
 /** O que muda por trás do app: demonstração local ou Supabase de verdade. */
 export interface Backend {

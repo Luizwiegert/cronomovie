@@ -245,6 +245,51 @@ function startReleases() {
   }, 200);
 }
 
+/* ---------- Primeiros passos: quem ainda não marcou nada recebe atalhos no lugar do progresso zerado ---------- */
+const WELCOME = 'cronomovie-primeiros-passos';
+/** Os 23 filmes da Saga do Infinito (de Homem de Ferro, 2008, a Homem-Aranha: Longe de Casa, 2019) */
+const SAGA = ITEMS.filter(it => it.e <= 4 && it.k === 'f' && it.r <= '2019-07').map(it => it.id);
+/** Filmes marcados pelo atalho, enquanto ainda dá para desfazer */
+let welcomeUndo: string[] | null = null;
+const welcomeDone = () => { try { return !!localStorage.getItem(WELCOME); } catch { return false; } };
+
+function welcomeHTML(): string | null {
+  if (welcomeUndo) {
+    return `<div class="welcome"><p class="muted">Primeiros passos</p><h3>Pronto: ${welcomeUndo.length} filmes marcados como vistos</h3><p class="w-txt">Agora é seguir a ordem a partir do próximo título.</p><div class="w-btns"><button class="btn primary" data-welcome="ok">Continuar</button><button class="btn" data-welcome="desfazer">Desfazer</button></div></div>`;
+  }
+  if (welcomeDone() || Object.keys(marksOf(S.me)).length) return null;
+  return `<div class="welcome"><p class="muted">Primeiros passos</p><h3>Comece pelo que você já viu</h3><p class="w-txt">Marque o que já assistiu e o Cronomovie mostra o que falta até Doutor Destino.</p><div class="w-btns"><button class="btn primary" data-welcome="saga">Já vi os ${SAGA.length} filmes da Saga do Infinito</button><button class="btn" data-welcome="um">Vou marcar um por um</button><button class="btn" data-welcome="zero">Estou começando do zero</button></div></div>`;
+}
+
+function welcomeAction(a: string) {
+  const done = () => { try { localStorage.setItem(WELCOME, '1'); } catch { /* sem armazenamento: o cartão some quando a pessoa marcar algo */ } };
+  if (a === 'saga') {
+    const m = marksOf(S.me);
+    welcomeUndo = SAGA.filter(id => !m[id]);
+    welcomeUndo.forEach(id => S.backend?.setMark(id, {}));
+    buzz();
+  } else if (a === 'desfazer') {
+    (welcomeUndo || []).forEach(id => S.backend?.setMark(id, null));
+    welcomeUndo = null;
+  } else if (a === 'ok') {
+    welcomeUndo = null; done();
+    guestNudge();
+  } else if (a === 'um') {
+    done();
+    toast('Toque no ✓ de cada cartaz que você já viu.');
+    // Rola até a lista depois do redesenho (senão a rolagem é interrompida), descontando a barra fixa do topo
+    window.setTimeout(() => {
+      const eras = $('#eras'), bar = document.querySelector<HTMLElement>('header.bar');
+      if (eras) window.scrollTo({ top: eras.getBoundingClientRect().top + window.scrollY - (bar?.offsetHeight || 0) - 12, behavior: reduced() ? 'auto' : 'smooth' });
+    }, 80);
+  } else if (a === 'zero') {
+    done();
+    const nx = nextUp();
+    if (nx) toast(`Comece por ${nx.t}.`);
+  }
+  refresh();
+}
+
 /** Quanto falta da Trilha Avengers até a estreia de Doutor Destino, e quanto isso dá por dia */
 function trailLeftHTML(): string {
   const days = daysTo(DOOMSDAY);
@@ -260,6 +305,8 @@ function trailLeftHTML(): string {
 function topHTML(): string {
   const st = stats(S.me), nx = nextUp();
   const who = demo() && !isMe('voce') ? esc(P(S.me).name) : '';
+  const wel = who ? null : welcomeHTML();
+  if (wel) return `${countHTML()}\n  <div class="top-side">${wel}</div>`;
   // Trilha ligada: o progresso do topo é o da trilha
   const tr = UI.trail ? trailProgress(S.me) : null;
   const seen = tr ? tr.seen : st.seenMain, total = tr ? tr.total : MAIN.length;
@@ -836,6 +883,12 @@ async function openNotifications() {
   const ul = el.querySelector<HTMLElement>('.nt-list')!, msg = el.querySelector<HTMLElement>('.pl-msg')!, slot = el.querySelector<HTMLElement>('.nt-push-slot')!;
   let list: Notif[] = [];
   const row = (n: Notif) => {
+    // Aviso do próprio site: o símbolo do Cronomovie no lugar da foto, o texto pronto e, se houver, o cartaz do título
+    if (!n.actor) {
+      const it = n.titleId ? BYID[n.titleId] : null;
+      const open = it ? ` data-nt-open="${it.id}"` : '';
+      return `<li class="prow nt-row${n.read ? '' : ' new'}"><button type="button" class="prow-main"${open}><span class="av md nt-sys" aria-hidden="true"><svg viewBox="0 0 64 32"><line x1="8" y1="16" x2="48" y2="16" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".42"/><circle cx="8" cy="16" r="4.5" fill="currentColor"/><circle cx="24" cy="16" r="4.5" fill="currentColor"/><circle cx="48" cy="16" r="11" fill="#E5484D"/></svg></span><span class="pinfo"><span class="nt-txt">${esc(n.info || '')}</span><span class="psub">${ago(n.at)}</span></span></button><div class="pact">${it ? `<button type="button" class="fd-p" data-nt-open="${it.id}" aria-label="${esc(it.t)}">${posterHTML(it)}</button>` : ''}</div></li>`;
+    }
     const id = n.actor.id, it = n.titleId ? BYID[n.titleId] : null, name = `<b>${esc(n.actor.name)}</b>`;
     const txt = n.kind === 'request' ? `${name} enviou um pedido de amizade.`
       : n.kind === 'accepted' ? `${name} aceitou seu pedido de amizade.`
@@ -847,7 +900,7 @@ async function openNotifications() {
   };
   const draw = () => {
     ul.innerHTML = list.map(row).join('');
-    msg.textContent = list.length ? '' : 'Nada por aqui ainda. Pedidos de amizade e curtidas nos seus comentários aparecem aqui.';
+    msg.textContent = list.length ? '' : 'Nada por aqui ainda. Pedidos de amizade, curtidas e avisos de estreias aparecem aqui.';
     msg.hidden = !msg.textContent;
   };
   const pushBox = async () => {
@@ -857,8 +910,8 @@ async function openNotifications() {
     slot.innerHTML = st === 'unsupported' ? ''
       : st === 'install' ? box('Receber no celular', 'No iPhone, as notificações chegam quando o Cronomovie está instalado na tela inicial.', '<button class="btn sm" type="button" data-nt-install>Como instalar</button>')
       : st === 'denied' ? box('Notificações bloqueadas', 'Para receber, libere as notificações do Cronomovie nos ajustes do celular ou do navegador.')
-      : st === 'on' ? box('Notificações ativadas', 'Este aparelho recebe pedidos de amizade, pedidos aceitos e curtidas.', '<button class="btn sm" type="button" data-push-off>Desativar</button>')
-      : box('Receber no celular', 'Seja avisado de pedidos de amizade, pedidos aceitos e curtidas, mesmo com o site fechado.', '<button class="btn sm primary" type="button" data-push-on disabled>Ativar</button>');
+      : st === 'on' ? box('Notificações ativadas', 'Este aparelho recebe avisos de estreias, a contagem até Doutor Destino, pedidos de amizade e curtidas.', '<button class="btn sm" type="button" data-push-off>Desativar</button>')
+      : box('Receber no celular', 'Seja avisado de estreias, da contagem até Doutor Destino, de pedidos de amizade e de curtidas, mesmo com o site fechado.', '<button class="btn sm primary" type="button" data-push-on disabled>Ativar</button>');
     // Deixa a chave pronta antes do toque em "Ativar"
     if (st === 'off' && await preparePush(() => S.backend!.pushKey())) slot.querySelector<HTMLButtonElement>('[data-push-on]')?.removeAttribute('disabled');
   };
@@ -880,7 +933,7 @@ async function openNotifications() {
   peopleRerender = draw;
   void pushBox();
   list = await (S.backend?.notifications() ?? Promise.resolve([]));
-  list.forEach(n => knowPerson(n.actor));
+  list.forEach(n => { if (n.actor) knowPerson(n.actor); });
   draw();
   // Abriu: tudo passa a contar como visto (o destaque das novas continua até fechar)
   if (S.unread || list.some(n => !n.read)) void S.backend?.readNotifications();
@@ -1692,6 +1745,7 @@ function wire() {
       return;
     }
     if ((el = q('[data-toggle]'))) { toggleSeen(el.dataset.toggle!); return; }
+    if ((el = q('[data-welcome]'))) { welcomeAction(el.dataset.welcome!); return; }
     if ((el = q('[data-rate]'))) { if (UI.modal) rate(UI.modal, +el.dataset.rate!); return; }
     if ((el = q('[data-save-c]'))) {
       const ta = $<HTMLTextAreaElement>('#m-c'); if (!ta) return;

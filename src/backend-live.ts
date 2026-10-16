@@ -12,7 +12,7 @@ interface ProfileRow { id: string; name: string; color?: string; avatar: string 
 interface WatchRow { user_id: string; title_id: string; list: Watch['list']; episodes: string[] }
 interface FriendRow { requester: string; addressee: string; status: 'pending' | 'accepted' }
 interface LikeRow { liker: string; owner: string; title_id: string }
-interface NotifRow { id: number; kind: Notif['kind']; title_id: string | null; created_at: string; read_at: string | null; actor_id: string; name: string; username: string | null; avatar: string | null; color: string | null }
+interface NotifRow { id: number; kind: Notif['kind']; title_id: string | null; info: string | null; created_at: string; read_at: string | null; actor_id: string | null; name: string | null; username: string | null; avatar: string | null; color: string | null }
 /** Pessoa vinda da busca ou das sugestões, com os amigos em comum */
 interface HitRow extends ProfileRow { mutual: number | null; mutual_ids: string[] | null }
 
@@ -341,8 +341,8 @@ export async function startLive(sb: SupabaseClient, hooks: LiveHooks) {
       const { data, error } = await sb.rpc('my_notifications', { lim: 50 });
       if (error) { toast('Não foi possível carregar as notificações.'); return []; }
       return (data as NotifRow[]).map(r => ({
-        id: r.id, kind: r.kind, titleId: r.title_id, at: r.created_at, read: !!r.read_at,
-        actor: { id: r.actor_id, name: r.name, color: r.color || '#6A7080', avatar: r.avatar, username: r.username },
+        id: r.id, kind: r.kind, titleId: r.title_id, at: r.created_at, read: !!r.read_at, info: r.info,
+        actor: r.actor_id ? { id: r.actor_id, name: r.name || '', color: r.color || '#6A7080', avatar: r.avatar, username: r.username } : null,
       }));
     },
     async readNotifications() {

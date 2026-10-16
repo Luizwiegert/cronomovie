@@ -221,6 +221,11 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 .next .next-meta{margin:-8px 0 12px;font-size:13px;color:var(--muted)}
 .prog-left{margin:8px 0 0;font-size:13px;line-height:1.4;color:var(--muted)}
 .prog-left b{color:var(--ink);font-weight:700}
+.welcome{padding:20px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.welcome h3{margin:4px 0 6px;font-size:20px;line-height:1.2;font-weight:700;text-wrap:balance}
+.welcome .w-txt{margin:0 0 16px;font-size:14px;line-height:1.45;color:var(--muted)}
+.w-btns{display:grid;gap:8px}
+.w-btns .btn{white-space:normal;text-align:center}
 @media (hover:hover){.next h3 button:hover{text-decoration:underline;text-underline-offset:3px}}
 @media (max-width:900px){
   .top,.top.no-count .top-side{grid-template-columns:minmax(0,1fr);gap:40px}
@@ -1029,6 +1034,8 @@ html.intro-on .bar .brand{visibility:hidden}
 .nt-row .pinfo{gap:2px}
 .nt-txt{font-size:14px;line-height:1.4;white-space:normal}
 .nt-txt b{font-weight:700}
+.av.nt-sys{display:grid;place-items:center;background:var(--surface,#141416);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.av.nt-sys svg{width:70%;height:auto}
 .nt-row.new .nt-txt::before{content:'';display:inline-block;width:8px;height:8px;margin-right:6px;border-radius:50%;background:var(--accent);vertical-align:1px}
 .nt-push{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;margin:0 var(--edge) 12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .nt-push>svg{width:22px;height:22px;color:var(--muted)}

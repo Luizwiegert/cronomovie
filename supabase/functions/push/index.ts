@@ -45,19 +45,23 @@ Deno.serve(async req => {
     if (!Number.isInteger(id)) return json({ error: 'id inválido' }, 400);
     // Marca como enviada antes de enviar: chamadas repetidas não mandam duas vezes
     const { data: n } = await sb.from('notifications').update({ pushed_at: new Date().toISOString() })
-      .eq('id', id).is('pushed_at', null).select('id,user_id,actor_id,kind').maybeSingle();
+      .eq('id', id).is('pushed_at', null).select('id,user_id,actor_id,kind,title_id,info').maybeSingle();
     if (!n) return json({ sent: 0 });
 
     const [{ data: actor }, { data: subs }] = await Promise.all([
-      sb.from('profiles').select('name').eq('id', n.actor_id).maybeSingle(),
+      n.actor_id ? sb.from('profiles').select('name').eq('id', n.actor_id).maybeSingle() : Promise.resolve({ data: null }),
       sb.from('push_subscriptions').select('endpoint,p256dh,auth').eq('user_id', n.user_id),
     ]);
     if (!subs?.length) return json({ sent: 0 });
+    // Avisos do próprio site (estreia do dia, contagem, lembrete semanal) já vêm com o texto pronto
+    const system = !n.actor_id;
     const name = actor?.name || 'Alguém';
-    const body = n.kind === 'request' ? `${name} enviou um pedido de amizade.`
+    const body = system ? (n.info || 'Novidade no Cronomovie.')
+      : n.kind === 'request' ? `${name} enviou um pedido de amizade.`
       : n.kind === 'accepted' ? `${name} aceitou seu pedido de amizade.`
       : `${name} curtiu seu comentário.`;
-    const payload = JSON.stringify({ title: 'Cronomovie', body, url: n.kind === 'like' ? '/#perfil' : '/#amigos', tag: `${n.kind}-${n.actor_id}` });
+    const url = system ? (n.title_id ? `/?t=${encodeURIComponent(n.title_id)}` : '/') : n.kind === 'like' ? '/#perfil' : '/#amigos';
+    const payload = JSON.stringify({ title: 'Cronomovie', body, url, tag: `${n.kind}-${n.actor_id || n.title_id || n.id}` });
 
     let sent = 0;
     await Promise.all(subs.map(async s => {
