@@ -14,9 +14,9 @@ typography:
     weights: [700, 900]
     use: "nome da marca, anos, números grandes, títulos de impacto"
   body:
-    family: "Archivo"
-    weights: [400, 700]
-    use: "frases de apoio e legendas (no site); em vídeo, prefira a display 700 com espaçamento largo"
+    family: "Inter"
+    weights: [400, 600, 700]
+    use: "frases de apoio, legendas e números (desde 14/10/2026 o site usa a letra do sistema da Apple, com Inter fora da Apple); a display fica para a logo e os rótulos"
   label:
     family: "Big Shoulders Display"
     weight: 700
@@ -50,6 +50,10 @@ Sala de cinema escura. O fundo é quase preto, os cartazes são as únicas cores
 - Entradas com `expo.out` ou `back.out`; movimentos de câmera com `power3.inOut`. Varie durações; nada de tudo em 0,4 s.
 - O ponto vermelho da estreia é o clímax: surge com um anel que se expande, um clarão horizontal e o brilho de fundo.
 - **Imagem sempre nítida.** No site a abertura é desenhada ao vivo pelo navegador (`src/intro.ts`), não em vídeo comprimido. Vídeo pra postar sai em 1080p com qualidade alta (`-q high`), sem recomprimir.
+
+## Método
+
+Antes de fazer qualquer vídeo, leia `metodo-motion.md` (o que funciona e o que dá cara de IA, com o modelo de pedido).
 
 ## Peças prontas pra reaproveitar
 

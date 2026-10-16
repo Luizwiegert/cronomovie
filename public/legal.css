@@ -19,3 +19,7 @@ ul{margin:0 0 12px;padding-left:20px;color:rgba(242,241,238,.86)}
 li{margin-bottom:8px}
 b{color:#F2F1EE}
 footer{max-width:760px;margin:24px auto 0;padding:24px 20px 48px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(242,241,238,.5)}
+/* Página de endereço não encontrado */
+.nf{text-align:center;padding-top:72px}
+.nf p{margin-top:12px}
+.nf-btn{display:inline-block;margin-top:16px;padding:12px 22px;border-radius:999px;background:#F2F1EE;color:#0B0B0C;font-weight:600;text-decoration:none}

@@ -1,0 +1,252 @@
+# Ordem cronológica da Marvel (Cronomovie)
+
+> São 162 títulos da Marvel no total: 83 na linha principal antes de Vingadores: Doutor Destino (Avengers: Doomsday), o próprio filme, que estreia nos cinemas do Brasil em 17 de dezembro de 2026, e 78 em universos paralelos (X-Men da Fox, Homem-Aranha da Sony, animações e adaptações independentes). Os 27 marcados como essenciais são os que não dá para pular. A Trilha Avengers reúne os 57 títulos que levam a Doutor Destino.
+
+Fonte: https://cronomovie.com (gerado em 2026-10-16). No Cronomovie você marca o que já viu, vê o próximo título da ordem, liga a Trilha Avengers para ficar só com o essencial, confere onde assistir no Brasil e compara o progresso com os amigos. É grátis.
+
+## Critério da ordem
+
+A linha principal segue a linha do tempo completa do Disney+, publicada pela Marvel em 2 de junho de 2026, com as séries separadas por temporada. Os títulos que a lista oficial não inclui (as séries da Marvel Television, como Agents of S.H.I.E.L.D. e Agent Carter) ficam na época em que a história se passa, e Helstrom, que fica fora da continuidade do MCU, está nos universos paralelos. Séries que atravessam vários anos têm uma nota quando começam ou terminam em outra época, e as cenas pós-créditos que se passam em outro momento vêm indicadas no título.
+
+Ordem revisada em 16 de outubro de 2026. Fonte: linha do tempo completa do Disney+, publicada pela Marvel em 2 de junho de 2026 (https://www.marvel.com/articles/movies/mcu-timeline-order-disney-plus).
+
+## Como funciona o Cronomovie
+
+- **Sem conta:** Qualquer pessoa consulta a ordem completa, busca títulos, filtra por saga e por tipo (filmes, séries, essenciais) e abre a página de cada título. O que for marcado sem conta fica guardado só naquela visita e entra na conta se a pessoa criar uma.
+- **Conta grátis:** Dá para entrar com o Google, com o Discord ou com e-mail e senha. O progresso fica salvo e aparece igual no celular e no computador.
+- **Marcar o que já viu:** Cada cartaz tem um botão de visto, e o topo da linha do tempo mostra o próximo título da ordem, com tipo, duração e se é essencial, e o botão "Marcar como visto". Nas séries, dá para marcar episódio por episódio ou a temporada inteira. Cada título aceita nota de 1 a 5, um comentário curto e as listas "quero ver" e "assistindo".
+- **Progresso:** Uma barra mostra quantos dos 83 títulos da linha principal a pessoa já viu, quantos dos 27 essenciais, quantas horas de Marvel isso soma e quantas horas de Trilha Avengers faltam até Doutor Destino, com a conta de quanto dá por dia.
+- **Trilha Avengers:** Um interruptor deixa na tela só os 57 títulos que levam a Vingadores: Doutor Destino, para quem quer maratonar sem se perder.
+- **Página de cada título:** Mostra a sinopse, o trailer, onde assistir no Brasil (dados de streaming do JustWatch), a lista de episódios das séries, a nota dos amigos e os comentários. Comentário com spoiler de algo que a pessoa ainda não viu aparece escondido até ela tocar.
+- **Amigos:** A amizade funciona por pedido e aceite. Dá para buscar pessoas pelo nome ou pelo @, ver a atividade dos amigos e bloquear alguém. O que a pessoa assiste fica visível só para os amigos dela; para os outros, o perfil mostra apenas foto, nome, @, filme favorito e amigos em comum.
+- **Ranking:** Compara a pessoa com os amigos em três critérios: títulos vistos, essenciais vistos e horas assistidas.
+- **Lançamentos:** A contagem regressiva mostra os próximos lançamentos da Marvel, com botão para salvar o lembrete na agenda do celular ou no Google Agenda.
+- **No celular:** O site pode ser instalado como aplicativo na tela inicial e avisa sobre pedidos de amizade e curtidas. Também gera um cartão da maratona para compartilhar nos Stories.
+
+## Perguntas frequentes
+
+**Qual a ordem certa para assistir à Marvel?** A que segue a linha do tempo oficial do Disney+, publicada pela Marvel, com as séries por temporada. O Cronomovie usa essa ordem na linha principal, das histórias do passado (como Capitão América: O Primeiro Vingador, que se passa nos anos 1940) até Vingadores: Doutor Destino.
+
+**O que ver antes de Vingadores: Doutor Destino?** Os 27 títulos marcados como essenciais são os que não dá para pular. Para uma maratona mais completa, a Trilha Avengers reúne 57 títulos.
+
+**O Cronomovie é grátis?** Sim. O site é gratuito e é um projeto de fãs, sem ligação com a Marvel ou a Disney.
+
+**Precisa criar conta?** Não para consultar a ordem. A conta grátis serve para salvar o que já viu, ver o progresso e comparar com os amigos.
+
+## A ordem completa
+
+Cada título tem uma página com posição, sinopse, onde assistir, trailer e episódios (link ao lado).
+
+### 1. Passado
+
+1. Olhos de Wakanda: série, 2025 · Reúne histórias de várias épocas de Wakanda; fica em primeiro porque começa na mais antiga (https://cronomovie.com/titulo/olhos-wakanda)
+2. Capitão América: O Primeiro Vingador: filme, 2011 · essencial · Trilha Avengers · Se passa em 1943–45 (https://cronomovie.com/titulo/cap1)
+3. Agent Carter (T1 e T2): série, 2015 · Se passa em 1946–47 (https://cronomovie.com/titulo/agent-carter)
+4. Capitã Marvel: filme, 2019 · Trilha Avengers · Se passa em 1995. A cena pós-créditos acontece depois de Guerra Infinita (https://cronomovie.com/titulo/capita)
+
+### 2. Formação dos Vingadores
+
+5. Homem de Ferro: filme, 2008 · essencial · Trilha Avengers (https://cronomovie.com/titulo/hdf1)
+6. Homem de Ferro 2: filme, 2010 · Trilha Avengers (https://cronomovie.com/titulo/hdf2)
+7. O Incrível Hulk: filme, 2008 · Trilha Avengers (https://cronomovie.com/titulo/hulk)
+8. Thor: filme, 2011 · Trilha Avengers (https://cronomovie.com/titulo/thor1)
+9. Os Vingadores: filme, 2012 · essencial · Trilha Avengers (https://cronomovie.com/titulo/vingadores)
+10. Thor: O Mundo Sombrio: filme, 2013 · Trilha Avengers (https://cronomovie.com/titulo/thor2)
+11. Homem de Ferro 3: filme, 2013 · Trilha Avengers (https://cronomovie.com/titulo/hdf3)
+12. Agents of S.H.I.E.L.D. (T1): série, 2013 (https://cronomovie.com/titulo/shield1)
+13. Capitão América: O Soldado Invernal: filme, 2014 · essencial · Trilha Avengers (https://cronomovie.com/titulo/cap2)
+14. Guardiões da Galáxia: filme, 2014 · Trilha Avengers (https://cronomovie.com/titulo/gotg1)
+15. Guardiões da Galáxia Vol. 2: filme, 2017 · Trilha Avengers (https://cronomovie.com/titulo/gotg2)
+16. Eu Sou Groot: série, 2022 · Curtas (https://cronomovie.com/titulo/groot)
+17. Agents of S.H.I.E.L.D. (T2): série, 2014 (https://cronomovie.com/titulo/shield2)
+18. Demolidor (T1): série, 2015 · Netflix (https://cronomovie.com/titulo/dd1)
+19. Jessica Jones (T1): série, 2015 · Netflix (https://cronomovie.com/titulo/jj)
+20. Vingadores: Era de Ultron: filme, 2015 · essencial · Trilha Avengers (https://cronomovie.com/titulo/ultron)
+21. Homem-Formiga: filme, 2015 · Trilha Avengers (https://cronomovie.com/titulo/formiga1)
+
+### 3. Guerra Civil até Ultimato
+
+22. Demolidor (T2): série, 2016 · Netflix (https://cronomovie.com/titulo/dd2)
+23. Luke Cage (T1): série, 2016 · Netflix (https://cronomovie.com/titulo/lc1)
+24. Punho de Ferro (T1): série, 2017 · Netflix (https://cronomovie.com/titulo/if1)
+25. Os Defensores: série, 2017 · Netflix. Junta Demolidor, Jessica Jones, Luke Cage e Punho de Ferro (https://cronomovie.com/titulo/defensores)
+26. Capitão América: Guerra Civil: filme, 2016 · essencial · Trilha Avengers (https://cronomovie.com/titulo/guerracivil)
+27. Viúva Negra: filme, 2021 · Trilha Avengers · A cena pós-créditos se passa depois de Ultimato (https://cronomovie.com/titulo/viuva)
+28. Pantera Negra: filme, 2018 · essencial · Trilha Avengers (https://cronomovie.com/titulo/pantera1)
+29. Homem-Aranha: De Volta ao Lar: filme, 2017 · Trilha Avengers (https://cronomovie.com/titulo/aranha1)
+30. O Justiceiro (T1): série, 2017 · Netflix (https://cronomovie.com/titulo/pun1)
+31. Doutor Estranho: filme, 2016 · Trilha Avengers (https://cronomovie.com/titulo/estranho1)
+32. Jessica Jones (T2): série, 2018 · Netflix (https://cronomovie.com/titulo/jj2)
+33. Luke Cage (T2): série, 2018 · Netflix (https://cronomovie.com/titulo/lc2)
+34. Punho de Ferro (T2): série, 2018 · Netflix (https://cronomovie.com/titulo/if2)
+35. Demolidor (T3): série, 2018 · Netflix (https://cronomovie.com/titulo/dd3)
+36. Thor: Ragnarok: filme, 2017 · essencial · Trilha Avengers (https://cronomovie.com/titulo/ragnarok)
+37. O Justiceiro (T2): série, 2019 · Netflix (https://cronomovie.com/titulo/pun2)
+38. Jessica Jones (T3): série, 2019 · Netflix (https://cronomovie.com/titulo/jj3)
+39. Inumanos: série, 2017 · Marvel Television. Se passa em 2017 (https://cronomovie.com/titulo/inumanos)
+40. Fugitivos (T1 a T3): série, 2017 · Marvel Television (https://cronomovie.com/titulo/fugitivos)
+41. Manto e Adaga (T1 e T2): série, 2018 · Marvel Television (https://cronomovie.com/titulo/manto-adaga)
+42. Homem-Formiga e a Vespa: filme, 2018 · Trilha Avengers · A cena pós-créditos acontece durante o estalo de Guerra Infinita (https://cronomovie.com/titulo/formiga2)
+43. Agents of S.H.I.E.L.D. (T3 a T5): série, 2015 · Começa depois de Era de Ultron e termina durante Guerra Infinita (https://cronomovie.com/titulo/shield35)
+44. Vingadores: Guerra Infinita: filme, 2018 · essencial · Trilha Avengers (https://cronomovie.com/titulo/guerrainf)
+45. Agents of S.H.I.E.L.D. (T6 e T7): série, 2019 · Se passa depois de Guerra Infinita, mas não leva em conta o estalo de Thanos (https://cronomovie.com/titulo/shield67)
+46. Vingadores: Ultimato: filme, 2019 · essencial · Trilha Avengers · Voltou aos cinemas em 25/09/2026 como Endgame Encore (https://cronomovie.com/titulo/ultimato)
+
+### 4. Depois do Blip
+
+47. Loki (T1): série, 2021 · essencial · Trilha Avengers · Começa em 2012, durante Ultimato, e segue fora do tempo (https://cronomovie.com/titulo/loki1)
+48. What If...? (T1): série, 2021 (https://cronomovie.com/titulo/whatif1)
+49. Marvel Zombies: série, 2025 (https://cronomovie.com/titulo/zombies)
+50. WandaVision: série, 2021 · essencial · Trilha Avengers (https://cronomovie.com/titulo/wandavision)
+51. Shang-Chi e a Lenda dos Dez Anéis: filme, 2021 · essencial · Trilha Avengers (https://cronomovie.com/titulo/shangchi)
+52. Falcão e o Soldado Invernal: série, 2021 · essencial · Trilha Avengers (https://cronomovie.com/titulo/falcao)
+53. Homem-Aranha: Longe de Casa: filme, 2019 · Trilha Avengers (https://cronomovie.com/titulo/aranha2)
+54. Eternos: filme, 2021 (https://cronomovie.com/titulo/eternos)
+55. Homem-Aranha: Sem Volta para Casa: filme, 2021 · essencial · Trilha Avengers · Veja antes os Aranhas de Tobey e Andrew (https://cronomovie.com/titulo/aranha3)
+56. Doutor Estranho no Multiverso da Loucura: filme, 2022 · essencial · Trilha Avengers (https://cronomovie.com/titulo/estranho2)
+57. Gavião Arqueiro: série, 2021 (https://cronomovie.com/titulo/gaviao)
+58. Cavaleiro da Lua: série, 2022 (https://cronomovie.com/titulo/cavaleiro)
+59. Pantera Negra: Wakanda para Sempre: filme, 2022 · essencial · Trilha Avengers (https://cronomovie.com/titulo/wakanda)
+60. Eco: série, 2024 (https://cronomovie.com/titulo/eco)
+61. Mulher-Hulk: série, 2022 (https://cronomovie.com/titulo/mulherhulk)
+62. Ms. Marvel: série, 2022 (https://cronomovie.com/titulo/msmarvel)
+63. Thor: Amor e Trovão: filme, 2022 · Trilha Avengers (https://cronomovie.com/titulo/thor4)
+64. Coração de Ferro: série, 2025 (https://cronomovie.com/titulo/ironheart)
+65. Lobisomem na Noite: especial, 2022 (https://cronomovie.com/titulo/lobisomem)
+66. Guardiões da Galáxia: Especial de Festas: especial, 2022 (https://cronomovie.com/titulo/festas)
+
+### 5. Fase 5 até Doutor Destino
+
+67. Homem-Formiga e a Vespa: Quantumania: filme, 2023 · essencial · Trilha Avengers (https://cronomovie.com/titulo/quantumania)
+68. Guardiões da Galáxia Vol. 3: filme, 2023 · Trilha Avengers (https://cronomovie.com/titulo/gotg3)
+69. Invasão Secreta: série, 2023 (https://cronomovie.com/titulo/invasao)
+70. As Marvels: filme, 2023 · Trilha Avengers · A cena pós-créditos traz o Fera (https://cronomovie.com/titulo/marvels)
+71. Loki (T2): série, 2023 · essencial · Trilha Avengers · Continua direto do fim da T1, fora do tempo. A ordem oficial do Disney+ põe aqui, mas dá para ver logo depois da T1 (https://cronomovie.com/titulo/loki2)
+72. What If...? (T2 e T3): série, 2023 · Na ordem oficial, a T3 vem depois de Agatha Desde Sempre (https://cronomovie.com/titulo/whatif23)
+73. Deadpool & Wolverine: filme, 2024 · essencial · Trilha Avengers · Outro universo, mas conecta aqui (https://cronomovie.com/titulo/deadpool3)
+74. Agatha Desde Sempre: série, 2024 (https://cronomovie.com/titulo/agatha)
+75. Demolidor: Renascido (T1): série, 2025 (https://cronomovie.com/titulo/ddr1)
+76. Capitão América: Admirável Mundo Novo: filme, 2025 · essencial · Trilha Avengers (https://cronomovie.com/titulo/cap4)
+77. Thunderbolts*: filme, 2025 · essencial · Trilha Avengers (https://cronomovie.com/titulo/thunderbolts)
+78. Quarteto Fantástico: Primeiros Passos: filme, 2025 · essencial · Trilha Avengers · Se passa na Terra-828 (https://cronomovie.com/titulo/quarteto)
+79. Wonder Man: série, 2026 (https://cronomovie.com/titulo/wonderman)
+80. Demolidor: Renascido (T2): série, 2026 (https://cronomovie.com/titulo/ddr2)
+81. O Justiceiro: Uma Última Morte: especial, 2026 · Especial do Disney+ (https://cronomovie.com/titulo/justiceiro-especial)
+82. Homem-Aranha: Um Novo Dia: filme, 2026 · Trilha Avengers (https://cronomovie.com/titulo/aranha4)
+83. VisionQuest: série, 2026 · Continua WandaVision e Agatha Desde Sempre (https://cronomovie.com/titulo/visionquest)
+84. Vingadores: Doutor Destino: filme, estreia em 17 de dezembro de 2026 · Trilha Avengers · Estreia em 17 de dezembro de 2026 (https://cronomovie.com/titulo/doomsday)
+
+### Universos paralelos
+
+#### X-Men da Fox
+
+Encaixe antes de Deadpool & Wolverine.
+
+- X-Men: O Filme: filme, 2000 · essencial · Trilha Avengers (https://cronomovie.com/titulo/x1)
+- X-Men 2: filme, 2003 · essencial · Trilha Avengers (https://cronomovie.com/titulo/x2)
+- X-Men: O Confronto Final: filme, 2006 · essencial · Trilha Avengers (https://cronomovie.com/titulo/x3)
+- X-Men Origens: Wolverine: filme, 2009 · Trilha Avengers (https://cronomovie.com/titulo/xo)
+- X-Men: Primeira Classe: filme, 2011 · Trilha Avengers (https://cronomovie.com/titulo/xfc)
+- Wolverine: Imortal: filme, 2013 · Trilha Avengers (https://cronomovie.com/titulo/wolv2)
+- X-Men: Dias de um Futuro Esquecido: filme, 2014 · essencial · Trilha Avengers (https://cronomovie.com/titulo/xdofp)
+- Deadpool: filme, 2016 · Trilha Avengers (https://cronomovie.com/titulo/dp1)
+- X-Men: Apocalipse: filme, 2016 · Trilha Avengers (https://cronomovie.com/titulo/xapoc)
+- Logan: filme, 2017 · Trilha Avengers (https://cronomovie.com/titulo/logan)
+- Deadpool 2: filme, 2018 · Trilha Avengers (https://cronomovie.com/titulo/dp2)
+- X-Men: Fênix Negra: filme, 2019 · Trilha Avengers (https://cronomovie.com/titulo/xdp)
+- Os Novos Mutantes: filme, 2020 (https://cronomovie.com/titulo/novos)
+
+#### Homem-Aranha da Sony
+
+Encaixe antes de Sem Volta para Casa.
+
+- Homem-Aranha: filme, 2002 · Tobey Maguire (https://cronomovie.com/titulo/sm1)
+- Homem-Aranha 2: filme, 2004 · Tobey Maguire (https://cronomovie.com/titulo/sm2)
+- Homem-Aranha 3: filme, 2007 · Tobey Maguire (https://cronomovie.com/titulo/sm3)
+- O Espetacular Homem-Aranha: filme, 2012 · Andrew Garfield (https://cronomovie.com/titulo/asm1)
+- O Espetacular Homem-Aranha 2: filme, 2014 · Andrew Garfield (https://cronomovie.com/titulo/asm2)
+
+#### Quarteto antigo, Blade, Demolidor e Elektra
+
+Opcionais: aparecem em Deadpool & Wolverine.
+
+- Blade: O Caçador de Vampiros: filme, 1998 (https://cronomovie.com/titulo/blade1)
+- Blade II: filme, 2002 (https://cronomovie.com/titulo/blade2)
+- Blade: Trinity: filme, 2004 (https://cronomovie.com/titulo/blade3)
+- Demolidor: O Homem Sem Medo: filme, 2003 · Elektra é a continuação (https://cronomovie.com/titulo/dd03)
+- Elektra: filme, 2005 (https://cronomovie.com/titulo/elektra)
+- Quarteto Fantástico (2005): filme, 2005 · Trilha Avengers (https://cronomovie.com/titulo/ff05)
+- Quarteto Fantástico e o Surfista Prateado: filme, 2007 · Trilha Avengers (https://cronomovie.com/titulo/ff07)
+- Quarteto Fantástico (2015): filme, 2015 · Trilha Avengers (https://cronomovie.com/titulo/ff15)
+
+#### Universo do Venom (Sony)
+
+Venom aparece nos créditos de Sem Volta para Casa.
+
+- Venom: filme, 2018 (https://cronomovie.com/titulo/venom1)
+- Venom: Tempo de Carnificina: filme, 2021 · A cena pós-créditos liga com Sem Volta para Casa (https://cronomovie.com/titulo/venom2)
+- Morbius: filme, 2022 (https://cronomovie.com/titulo/morbius)
+- Madame Teia: filme, 2024 (https://cronomovie.com/titulo/madame-teia)
+- Venom: A Última Rodada: filme, 2024 (https://cronomovie.com/titulo/venom3)
+- Kraven: O Caçador: filme, 2024 (https://cronomovie.com/titulo/kraven)
+
+#### Séries animadas
+
+Histórias próprias, fora da linha principal.
+
+- X-Men: A Série Animada: série, 1992 · A série dos anos 90 que X-Men '97 continua (https://cronomovie.com/titulo/xmen-tas)
+- Quarteto Fantástico: A Série Animada: série, 1994 (https://cronomovie.com/titulo/ff94)
+- Homem-Aranha: A Série Animada: série, 1994 (https://cronomovie.com/titulo/aranha94)
+- O Incrível Hulk: A Série Animada: série, 1996 (https://cronomovie.com/titulo/hulk96)
+- O Surfista Prateado: série, 1998 (https://cronomovie.com/titulo/surfista98)
+- Homem-Aranha: Ação Sem Limites: série, 1999 (https://cronomovie.com/titulo/aranha-ilimitado)
+- X-Men: Evolution: série, 2000 (https://cronomovie.com/titulo/xmen-evolution)
+- Quarteto Fantástico: Os Maiores Heróis da Terra: série, 2006 (https://cronomovie.com/titulo/ff-wgh)
+- O Espetacular Homem-Aranha: A Série Animada: série, 2008 (https://cronomovie.com/titulo/espetacular)
+- Wolverine e os X-Men: série, 2009 (https://cronomovie.com/titulo/wolverine-xmen)
+- Homem de Ferro: Série Animada: série, 2009 (https://cronomovie.com/titulo/hdf-armored)
+- Esquadrão de Heróis: série, 2009 (https://cronomovie.com/titulo/esquadrao)
+- Os Vingadores: Os Super-Heróis Mais Poderosos da Terra: série, 2010 (https://cronomovie.com/titulo/emh)
+- Marvel Anime (Homem de Ferro, Wolverine, X-Men e Blade): série, 2010 · Quatro séries japonesas de 12 episódios (https://cronomovie.com/titulo/marvel-anime)
+- Ultimate Homem-Aranha: série, 2012 (https://cronomovie.com/titulo/ultimate)
+- Os Vingadores Unidos: série, 2013 (https://cronomovie.com/titulo/vingadores-unidos)
+- Hulk e os Agentes de S.M.A.S.H.: série, 2013 (https://cronomovie.com/titulo/hulk-smash)
+- Guardiões da Galáxia: A Série Animada: série, 2015 (https://cronomovie.com/titulo/gotg-anim)
+- Marvel: Homem-Aranha: série, 2017 (https://cronomovie.com/titulo/aranha2017)
+- M.O.D.O.K.: série, 2021 (https://cronomovie.com/titulo/modok)
+- Hit-Monkey: série, 2021 (https://cronomovie.com/titulo/hit-monkey)
+- X-Men '97 (T1 e T2): série, 2024 · Continua a série animada dos anos 90 (https://cronomovie.com/titulo/xmen97)
+- Seu Amigão da Vizinhança: Homem-Aranha: série, 2025 (https://cronomovie.com/titulo/amigao)
+
+#### Filmes animados
+
+Histórias próprias, fora da linha principal.
+
+- Os Supremos: O Filme: filme, 2006 (https://cronomovie.com/titulo/supremos1)
+- Os Supremos 2: filme, 2006 (https://cronomovie.com/titulo/supremos2)
+- O Invencível Homem de Ferro: filme, 2007 (https://cronomovie.com/titulo/hdf-invencivel)
+- Doutor Estranho: O Mago Supremo: filme, 2007 (https://cronomovie.com/titulo/estranho07)
+- Os Novos Vingadores: Heróis do Amanhã: filme, 2008 (https://cronomovie.com/titulo/novos-vingadores)
+- Hulk vs. Wolverine: filme, 2009 (https://cronomovie.com/titulo/hulk-wolverine)
+- Hulk vs. Thor: filme, 2009 (https://cronomovie.com/titulo/hulk-thor)
+- Planeta Hulk: filme, 2010 (https://cronomovie.com/titulo/planeta-hulk)
+- Thor: O Filho de Asgard: filme, 2011 (https://cronomovie.com/titulo/thor-asgard)
+- Homem de Ferro e Hulk: Super-Heróis Unidos: filme, 2013 (https://cronomovie.com/titulo/ferro-hulk)
+- Homem de Ferro e Capitão América: Super-Heróis Unidos: filme, 2014 (https://cronomovie.com/titulo/ferro-cap)
+- Hulk: Onde os Monstros Habitam: filme, 2016 (https://cronomovie.com/titulo/hulk-monstros)
+- Marvel Rising: Guerreiros Secretos: filme, 2018 (https://cronomovie.com/titulo/rising)
+- Homem-Aranha no Aranhaverso: filme, 2019 (https://cronomovie.com/titulo/aranhaverso1)
+- Homem-Aranha: Através do Aranhaverso: filme, 2023 (https://cronomovie.com/titulo/aranhaverso2)
+
+#### Adaptações antigas e independentes
+
+Filmes e séries fora do universo compartilhado.
+
+- Hulk: filme, 2003 (https://cronomovie.com/titulo/hulk03)
+- O Justiceiro: filme, 2004 (https://cronomovie.com/titulo/pun04)
+- Motoqueiro Fantasma: filme, 2007 (https://cronomovie.com/titulo/gr07)
+- O Justiceiro: Em Zona de Guerra: filme, 2008 (https://cronomovie.com/titulo/pun08)
+- Motoqueiro Fantasma: Espírito de Vingança: filme, 2012 (https://cronomovie.com/titulo/gr12)
+- Legion (T1 a T3): série, 2017 · Série ligada aos X-Men (https://cronomovie.com/titulo/legion)
+- The Gifted (T1 e T2): série, 2017 · Série ligada aos X-Men (https://cronomovie.com/titulo/gifted)
+- Helstrom: série, 2020 · Marvel Television. Fica fora da continuidade do MCU (https://cronomovie.com/titulo/helstrom)

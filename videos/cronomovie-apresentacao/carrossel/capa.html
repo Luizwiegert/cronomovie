@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Capa do Reels</title>
+    <style>
+      @font-face { font-family: 'Big Shoulders Display'; font-weight: 900; src: url('../assets/fonts/BigShouldersDisplay-900.woff2') format('woff2'); }
+      @font-face { font-family: 'Big Shoulders Display'; font-weight: 700; src: url('../assets/fonts/BigShouldersDisplay-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 500; src: url('../assets/fonts/Inter-500.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 700; src: url('../assets/fonts/Inter-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 800; src: url('../assets/fonts/Inter-800.woff2') format('woff2'); }
+      :root { --bg: #0b0b0c; --ink: #f2f1ee; --muted: rgba(242, 241, 238, 0.66); --red: #e5484d; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #000; color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      #capa { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #capa::before { content: ''; position: absolute; left: 50%; top: 1060px; width: 1500px; height: 1500px; margin: -750px 0 0 -750px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(229, 72, 77, 0.26) 0%, rgba(229, 72, 77, 0.08) 34%, rgba(229, 72, 77, 0) 62%); }
+      .abs { position: absolute; }
+      .logo { left: 0; top: 300px; width: 1080px; display: flex; justify-content: center; align-items: center; gap: 20px; }
+      .logo svg { width: 128px; height: 64px; }
+      .logo b { font: 900 84px/1 'Big Shoulders Display'; letter-spacing: -0.01em; }
+      .logo b span { color: var(--red); }
+      .h { left: 0; top: 440px; width: 1080px; text-align: center; font: 800 112px/1.02 'Inter'; letter-spacing: -0.045em; }
+      .h em { font-style: normal; color: var(--red); }
+      .rail { left: 120px; top: 1238px; width: 840px; height: 5px; border-radius: 99px; background: rgba(242, 241, 238, 0.42); }
+      .post { width: 176px; height: 264px; border-radius: 14px; object-fit: cover; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7); }
+      .post.doom { box-shadow: 0 0 0 5px var(--red), 0 0 90px rgba(229, 72, 77, 0.6); }
+      .conn { width: 4px; height: 40px; background: rgba(242, 241, 238, 0.42); }
+      .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); }
+      .dot.red { width: 54px; height: 54px; background: var(--red); box-shadow: 0 0 0 12px rgba(229, 72, 77, 0.18); }
+      .pill { left: 50%; top: 1356px; transform: translateX(-50%); padding: 24px 40px; border-radius: 99px; border: 3px solid var(--red);
+        font: 700 44px/1 'Inter'; letter-spacing: -0.02em; white-space: nowrap; background: rgba(229, 72, 77, 0.1); }
+      .pill b { font: 900 1.3em/0.7 'Big Shoulders Display'; color: var(--red); }
+      .url { left: 0; top: 1500px; width: 1080px; text-align: center; font: 500 40px/1 'Inter'; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <div id="capa">
+      <div class="abs logo">
+        <svg viewBox="0 0 64 32"><line x1="8" y1="16" x2="48" y2="16" stroke="#f2f1ee" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round" /><circle cx="8" cy="16" r="4" fill="#f2f1ee" /><circle cx="24" cy="16" r="4" fill="#f2f1ee" /><circle cx="48" cy="16" r="11" fill="#e5484d" /></svg>
+        <b>Crono<span>movie</span></b>
+      </div>
+      <div class="abs h">A Marvel inteira<br />na <em>ordem certa.</em></div>
+      <div class="abs rail"></div>
+      <div id="linha"></div>
+      <div class="abs pill">Faltam <b>62</b> dias para Doutor Destino</div>
+      <div class="abs url">cronomovie.com · grátis</div>
+    </div>
+    <script>
+      // cinco cartazes em ordem cronológica, cada um ligado à sua bolinha na linha
+      const P = ['00-cap1', '02-hdf1', '03-vingadores', '10-ultimato', '17-doomsday'];
+      const linha = document.getElementById('linha');
+      P.forEach((f, i) => {
+        const cx = 150 + i * 195, doom = i === P.length - 1;
+        linha.insertAdjacentHTML('beforeend',
+          `<img class="abs post${doom ? ' doom' : ''}" src="../assets/coluna/${f}.jpg" style="left:${cx - 88}px;top:${doom ? 880 : 896}px">` +
+          `<div class="abs conn" style="left:${cx - 2}px;top:${doom ? 1170 : 1176}px;height:${doom ? 44 : 50}px"></div>` +
+          `<div class="abs dot${doom ? ' red' : ''}" style="left:${cx - (doom ? 27 : 11)}px;top:${1240.5 - (doom ? 27 : 11)}px"></div>`);
+      });
+    </script>
+  </body>
+</html>

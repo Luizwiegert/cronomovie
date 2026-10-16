@@ -2,6 +2,7 @@ import { BUCKETS, BYID, DOOMSDAY, ESS, EVENTS, EXTRAS_ORDER, FILTERS, ITEMS, MAI
 import type { Item, Release } from './data';
 import { avatarById, avatarStyle, photoStyle, photoURL } from './avatars';
 import { countdown, esc, fmt, norm } from './util';
+import { detailsReady, inMyServices } from './details';
 
 /** Doomsday já estreou? Antes disso ele não pode ser marcado. */
 export const released = () => countdown(DOOMSDAY).done;
@@ -25,6 +26,14 @@ export interface Person { id: string; name: string; color: string; avatar: strin
 export interface Watch { list: 'quero' | 'assistindo' | null; eps: string[] }
 /** Pedido de amizade (pending) ou amizade aceita (accepted). a pediu, b recebeu. */
 export interface Friendship { a: string; b: string; status: 'pending' | 'accepted' }
+/** Pessoa vinda da busca ou das sugestões, com os amigos em comum (até 3, para escrever os nomes) */
+export interface PersonHit extends Person { mutual: number; mutualIds: string[] }
+/** O que o servidor diz de um perfil: amigos (só para a própria pessoa e os amigos dela) e amigos em comum */
+export interface ProfileInfo { person: Person; friends: number | null; mutual: number; mutualIds: string[] }
+/** Uma página da lista de amigos de alguém. common = também é seu amigo (ou é você) */
+export interface FriendsPage { people: (Person & { common: boolean })[]; total: number }
+/** Notificação: pedido recebido, pedido aceito ou curtida no seu comentário */
+export interface Notif { id: number; kind: 'request' | 'accepted' | 'like'; titleId: string | null; at: string; read: boolean; actor: Person }
 
 /** O que muda por trás do app: demonstração local ou Supabase de verdade. */
 export interface Backend {
@@ -44,8 +53,27 @@ export interface Backend {
   signOut(): Promise<void>;
   /** Apaga a conta e tudo que é dela (marcações, listas, amizades) */
   deleteAccount(): Promise<void>;
-  /** Busca pessoas pelo nome (sem você) */
-  searchPeople(q: string): Promise<Person[]>;
+  /** Busca pessoas pelo nome ou @ (sem você e sem bloqueios), 20 por vez */
+  searchPeople(q: string, offset?: number): Promise<PersonHit[]>;
+  /** Pessoas que talvez você conheça: amigos dos seus amigos */
+  suggestions(): Promise<PersonHit[]>;
+  /** Cabeçalho de um perfil (null = não existe ou há bloqueio) */
+  profileInfo(id: string): Promise<ProfileInfo | null>;
+  /** Amigos de alguém (só a própria pessoa e os amigos dela veem), 30 por vez */
+  friendsList(id: string, q: string, offset: number): Promise<FriendsPage>;
+  /** Bloqueia: desfaz a amizade e a pessoa deixa de encontrar você */
+  block(id: string): Promise<void>;
+  unblock(id: string): Promise<void>;
+  blockedList(): Promise<Person[]>;
+  /** Curte (on = true) ou descurte o comentário de um amigo num título */
+  like(owner: string, titleId: string, on: boolean): Promise<void>;
+  notifications(): Promise<Notif[]>;
+  /** Marca todas as notificações como vistas */
+  readNotifications(): Promise<void>;
+  /** Chave pública do servidor de notificações (null = não disponível aqui) */
+  pushKey(): Promise<string | null>;
+  savePush(sub: PushSubscriptionJSON): Promise<void>;
+  dropPush(endpoint: string): Promise<void>;
   /** Pede amizade; se a pessoa já tinha pedido para você, aceita */
   requestFriend(p: Person): Promise<void>;
   acceptFriend(id: string): Promise<void>;
@@ -64,6 +92,10 @@ export const S = {
   friendships: [] as Friendship[],
   watch: {} as Record<string, Record<string, Watch>>,
   marks: {} as Record<string, Record<string, Mark>>,
+  /** Curtidas por comentário ("dono|título"): quem curtiu */
+  likes: {} as Record<string, string[]>,
+  /** Notificações ainda não vistas */
+  unread: 0,
   backend: null as Backend | null,
 };
 
@@ -77,7 +109,9 @@ export const nav = {
 
 let listener: () => void = () => {};
 export const onState = (fn: () => void) => { listener = fn; };
-export const emit = () => listener();
+/** Muda a cada atualização: as contas guardadas (perfis e amigos) se refazem a partir dela */
+let ver = 0;
+export const emit = () => { ver++; listener(); };
 
 export type Tab = 'linha' | 'ranking' | 'amigos' | 'perfil';
 export const TABS: Tab[] = ['linha', 'ranking', 'amigos', 'perfil'];
@@ -87,7 +121,10 @@ export const UI = {
   type: 'all',
   order: 'crono',
   view: 'h',
-  hide: false,
+  /** Assistidos: todos, só os que já vi ou só os que faltam */
+  seen: 'all',
+  /** Onde assistir: todos ou só o que está nos streamings que a pessoa assina */
+  streams: 'all',
   q: '',
   saga: null as string | null,
   metric: 'main',
@@ -129,17 +166,37 @@ export function relation(id: string): 'friend' | 'sent' | 'received' | 'none' {
   return f.a === S.me ? 'sent' : 'received';
 }
 /** Quem entra no ranking, nas médias e nas bolinhas: você e seus amigos */
-export const pids = () => {
-  const fr = friendIds().sort((x, y) => P(x).name.localeCompare(P(y).name, 'pt'));
-  return S.me ? [S.me, ...fr] : fr;
+let pidsKey = '', pidsArr: Friendship[] | null = null, pidsVal: string[] = [];
+export const pids = (): string[] => {
+  // Guardado até a próxima atualização: com muitos amigos, cada desenho da tela chama isso centenas de vezes
+  const key = `${ver}|${S.me}|${S.friendships.length}`;
+  if (key !== pidsKey || pidsArr !== S.friendships) {
+    const fr = friendIds().sort((x, y) => P(x).name.localeCompare(P(y).name, 'pt'));
+    pidsVal = S.me ? [S.me, ...fr] : fr;
+    pidsKey = key; pidsArr = S.friendships;
+  }
+  return pidsVal;
 };
 export const marksOf = (pid: string): Record<string, Mark> => S.marks[pid] || (S.marks[pid] = {});
+/** Quem curtiu o comentário de alguém num título */
+export const likesOf = (owner: string, titleId: string): string[] => S.likes[`${owner}|${titleId}`] || [];
 export const watchOf = (pid: string): Record<string, Watch> => S.watch[pid] || (S.watch[pid] = {});
 /** Formato aceito para o @: 3 a 20 letras minúsculas, números, ponto ou _ */
 export const USERNAME_RE = /^[a-z0-9_.]{3,20}$/;
 
+let pMap = new Map<string, Person>(), pArr: Person[] | null = null, pVer = -1;
 export function P(pid: string): Person {
-  return S.people.find(p => p.id === pid) || { id: pid, name: 'Alguém', color: '#6A7080', avatar: null };
+  // Índice por id, refeito a cada atualização (procurar na lista toda ficava lento com muitos amigos)
+  if (pArr !== S.people || pVer !== ver) { pMap = new Map(S.people.map(p => [p.id, p])); pArr = S.people; pVer = ver; }
+  let p = pMap.get(pid);
+  if (!p) { p = S.people.find(x => x.id === pid); if (p) pMap.set(pid, p); }
+  return p || { id: pid, name: 'Alguém', color: '#6A7080', avatar: null };
+}
+/** Guarda (ou atualiza) um perfil que apareceu na busca, nas sugestões ou numa lista */
+export function rememberPerson(p: Person) {
+  const i = S.people.findIndex(x => x.id === p.id);
+  if (i < 0) S.people.push(p); else S.people[i] = { ...S.people[i], ...p };
+  pVer = -1;
 }
 
 /** Foto de perfil: o personagem escolhido ou a foto enviada; sem nenhum dos dois, a inicial do nome. */
@@ -212,7 +269,9 @@ export function passes(it: Item): boolean {
   if (UI.type === 'film' && it.k === 's') return false;
   if (UI.type === 'series' && it.k !== 's') return false;
   if (UI.saga && !FILTERS[UI.saga]?.ids.has(it.id)) return false;
-  if (UI.hide && m[it.id]) return false;
+  if (UI.seen === 'unseen' && m[it.id]) return false;
+  if (UI.seen === 'seen' && !m[it.id]) return false;
+  if (UI.streams === 'mine' && detailsReady() && !inMyServices(it.id)) return false;
   if (q && !norm(it.t).includes(norm(q))) return false;
   return true;
 }

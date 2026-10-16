@@ -195,6 +195,7 @@ Q.aranhaverso3 = ['movie', 911916];
 Q.xmen2028 = ['movie', 1293690];
 Q.gr2028 = ['movie', 1738010];
 Q.bp3 = ['movie', 1386618];
+Q.ddr3 = ['tv', 'Daredevil: Born Again', 2025, 3];
 
 // Temporadas de cada série, pra marcar episódio por episódio.
 // Número = temporada da própria série; [título, ano, temporada, rótulo] = temporada de outra série (pacotes).
@@ -232,6 +233,37 @@ async function episodes(showId, season) {
   return (s?.episodes || []).map(e => [e.name || `Episódio ${e.episode_number}`, e.runtime || null]);
 }
 
+/** Trailer oficial no YouTube: em português (dublado ou legendado) quando existe; senão, o original. */
+async function trailer(type, id, season) {
+  const base = season ? `/tv/${id}/season/${season}/videos` : `/${type}/${id}/videos`;
+  for (const lang of ['pt-BR', 'en-US']) {
+    const r = await tmdb(base, { language: lang }).catch(() => null);
+    const vids = (r?.results || []).filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
+    vids.sort((a, b) => (b.type === 'Trailer') - (a.type === 'Trailer') || (b.official === true) - (a.official === true)
+      || (b.size || 0) - (a.size || 0) || String(b.published_at).localeCompare(String(a.published_at)));
+    if (vids[0]) return vids[0].key;
+  }
+  // Temporada sem trailer próprio: usa o da série
+  return season ? trailer(type, id) : null;
+}
+
+// Só os trailers: node scripts/fetch-posters.mjs --trailers (não mexe nos cartazes nem no resto dos detalhes)
+if (process.argv.includes('--trailers')) {
+  const det = JSON.parse(readFileSync('src/details.json', 'utf8'));
+  let n = 0;
+  for (const [id, [type, title, year, season]] of Object.entries(Q)) {
+    try {
+      const hit = await find(type, title, year);
+      if (!hit) { console.log('sem ', id, '(não encontrado)'); continue; }
+      const key = await trailer(type, hit.id, season);
+      if (key) { (det[id] ||= {}).tr = key; n++; console.log('ok  ', id.padEnd(16), key); } else console.log('sem ', id);
+    } catch (e) { console.error(id, e.message); }
+  }
+  writeFileSync('src/details.json', JSON.stringify(det) + '\n');
+  console.log(`\n${n} trailers salvos em src/details.json.`);
+  process.exit(0);
+}
+
 const out = {};
 const backs = {};
 const details = {};
@@ -256,6 +288,8 @@ for (const [id, [type, title, year, season]] of Object.entries(Q)) {
     const d = { ov: overview };
     const prov = await providers(type, hit.id);
     if (prov) d.prov = prov;
+    const tr = await trailer(type, hit.id, season);
+    if (tr) d.tr = tr;
 
     if (SEASONS[id]) {
       d.seasons = [];
