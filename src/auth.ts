@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { AVATARS, avatarFieldHTML, openAvatarChooser, setAvatarField } from './avatars';
 import { stashGuest } from './backend-guest';
+import { captchaOn, captchaToken, mountCaptcha, resetCaptcha } from './captcha';
 import { cleanUsername, usernameFieldHTML } from './extras';
 import { USERNAME_RE } from './state';
 
@@ -22,8 +23,27 @@ function socialEnabled(): Promise<Social[]> {
     .then(r => (r.ok ? r.json() : null))
     .then((st: { external?: Record<string, boolean> } | null) => (socialOn = SOCIAL.filter(p => st?.external?.[p.id]).map(p => p.id)), () => []);
 }
-const socialHTML = () => `<div class="auth-alt" data-social${socialOn.length ? '' : ' hidden'}>
-      ${SOCIAL.map(p => `<button class="btn social" type="button" data-oauth="${p.id}"${socialOn.includes(p.id) ? '' : ' hidden'}>${p.logo}<span>Continuar com o ${p.name}</span></button>`).join('')}
+/** Navegador de dentro do Instagram, TikTok ou Facebook (link da bio). O Google não deixa entrar por eles. */
+function inAppName(): string {
+  const ua = navigator.userAgent;
+  if (/Instagram/i.test(ua)) return 'Instagram';
+  if (/musical_ly|BytedanceWebview|TikTok/i.test(ua)) return 'TikTok';
+  if (/FBAN|FBAV|FB_IAB/i.test(ua)) return 'Facebook';
+  return '';
+}
+/** O botão aparece se o login estiver ligado e, no caso do Google, se não for o navegador de um aplicativo */
+const usable = (id: Social) => socialOn.includes(id) && !(id === 'google' && inAppName());
+/** No navegador do aplicativo: aviso curto e, no Android, um botão que abre o site no navegador do celular */
+function inAppHTML(): string {
+  const app = inAppName();
+  if (!app || !socialOn.includes('google')) return '';
+  const open = /Android/i.test(navigator.userAgent)
+    ? `<a class="btn sm" href="intent://${location.host}${location.pathname}#Intent;scheme=https;S.browser_fallback_url=${encodeURIComponent(location.href)};end">Abrir no navegador</a>`
+    : '<span>Toque em ⋯ no canto da tela e escolha abrir no navegador.</span>';
+  return `<div class="inapp" data-inapp><p>Pelo navegador do ${app}, o Google não deixa entrar.</p>${open}</div>`;
+}
+const socialHTML = () => `${inAppHTML()}<div class="auth-alt" data-social${SOCIAL.some(p => usable(p.id)) ? '' : ' hidden'}>
+      ${SOCIAL.map(p => `<button class="btn social" type="button" data-oauth="${p.id}"${usable(p.id) ? '' : ' hidden'}>${p.logo}<span>Continuar com o ${p.name}</span></button>`).join('')}
       <p class="auth-or"><span>ou</span></p>
     </div>`;
 
@@ -37,6 +57,7 @@ function friendly(err: unknown, mode: Mode): string {
   if (/password.*(at least|6)/i.test(msg)) return 'A senha precisa ter pelo menos 6 caracteres.';
   if (/rate limit|too many/i.test(msg)) return 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.';
   if (/invalid.*email|email.*invalid/i.test(msg)) return 'Esse e-mail não parece válido.';
+  if (/captcha/i.test(msg)) return 'Não foi possível confirmar que você é uma pessoa. Tente de novo.';
   if (/fetch|network/i.test(msg)) return 'Sem conexão com o servidor. Confira a internet.';
   return mode === 'criar' ? 'Não foi possível criar a conta. Tente de novo.' : 'Algo deu errado. Tente de novo.';
 }
@@ -67,6 +88,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
       <p class="muted">Enviamos um link para o seu e-mail, por onde você cria uma senha nova.</p>
       <label class="lbl" for="a-email">E-mail</label>
       <input id="a-email" type="email" autocomplete="email" required>
+      <div class="captcha" id="a-captcha"></div>
       <button class="btn primary big" type="submit">Enviar link</button>
       <button class="linkish back" type="button" data-mode="entrar">Voltar para entrar</button>`;
     const tabs = `<div class="seg auth-tabs" role="tablist"><button type="button" role="tab" data-mode="entrar" aria-pressed="${mode === 'entrar'}">Entrar</button><button type="button" role="tab" data-mode="criar" aria-pressed="${mode === 'criar'}">Criar conta</button></div>${socialHTML()}`;
@@ -81,6 +103,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
       <input id="a-pass" type="password" autocomplete="new-password" minlength="6" required placeholder="Pelo menos 6 caracteres">
       <span class="lbl">Sua foto de perfil</span>
       ${avatarFieldHTML(avatar)}
+      <div class="captcha" id="a-captcha"></div>
       <button class="btn primary big" type="submit">Criar conta</button>
       <p class="auth-legal">Ao criar a conta você concorda com os <a href="/termos.html" target="_blank" rel="noopener">Termos de uso</a> e a <a href="/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p>`;
     return `${tabs}
@@ -88,6 +111,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
       <input id="a-email" type="email" autocomplete="email" required>
       <label class="lbl" for="a-pass">Senha</label>
       <input id="a-pass" type="password" autocomplete="current-password" required>
+      <div class="captcha" id="a-captcha"></div>
       <button class="btn primary big" type="submit">Entrar</button>
       <button class="linkish back" type="button" data-mode="esqueci">Esqueci minha senha</button>`;
   };
@@ -104,7 +128,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
 
   // E-mail que ainda falta confirmar (para poder reenviar o link)
   let pending = '';
-  const draw = () => { $('#auth-fields').innerHTML = form(); setMsg(''); };
+  const draw = () => { $('#auth-fields').innerHTML = form(); setMsg(''); void mountCaptcha(document.getElementById('a-captcha')); };
   const setMsg = (m: string, ok = false, resend = '') => {
     const el = $('#auth-msg');
     el.textContent = m; el.hidden = !m; el.classList.toggle('ok', ok);
@@ -115,9 +139,13 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
   draw();
   // Mostra os botões de login ligados sem redesenhar o formulário (não apaga o que a pessoa já digitou)
   void socialEnabled().then(on => {
-    if (!on.length) return;
+    const ids = on.filter(usable);
+    if (inAppName() && on.includes('google') && !document.querySelector('[data-inapp]')) {
+      document.querySelector('[data-social]')?.insertAdjacentHTML('beforebegin', inAppHTML());
+    }
+    if (!ids.length) return;
     document.querySelector<HTMLElement>('[data-social]')?.removeAttribute('hidden');
-    for (const id of on) document.querySelector<HTMLElement>(`[data-oauth="${id}"]`)?.removeAttribute('hidden');
+    for (const id of ids) document.querySelector<HTMLElement>(`[data-oauth="${id}"]`)?.removeAttribute('hidden');
   });
 
   $('#auth-back')?.addEventListener('click', () => opts.onBack?.());
@@ -133,7 +161,9 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
       const email = pending, btn = $<HTMLButtonElement>('#auth-resend');
       if (!email) return;
       btn.disabled = true;
-      const { error } = await sb.auth.resend({ type: 'signup', email, options: { emailRedirectTo: location.origin + location.pathname } });
+      const captcha = await captchaToken();
+      const { error } = await sb.auth.resend({ type: 'signup', email, options: { emailRedirectTo: location.origin + location.pathname, captchaToken: captcha } });
+      resetCaptcha();
       btn.disabled = false;
       if (error) setMsg(/rate limit|security purposes|seconds/i.test(error.message) ? 'Espere um minuto antes de pedir de novo.' : 'Não foi possível reenviar agora. Tente de novo em instantes.', false, email);
       else setMsg(`Reenviamos o link para ${email}. Pode levar alguns minutos. Confira também o spam e a aba Promoções.`, true, email);
@@ -163,9 +193,12 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
     setMsg('');
     try {
       busy(true);
+      // Proteção contra robôs: sem o código da verificação, o Supabase recusa
+      const captcha = mode === 'nova' ? undefined : await captchaToken();
+      if (mode !== 'nova' && captchaOn() && !captcha) { setMsg('Falta a verificação de segurança logo acima do botão. Confirme e tente de novo.'); return; }
       if (mode === 'entrar') {
         if (!val('a-email') || !val('a-pass')) { setMsg('Preencha e-mail e senha.'); return; }
-        const { error } = await sb.auth.signInWithPassword({ email: val('a-email'), password: val('a-pass') });
+        const { error } = await sb.auth.signInWithPassword({ email: val('a-email'), password: val('a-pass'), options: { captchaToken: captcha } });
         if (error) throw error;
       } else if (mode === 'criar') {
         if (!val('a-name')) { setMsg('Escreva seu nome.'); return; }
@@ -177,7 +210,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
         if (free === false) { setMsg('Esse nome de usuário já está em uso. Tente outro.'); return; }
         const { data, error } = await sb.auth.signUp({
           email: val('a-email'), password: val('a-pass'),
-          options: { data: { name: val('a-name').slice(0, 20), avatar, username }, emailRedirectTo: location.origin + location.pathname },
+          options: { data: { name: val('a-name').slice(0, 20), avatar, username }, emailRedirectTo: location.origin + location.pathname, captchaToken: captcha },
         });
         if (error) throw error;
         if (!data.session) {
@@ -188,7 +221,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
         }
       } else if (mode === 'esqueci') {
         if (!val('a-email')) { setMsg('Escreva seu e-mail.'); return; }
-        const { error } = await sb.auth.resetPasswordForEmail(val('a-email'), { redirectTo: location.origin + location.pathname });
+        const { error } = await sb.auth.resetPasswordForEmail(val('a-email'), { redirectTo: location.origin + location.pathname, captchaToken: captcha });
         if (error) throw error;
         setMsg('Pronto. Se esse e-mail tiver conta, o link chega em instantes.', true);
       } else {
@@ -203,6 +236,7 @@ export function showAuth(sb: SupabaseClient, opts: AuthOptions = {}) {
       setMsg(friendly(err, mode), false, unconfirmed ? val('a-email') : '');
     } finally {
       busy(false);
+      resetCaptcha();
     }
   });
 }

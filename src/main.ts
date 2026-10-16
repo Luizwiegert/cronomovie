@@ -8,11 +8,17 @@ import { fetchCard, startLive } from './backend-live';
 import { installPosterFallback } from './posters';
 import { S, nav } from './state';
 import { smooth } from './util';
-import { askAccount, captureInvite, showApp, showMessage } from './views';
+import { wirePress } from './glass';
+import { askAccount, captureInvite, installChanged, showApp, showMessage } from './views';
+import { initPWA } from './pwa';
 
 installPosterFallback();
+// Botões com toque de vidro líquido (crescem com mola e um brilho segue o dedo)
+wirePress();
 // Link de perfil (?u=nome): guarda de quem é antes de qualquer tela aparecer
 captureInvite();
+// Pode ser instalado como app (tela inicial do celular) e receber notificações
+initPWA(installChanged);
 // A abertura roda por cima enquanto o site carrega por baixo.
 void playIntro();
 

@@ -5,6 +5,8 @@ import TMDB from './posters.json';
 /** Caminhos de cartaz do TMDB, gerados por scripts/fetch-posters.mjs */
 const REAL = TMDB as Record<string, string>;
 export const hasRealPosters = Object.keys(REAL).length > 0;
+/** Endereço do cartaz oficial (ou null, quando o título só tem a ilustração gerada) */
+export const posterURL = (id: string, size = 'w342') => (REAL[id] ? `https://image.tmdb.org/t/p/${size}${REAL[id]}` : null);
 
 interface Style { a: string; b: string; c: string; c2?: string; m: string }
 

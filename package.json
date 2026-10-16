@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/ordem-estatica.mjs && tsc && vite build",
     "preview": "vite preview",
     "posters": "node scripts/fetch-posters.mjs",
     "demo": "vite --mode demo --port 5180 --strictPort",

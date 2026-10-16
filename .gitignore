@@ -59,3 +59,10 @@ client_secret_*.json
 desktop.ini
 # Relatórios do radar de notícias: anotações internas
 radar
+# Cópias de segurança do banco (dados das pessoas): só neste computador
+backups
+
+# Mídia dos vídeos (áudio, telas, cartazes): pesada e com imagens de terceiros, fica só na máquina
+videos/*/assets/
+videos/*/carrossel/*.png
+videos/*/quadros-de-prova.png

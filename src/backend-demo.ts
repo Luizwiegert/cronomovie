@@ -1,7 +1,7 @@
 import { EXTRAS_ORDER, ITEMS } from './data';
 import type { Item } from './data';
 import { S, emit } from './state';
-import type { Backend, Friendship, Mark, Person, Watch } from './state';
+import type { Backend, Friendship, Mark, Notif, Person, PersonHit, Watch } from './state';
 import { hash, iso } from './util';
 
 /**
@@ -18,13 +18,17 @@ const PEOPLE: Person[] = [
   { id: 'rafael', name: 'Rafael', color: '#2D7FD3', avatar: 'wolverine', username: 'rafa' },
 ];
 
-// Você é amigo do Caio e do Tércio; o Matheus te mandou um pedido; Lucas e Rafael você acha na busca.
+// Você é amigo do Caio e do Tércio; o Matheus te mandou um pedido; Lucas e Rafael aparecem nas sugestões
+// (amigos dos seus amigos) e na busca.
 const FRIENDS: Friendship[] = [
   { a: 'voce', b: 'caio', status: 'accepted' },
   { a: 'tercio', b: 'voce', status: 'accepted' },
   { a: 'caio', b: 'tercio', status: 'accepted' },
   { a: 'matheus', b: 'voce', status: 'pending' },
   { a: 'matheus', b: 'caio', status: 'accepted' },
+  { a: 'lucas', b: 'caio', status: 'accepted' },
+  { a: 'lucas', b: 'tercio', status: 'accepted' },
+  { a: 'rafael', b: 'tercio', status: 'accepted' },
 ];
 
 const BIAS: Record<string, number> = {
@@ -79,15 +83,15 @@ function buildMock() {
     caio: { falcao: { list: 'assistindo', eps: ['0:1', '0:2', '0:3', '0:4'] }, aranha4: { list: 'quero', eps: [] } },
     tercio: { ddr2: { list: 'assistindo', eps: ['0:1', '0:2'] } },
   };
-  return { me: 'voce', marks, watch, prof: {} as Record<string, { name: string; avatar: string | null; username?: string | null; favorite?: string | null }>, friends: FRIENDS.map(f => ({ ...f })) };
+  return { me: 'voce', marks, watch, prof: {} as Record<string, { name: string; avatar: string | null; username?: string | null; favorite?: string | null }>, friends: FRIENDS.map(f => ({ ...f })), blocks: [] as [string, string][], likes: { 'tercio|thunderbolts': ['caio'], 'tercio|ultimato': ['caio', 'matheus'] } as Record<string, string[]>, seen: false };
 }
 
-const KEY = 'moviegram-demo-v4';
+const KEY = 'moviegram-demo-v6';
 
 export function startDemo() {
   let data: ReturnType<typeof buildMock>;
   try { data = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { data = null as never; }
-  if (!data || !data.marks || !data.friends || !data.watch || !PEOPLE.some(p => p.id === data.me)) data = buildMock();
+  if (!data || !data.marks || !data.friends || !data.watch || !data.blocks || !data.likes || !PEOPLE.some(p => p.id === data.me)) data = buildMock();
 
   const apply = () => {
     S.me = data.me;
@@ -95,9 +99,21 @@ export function startDemo() {
     S.marks = data.marks;
     S.friendships = data.friends;
     S.watch = data.watch;
+    S.likes = data.likes;
+    S.unread = data.seen ? 0 : 2;
   };
   const pair = (x: Friendship, id: string) => (x.a === data.me && x.b === id) || (x.b === data.me && x.a === id);
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch { /* ignorado */ } };
+  const n = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const person = (id: string) => S.people.find(p => p.id === id)!;
+  const friendsOf = (id: string) => data.friends.filter(f => f.status === 'accepted' && (f.a === id || f.b === id)).map(f => (f.a === id ? f.b : f.a));
+  const blocked = (a: string, b: string) => data.blocks.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+  const related = (id: string) => data.friends.some(f => pair(f, id));
+  /** Amigos em comum com você: quantos e até 3 (por nome) */
+  const hit = (p: Person): PersonHit => {
+    const mine = new Set(friendsOf(data.me)), common = friendsOf(p.id).filter(id => mine.has(id)).sort((x, y) => person(x).name.localeCompare(person(y).name, 'pt'));
+    return { ...p, mutual: common.length, mutualIds: common.slice(0, 3) };
+  };
 
   const backend: Backend = {
     mode: 'demo',
@@ -129,11 +145,59 @@ export function startDemo() {
     async usernameAvailable(u) { return !S.people.some(p => p.id !== data.me && (p.username || '').toLowerCase() === u.toLowerCase()); },
     async signOut() { /* não existe na demonstração */ },
     async deleteAccount() { /* não existe na demonstração */ },
-    async searchPeople(q) {
-      const n = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-      const k = n(q.replace(/^@/, ''));
-      return S.people.filter(p => p.id !== data.me && (n(p.name).includes(k) || (p.username || '').includes(k)));
+    async searchPeople(q, offset = 0) {
+      const k = n(q.trim().replace(/^@/, ''));
+      if (k.length < 2) return [];
+      const rank = (p: Person) => (p.username === k ? 0 : (p.username || '').startsWith(k) ? 1 : n(p.name).startsWith(k) ? 2 : 3);
+      return S.people.filter(p => p.id !== data.me && !blocked(data.me, p.id) && (n(p.name).includes(k) || (p.username || '').includes(k)))
+        .map(hit).sort((a, b) => rank(a) - rank(b) || b.mutual - a.mutual || a.name.localeCompare(b.name, 'pt')).slice(offset, offset + 20);
     },
+    async suggestions() {
+      const mine = friendsOf(data.me);
+      const ids = [...new Set(mine.flatMap(friendsOf))].filter(id => id !== data.me && !related(id) && !blocked(data.me, id));
+      return ids.map(id => hit(person(id))).sort((a, b) => b.mutual - a.mutual || a.name.localeCompare(b.name, 'pt'));
+    },
+    async profileInfo(id) {
+      if (!PEOPLE.some(p => p.id === id) || blocked(data.me, id)) return null;
+      const h = hit(person(id)), close = id === data.me || friendsOf(data.me).includes(id);
+      return { person: person(id), friends: close ? friendsOf(id).length : null, mutual: h.mutual, mutualIds: h.mutualIds };
+    },
+    async friendsList(id, q, offset) {
+      if (id !== data.me && !friendsOf(data.me).includes(id)) return { people: [], total: 0 };
+      const mine = new Set([data.me, ...friendsOf(data.me)]), k = n(q.trim().replace(/^@/, ''));
+      const all = friendsOf(id).filter(x => !blocked(data.me, x)).map(person)
+        .filter(p => !k || n(p.name).includes(k) || (p.username || '').includes(k))
+        .map(p => ({ ...p, common: mine.has(p.id) }))
+        .sort((a, b) => Number(b.id === data.me) - Number(a.id === data.me) || Number(b.common) - Number(a.common) || a.name.localeCompare(b.name, 'pt'));
+      return { people: all.slice(offset, offset + 30), total: all.length };
+    },
+    async block(id) {
+      if (!blocked(data.me, id)) data.blocks.push([data.me, id]);
+      data.friends = data.friends.filter(x => !pair(x, id));
+      save(); apply(); emit();
+    },
+    async unblock(id) {
+      data.blocks = data.blocks.filter(([x, y]) => !(x === data.me && y === id));
+      save(); apply(); emit();
+    },
+    async blockedList() { return data.blocks.filter(([x]) => x === data.me).map(([, y]) => person(y)); },
+    async like(owner, titleId, on) {
+      const k = `${owner}|${titleId}`, list = data.likes[k] || [];
+      data.likes[k] = on ? [...list.filter(x => x !== data.me), data.me] : list.filter(x => x !== data.me);
+      save(); apply(); emit();
+    },
+    // Notificações de exemplo: o pedido do Matheus e o Caio aceitando a amizade
+    async notifications() {
+      const ago = (h: number) => new Date(Date.now() - h * 3600_000).toISOString();
+      const list: Notif[] = [];
+      for (const f of data.friends) if (f.status === 'pending' && f.b === data.me) list.push({ id: list.length + 1, kind: 'request', titleId: null, at: ago(2), read: data.seen, actor: person(f.a) });
+      if (friendsOf(data.me).includes('caio')) list.push({ id: 90, kind: 'accepted', titleId: null, at: ago(26), read: data.seen, actor: person('caio') });
+      return list;
+    },
+    async readNotifications() { data.seen = true; save(); apply(); emit(); },
+    async pushKey() { return null; },
+    async savePush() { /* não existe na demonstração */ },
+    async dropPush() { /* não existe na demonstração */ },
     async requestFriend(p) {
       const theirs = data.friends.find(f => f.a === p.id && f.b === data.me && f.status === 'pending');
       if (theirs) theirs.status = 'accepted';

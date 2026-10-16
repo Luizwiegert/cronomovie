@@ -1,14 +1,18 @@
 import { reduced } from './util';
 
 /**
- * Abertura do site: a revelação da logo do Cronomovie, desenhada ao vivo pelo navegador (nítida em qualquer tela),
- * sobre fundo liso: sem granulado, vinheta, névoa ou poeira.
- * É a mesma animação da composição do HyperFrames em videos/cronomovie-abertura (lá ela vira vídeo):
- *  1. a câmera passa colada nas letras gigantes do nome, inclinadas em 3D, com um brilho metálico correndo por dentro;
- *  2. ela recua e assenta de frente, e as letras ganham as cores da marca;
- *  3. as bolinhas do símbolo entram: a vermelha corre pela linha, as brancas pulam quando ela passa, e ela estoura no fim;
- *  4. um brilho varre o nome, as bolinhas fazem uma onda e a logo segura.
+ * Abertura do site: a revelação da logo do Cronomovie, desenhada ao vivo pelo navegador (nítida em qualquer tela).
+ * Uma ideia só, a da própria logo: a linha do tempo que chega na estreia. Cada momento nasce do anterior.
+ *  1. o símbolo aparece grande no centro: a bolinha vermelha corre a linha e as brancas surgem quando ela passa;
+ *  2. ela chega ao fim e cresce (a estreia), e o símbolo recua até o lugar dele, ao lado do nome;
+ *  3. as letras do nome sobem de uma máscara, uma a uma;
+ *  4. a logo inteira voa até o cabeçalho e vira o logo do site, enquanto o fundo some.
+ * Cerca de 3 segundos. Para não travar enquanto o site é montado por baixo, tudo que se mexe é um bloco de HTML
+ * animado só em posição, tamanho e opacidade: a placa de vídeo cuida disso sozinha, sem disputar com o resto da página.
+ * (Por isso o símbolo aqui é feito de blocos, e não do desenho SVG do cabeçalho: a linha e as bolinhas têm as mesmas medidas.)
+ * Sem brilho, partícula, clarão ou dissolve. Tudo é desenhado grande e só diminui, por isso fica nítido.
  * Toca uma vez por sessão do navegador. Em desenvolvimento, ?abertura força tocar de novo.
+ * A versão em vídeo (videos/cronomovie-abertura) é a anterior, em 3D, e não acompanha mais esta.
  */
 
 const SEEN = 'moviegram-abertura';
@@ -20,20 +24,29 @@ function shouldPlay(): boolean {
 }
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+const frame = () => new Promise(r => requestAnimationFrame(() => r(null)));
 
-// Curvas (as mesmas da composição, em cubic-bezier)
+// Curvas: entradas com expo, deslocamentos com in-out; a única mola tem só um leve passo além do ponto.
 const E = {
-  p1io: 'cubic-bezier(.45,0,.55,1)',
-  p3io: 'cubic-bezier(.65,0,.35,1)',
-  p2o: 'cubic-bezier(.22,.61,.36,1)',
+  io: 'cubic-bezier(.65,0,.35,1)',
   expo: 'cubic-bezier(.16,1,.3,1)',
-  back: 'cubic-bezier(.34,1.8,.64,1)',
-  sine: 'cubic-bezier(.37,0,.63,1)',
-  sineOut: 'cubic-bezier(.61,1,.88,1)',
+  spring: 'cubic-bezier(.34,1.25,.64,1)',
 };
-// Momentos (ms), iguais aos da composição
-const RUN = 520; // quanto a bolinha vermelha leva pra correr a linha
-const T = { fly: 120, settle: 1250, colors: 1700, mark: 1820, premiere: 1820 + RUN, shine: 2900, end: 4300 };
+// Momentos (ms)
+const T = {
+  run: 80, runDur: 680,       // a vermelha corre a linha
+  dot2: 360,                  // a vermelha passa pela segunda bolinha branca
+  grow: 760,                  // chega ao fim e cresce: a estreia
+  pull: 800, pullDur: 640,    // o símbolo recua até o lugar dele
+  type: 1180, stagger: 28, typeDur: 600, // as letras sobem quando o símbolo já está quase no lugar
+  hand: 2350, handDur: 600,   // a logo vai para o cabeçalho
+};
+const NAME = ['C', 'r', 'o', 'n', 'o'].map(c => `<span class="l">${c}</span>`).join('')
+  + ['m', 'o', 'v', 'i', 'e'].map(c => `<span class="l b">${c}</span>`).join('');
+
+/** Quem precisa esperar a abertura acabar (para não pesar a página enquanto ela toca) usa isto. */
+let finishedIntro: Promise<void> = Promise.resolve();
+export const introDone = () => finishedIntro;
 
 export function playIntro(): Promise<void> {
   if (!shouldPlay()) return Promise.resolve();
@@ -43,17 +56,13 @@ export function playIntro(): Promise<void> {
   root.className = 'intro';
   root.setAttribute('aria-hidden', 'true');
   root.innerHTML = `
-    <div class="iv-scene"><div class="iv-rig"><div class="iv-lockup">
-      <div class="iv-markbox">
-        <svg class="iv-mark" viewBox="0 0 64 32"><line x1="8" y1="16" x2="48" y2="16"/><circle class="n1" cx="8" cy="16" r="4"/><circle class="n2" cx="24" cy="16" r="4"/><circle class="ring" cx="48" cy="16" r="11"/><circle class="n3" cx="48" cy="16" r="11"/></svg>
-        <div class="iv-flare"></div>
-      </div>
-      <div class="iv-wordmark">
-        <span class="iv-word iv-solid"><span>Crono</span><span class="b">movie</span></span>
-        <span class="iv-word iv-over iv-chrome">Cronomovie</span>
-        <span class="iv-word iv-over iv-shine">Cronomovie</span>
-      </div>
-    </div></div></div>`;
+    <div class="iv-bg"></div>
+    <div class="iv-stage"><div class="iv-lockup">
+      <div class="iv-markbox"><div class="iv-markbig">
+        <i class="iv-line"></i><i class="iv-dot d1"></i><i class="iv-dot d2"></i><i class="iv-dot d3"></i>
+      </div></div>
+      <div class="iv-wordmark">${NAME}</div>
+    </div></div>`;
   const skip = document.createElement('button');
   skip.className = 'intro-skip';
   skip.type = 'button';
@@ -64,13 +73,17 @@ export function playIntro(): Promise<void> {
   let done = false;
   let resolve!: () => void;
   const finished = new Promise<void>(r => { resolve = r; });
+  finishedIntro = finished;
   const end = async (fast: boolean) => {
     if (done) return;
     done = true;
     skip.remove();
-    await root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fast ? 220 : 550, easing: 'ease', fill: 'forwards' }).finished.catch(() => {});
-    root.remove();
+    // No fim normal, o logo do cabeçalho já está no lugar exato da logo da abertura: as duas trocam sem salto.
     document.documentElement.classList.remove('intro-on');
+    const out = root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fast ? 220 : 160, easing: 'ease', fill: 'forwards' }).finished.catch(() => {});
+    // Se o navegador pausar a animação (aba em segundo plano), a abertura não fica presa na tela
+    await Promise.race([out, wait(400)]);
+    root.remove();
     removeEventListener('keydown', onKey);
     resolve();
   };
@@ -79,63 +92,55 @@ export function playIntro(): Promise<void> {
   addEventListener('keydown', onKey);
 
   const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector(s) as unknown as T;
+  const A = (el: Element, kf: Keyframe[], delay: number, duration: number, easing = 'linear', fill: FillMode = 'both') =>
+    el.animate(kf, { delay, duration, easing, fill });
 
   void (async () => {
-    // As posições dependem da largura do nome: espera a fonte da marca (no máximo 1,5 s).
-    await Promise.race([document.fonts.load('900 100px "Big Shoulders Display"').catch(() => {}), wait(1500)]);
+    // As posições dependem da largura do nome: espera a fonte da marca (no máximo 1,2 s)
+    // e dois quadros, para a primeira montagem da página por baixo já ter acontecido.
+    await Promise.race([document.fonts.load('900 100px "Big Shoulders Display"').catch(() => {}), wait(1200)]);
+    await Promise.race([(async () => { await frame(); await frame(); })(), wait(120)]);
     if (done) return;
 
-    const lockup = $('.iv-lockup'), lr = lockup.getBoundingClientRect(), wr = $('.iv-wordmark').getBoundingClientRect();
-    const cx = lr.left + lr.width / 2;
-    // A câmera começa colada no começo do nome e viaja até o fim dele.
-    const BIG = innerHeight > innerWidth ? 3.8 : 3.3;
-    const X0 = -BIG * (wr.left + wr.width * 0.27 - cx), X1 = -BIG * (wr.left + wr.width * 0.78 - cx);
-    const cam = (x: number, z: number, y: number, rx: number, s: number) => `translate3d(${x.toFixed(1)}px,0,0) rotate(${z}deg) rotateY(${y}deg) rotateX(${rx}deg) scale(${s})`;
+    const lockup = $('.iv-lockup'), big = $('.iv-markbig');
+    const box = $('.iv-markbox').getBoundingClientRect(), bigW = big.getBoundingClientRect().width;
+    const S = bigW / box.width, u = bigW / 64; // u = uma unidade do desenho do símbolo (64 de largura)
+    // Do lugar final dele até o centro da tela
+    const dx = innerWidth / 2 - (box.left + box.width / 2), dy = innerHeight / 2 - (box.top + box.height / 2);
+    const at = (x: number, y: number, s: number) => `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) scale(${s})`;
 
-    // Quantos pixels vale cada unidade do desenho do símbolo (ele tem 64 unidades de largura)
-    const mu = $('.iv-markbox').getBoundingClientRect().width / 64;
-    const line = $<SVGLineElement>('.iv-mark line'), len = line.getTotalLength();
-    line.style.strokeDasharray = `${len}`;
+    A(lockup, [{ opacity: 0 }, { opacity: 1 }], 0, 120, 'ease-out');
 
-    const A = (el: Element, kf: Keyframe[], delay: number, duration: number, easing = 'linear', fill: FillMode = 'both') =>
-      el.animate(kf, { delay, duration, easing, fill });
+    /* 1. o símbolo grande no centro: a vermelha corre a linha (a linha cresce junto, com a mesma curva)
+          e as brancas surgem quando ela passa */
+    A(big, [{ transform: at(dx, dy, 1) }, { transform: at(dx, dy, 1) }], 0, 1);
+    A($('.iv-line'), [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], T.run, T.runDur, E.io);
+    const red = $('.d3');
+    A(red, [{ transform: at(-40 * u, 0, .45) }, { transform: at(0, 0, .45) }], T.run, T.runDur, E.io);
+    A($('.d1'), [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], 40, 300, E.spring);
+    A($('.d2'), [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], T.dot2, 300, E.spring);
 
-    /* 1. voo colado nas letras, com o brilho metálico correndo por dentro; 2. a câmera recua e assenta de frente */
-    const total = T.settle + 1100;
-    $('.iv-rig').animate([
-      { transform: cam(X0, -9, -16, 56, BIG), offset: 0 },
-      { transform: cam(X0, -9, -16, 56, BIG), offset: T.fly / total, easing: E.p1io },
-      { transform: cam(X1, -5, 9, 56, BIG), offset: T.settle / total, easing: E.p3io },
-      { transform: cam(0, 0, 0, 0, 1), offset: 1 },
-    ], { duration: total, fill: 'both' });
-    A(lockup, [{ opacity: 0 }, { opacity: 1 }], T.fly, 300, 'ease-out');
-    A($('.iv-chrome'), [{ backgroundPosition: '100% 50%' }, { backgroundPosition: '0% 50%' }], T.fly, 2100);
-    A($('.iv-solid'), [{ opacity: 0 }, { opacity: 1 }], T.colors, 450, E.p1io);
-    $('.iv-chrome').animate([{ opacity: 1 }, { opacity: 0 }], { delay: T.colors + 50, duration: 500, easing: E.p1io, fill: 'forwards' });
+    /* 2. a estreia: ela cresce no fim da linha, e o símbolo recua até o lugar dele ao lado do nome */
+    A(red, [{ transform: at(0, 0, .45) }, { transform: at(0, 0, 1) }], T.grow, 420, E.expo, 'forwards');
+    A(big, [{ transform: at(dx, dy, 1) }, { transform: at(0, 0, 1 / S) }], T.pull, T.pullDur, E.io, 'forwards');
 
-    /* 3. as bolinhas: a vermelha nasce pequena na ponta e corre pela linha; as brancas pulam quando ela passa;
-          no fim da linha ela cresce e estoura */
-    const n1 = $('.iv-mark .n1'), n2 = $('.iv-mark .n2'), n3 = $('.iv-mark .n3');
-    const far = `translateX(${(-40 * mu).toFixed(1)}px)`; // a ponta esquerda da linha, vista do lugar final da vermelha
-    const hop = (h: number) => `translateY(${(-h * mu).toFixed(1)}px)`;
-    A(line, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], T.mark, RUN, E.p3io);
-    A(n3, [
-      { transform: `${far} scale(0)`, offset: 0, easing: E.expo },
-      { transform: `${far} scale(.36)`, offset: 110 / (110 + RUN + 420), easing: E.p3io },
-      { transform: 'translateX(0px) scale(.36)', offset: (110 + RUN) / (110 + RUN + 420), easing: E.expo },
-      { transform: 'translateX(0px) scale(1)', offset: 1 },
-    ], T.mark - 110, 110 + RUN + 420);
-    A(n1, [{ transform: 'translateY(0px) scale(0)' }, { transform: `${hop(4)} scale(1.12)`, offset: 0.45 }, { transform: 'translateY(0px) scale(1)' }], T.mark + 60, 360, E.p2o);
-    A(n2, [{ transform: 'translateY(0px) scale(0)' }, { transform: `${hop(5)} scale(1.15)`, offset: 0.45 }, { transform: 'translateY(0px) scale(1)' }], T.mark + 230, 380, E.p2o);
-    A($('.iv-mark .ring'), [{ transform: 'scale(1)', opacity: 0.85 }, { transform: 'scale(3.2)', opacity: 0 }], T.premiere + 40, 850, E.sineOut, 'none');
-    A($('.iv-flare'), [{ transform: 'scaleX(.05)', opacity: 1 }, { transform: 'scaleX(1)', opacity: 0 }], T.premiere, 750, E.p2o, 'none');
+    /* 3. o nome: cada letra sobe de dentro de uma máscara */
+    root.querySelectorAll('.iv-wordmark .l').forEach((l, i) =>
+      A(l, [{ transform: 'translate3d(0,110%,0)' }, { transform: 'translate3d(0,0,0)' }], T.type + i * T.stagger, T.typeDur, E.expo));
 
-    /* 4. um brilho varre o nome, as três bolinhas fazem uma onda, e a logo segura com uma aproximação leve */
-    A($('.iv-shine'), [{ backgroundPosition: '100% 50%' }, { backgroundPosition: '0% 50%' }], T.shine, 850, E.sine);
-    [n1, n2, n3].forEach((n, i) => A(n, [{ transform: 'translateY(0px) scale(1)' }, { transform: `${hop(4.5)} scale(1)` }, { transform: 'translateY(0px) scale(1)' }], T.shine + 200 + i * 90, 340, E.sine, 'none'));
-    A($('.iv-wordmark'), [{ transform: 'scale(1)' }, { transform: 'scale(1.02)' }], total, T.end - total, E.sineOut);
-
-    await wait(T.end);
+    /* 4. a logo vai até o logo do cabeçalho (mesmo desenho e proporções) e o fundo some */
+    await wait(T.hand);
+    if (done) return;
+    const brand = document.querySelector('.bar .brand');
+    const mark = brand?.querySelector('.mark')?.getBoundingClientRect(), word = brand?.querySelector('.wordmark')?.getBoundingClientRect();
+    if (mark && word && mark.width > 0) {
+      const lr = lockup.getBoundingClientRect();
+      const s = (word.right - mark.left) / lr.width;
+      const tx = mark.left - lr.left, ty = (mark.top + mark.height / 2) - (lr.top + (lr.height * s) / 2);
+      lockup.animate([{ transform: at(0, 0, 1) }, { transform: at(tx, ty, s) }], { duration: T.handDur, easing: E.io, fill: 'forwards' });
+    }
+    $('.iv-bg').animate([{ opacity: 1 }, { opacity: 0 }], { delay: 60, duration: T.handDur - 80, easing: 'ease', fill: 'forwards' });
+    await wait(T.handDur);
     void end(false);
   })();
 

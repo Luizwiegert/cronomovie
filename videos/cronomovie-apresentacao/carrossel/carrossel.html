@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Carrossel: como usar o Cronomovie</title>
+    <style>
+      @font-face { font-family: 'Big Shoulders Display'; font-weight: 700; src: url('../assets/fonts/BigShouldersDisplay-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Big Shoulders Display'; font-weight: 900; src: url('../assets/fonts/BigShouldersDisplay-900.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 500; src: url('../assets/fonts/Inter-500.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 600; src: url('../assets/fonts/Inter-600.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 700; src: url('../assets/fonts/Inter-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-weight: 800; src: url('../assets/fonts/Inter-800.woff2') format('woff2'); }
+      :root { --bg: #0b0b0c; --surface: #141416; --ink: #f2f1ee; --muted: rgba(242, 241, 238, 0.66); --red: #e5484d; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #000; color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: var(--bg); }
+      .slide::before { content: ''; position: absolute; left: 50%; top: 62%; width: 1300px; height: 1300px; margin: -650px 0 0 -650px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(229, 72, 77, 0.22) 0%, rgba(229, 72, 77, 0.07) 34%, rgba(229, 72, 77, 0) 62%); }
+      .abs { position: absolute; }
+
+      /* linha do tempo no topo: uma bolinha por imagem, a vermelha é a atual */
+      .rail { left: 90px; top: 92px; width: 900px; height: 4px; border-radius: 99px; background: rgba(242, 241, 238, 0.22); }
+      .rail i { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: rgba(242, 241, 238, 0.35); }
+      .rail i.done { background: var(--ink); }
+      .rail i.now { width: 34px; height: 34px; margin: -17px 0 0 -17px; background: var(--red); box-shadow: 0 0 0 8px rgba(229, 72, 77, 0.18); }
+
+      .kick { left: 90px; top: 160px; font: 700 34px/1 'Big Shoulders Display'; letter-spacing: 0.24em; text-transform: uppercase; color: var(--red); }
+      .h { left: 90px; top: 214px; width: 900px; font: 800 82px/1.04 'Inter'; letter-spacing: -0.035em; }
+      .h em { font-style: normal; color: var(--red); }
+      .p { left: 90px; width: 880px; font: 500 36px/1.38 'Inter'; letter-spacing: -0.01em; color: var(--muted); }
+      .p b { font-weight: 700; color: var(--ink); }
+
+      .phone { width: 520px; height: 1125px; border-radius: 60px; overflow: hidden;
+        box-shadow: 0 0 0 14px #1c1c1f, 0 0 0 16px rgba(255, 255, 255, 0.08), 0 50px 140px rgba(0, 0, 0, 0.8); }
+      .phone img { display: block; width: 100%; height: 100%; }
+      .card { border-radius: 30px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09), 0 40px 110px rgba(0, 0, 0, 0.75); }
+      .card img { display: block; width: 100%; }
+      .tap { width: 120px; height: 120px; border-radius: 50%; border: 6px solid var(--red); box-shadow: 0 0 0 10px rgba(229, 72, 77, 0.16); }
+      /* o círculo de "visto" já marcado, por cima do cartaz da tela */
+      .seen { width: 46px; height: 46px; border-radius: 50%; background: #f2f1ee; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5); }
+      .seen svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .tip { left: 90px; width: 900px; padding: 26px 30px; border-radius: 24px; background: rgba(229, 72, 77, 0.1); border: 2px solid rgba(229, 72, 77, 0.5);
+        font: 500 32px/1.35 'Inter'; color: var(--ink); }
+      .tip b { color: var(--red); font-weight: 700; }
+
+      .logo { display: flex; align-items: center; gap: 22px; }
+      .logo svg { width: 150px; height: 75px; }
+      .logo b { font: 900 96px/1 'Big Shoulders Display'; letter-spacing: -0.01em; }
+      .logo b span { color: var(--red); }
+      .swipe { right: 90px; bottom: 70px; font: 700 30px/1 'Inter'; color: var(--ink); background: var(--red); padding: 22px 30px; border-radius: 99px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); }
+      .num { font: 900 1em/1 'Big Shoulders Display'; }
+    </style>
+  </head>
+  <body>
+    <!-- 1. capa -->
+    <section class="slide" id="s1">
+      <div class="abs rail"></div>
+      <div class="abs logo" style="left:90px;top:150px">
+        <svg viewBox="0 0 64 32"><line x1="8" y1="16" x2="48" y2="16" stroke="#f2f1ee" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round" /><circle cx="8" cy="16" r="4" fill="#f2f1ee" /><circle cx="24" cy="16" r="4" fill="#f2f1ee" /><circle cx="48" cy="16" r="11" fill="#e5484d" /></svg>
+        <b>Crono<span>movie</span></b>
+      </div>
+      <div class="abs h" style="top:300px;font-size:104px">Como usar,<br />em <em>7 passos.</em></div>
+      <div class="abs p" style="top:530px">Do primeiro acesso até Vingadores: Doutor Destino. Salve para consultar durante a maratona.</div>
+      <div class="abs phone" style="left:280px;top:740px"><img src="../assets/telas/linha-topo.png" alt="" /></div>
+      <div class="abs swipe">Arraste →</div>
+    </section>
+
+    <!-- 2. passo 1: abrir -->
+    <section class="slide" id="s2">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 1</div>
+      <div class="abs h">Abra o <em>cronomovie.com</em></div>
+      <div class="abs p" style="top:400px">Funciona no navegador do celular e do computador, sem baixar nada.</div>
+      <div class="abs tip" style="top:540px">Veio pelo <b>link da bio</b>? Toque em <b>⋯</b> no canto da tela e escolha <b>abrir no navegador</b>. Dentro do Instagram, o Google não deixa entrar.</div>
+      <div class="abs phone" style="left:280px;top:800px"><img src="../assets/telas/linha-fileiras.png" alt="" /></div>
+    </section>
+
+    <!-- 3. passo 2: criar conta -->
+    <section class="slide" id="s3">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 2</div>
+      <div class="abs h">Crie a sua <em>conta grátis</em></div>
+      <div class="abs p" style="top:320px">Entre com o <b>Google</b>, o <b>Discord</b> ou o seu e-mail. Assim o seu progresso fica salvo e aparece em qualquer aparelho.</div>
+      <div class="abs card" style="left:240px;top:600px;width:600px"><img src="../assets/recortes/login.png" alt="" /></div>
+      <div class="abs tap" style="left:479px;top:715px"></div>
+    </section>
+
+    <!-- 4. passo 3: marcar o que já viu -->
+    <section class="slide" id="s4">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 3</div>
+      <div class="abs h">Marque o que <em>já viu</em></div>
+      <div class="abs p" style="top:320px">Toque no <b>✓</b> de cada cartaz que você já assistiu. Nas séries, dá para marcar a temporada inteira ou episódio por episódio.</div>
+      <div class="abs phone" style="left:90px;top:640px"><img src="../assets/telas/linha-grade.png" alt="" /></div>
+      <div class="abs seen" style="left:530px;top:805px"><svg viewBox="0 0 46 46"><path d="M14 24 L20.5 30.5 L32 17" fill="none" stroke="#1a1a1c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></svg></div>
+      <div class="abs tap" style="left:493px;top:768px"></div>
+      <div class="abs card" style="left:470px;top:960px;width:520px"><img src="../assets/recortes/episodios.png" alt="" /></div>
+    </section>
+
+    <!-- 5. passo 4: seguir a ordem -->
+    <section class="slide" id="s5">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 4</div>
+      <div class="abs h">Siga a <em>ordem</em></div>
+      <div class="abs p" style="top:320px">O site mostra o próximo título da linha do tempo. Assistiu? Toque em <b>“Marcar como visto”</b> e a barra de progresso avança.</div>
+      <div class="abs phone" style="left:90px;top:640px"><img src="../assets/telas/linha-topo.png" alt="" /></div>
+      <div class="abs card" style="left:330px;top:900px;width:680px"><img src="../assets/recortes/proximo.png" alt="" /></div>
+      <div class="abs tap" style="left:596px;top:1081px"></div>
+    </section>
+
+    <!-- 6. passo 5: trilha -->
+    <section class="slide" id="s6">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 5</div>
+      <div class="abs h">Ligue a <em>Trilha Avengers</em></div>
+      <div class="abs p" style="top:320px">Quer só o essencial? A trilha mostra apenas os títulos que levam a Doutor Destino.</div>
+      <div class="abs phone" style="left:280px;top:800px;opacity:0.55"><img src="../assets/telas/trilha-ligada.png" alt="" /></div>
+      <div class="abs card" style="left:90px;top:520px;width:900px"><img src="../assets/recortes/trilha-on.png" alt="" /></div>
+    </section>
+
+    <!-- 7. passo 6: abrir um título -->
+    <section class="slide" id="s7">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 6</div>
+      <div class="abs h">Abra <em>qualquer título</em></div>
+      <div class="abs p" style="top:320px">Veja o trailer, a nota dos amigos e onde assistir no Brasil.</div>
+      <div class="abs phone" style="left:470px;top:560px;opacity:0.6"><img src="../assets/telas/detalhe-topo.png" alt="" /></div>
+      <div class="abs card" style="left:90px;top:640px;width:700px"><img src="../assets/recortes/trailer.png" alt="" /></div>
+      <div class="abs card" style="left:90px;top:1080px;width:330px;border-radius:99px"><img src="../assets/recortes/provedor.png" alt="" /></div>
+    </section>
+
+    <!-- 8. passo 7: amigos -->
+    <section class="slide" id="s8">
+      <div class="abs rail"></div>
+      <div class="abs kick">Passo 7</div>
+      <div class="abs h">Chame os <em>amigos</em></div>
+      <div class="abs p" style="top:320px">Compare quantos títulos cada um já viu e deixe a sua nota. Comentário com spoiler fica escondido até você tocar.</div>
+      <div class="abs phone" style="left:90px;top:640px"><img src="../assets/telas/ranking.png" alt="" /></div>
+      <div class="abs card" style="left:400px;top:1000px;width:600px"><img src="../assets/recortes/spoiler.png" alt="" /></div>
+    </section>
+
+    <!-- 9. fecho -->
+    <section class="slide" id="s9">
+      <div class="abs rail"></div>
+      <div class="abs kick">Comece hoje</div>
+      <div class="abs h">Faltam <em class="num" style="font-size:1.25em">62</em> dias para <em>Doutor&nbsp;Destino</em></div>
+      <div class="abs card" style="left:150px;top:470px;width:780px"><img src="../assets/recortes/lancamento.png" alt="" /></div>
+      <div class="abs" style="left:0;top:1196px;width:1080px;text-align:center;font:800 64px/1 'Inter';letter-spacing:-0.03em">cronomovie.com</div>
+      <div class="abs" style="left:0;top:1276px;width:1080px;text-align:center;font:500 34px/1 'Inter';color:var(--muted)">Grátis. Link na bio.</div>
+    </section>
+
+    <script>
+      // bolinhas da linha do topo: uma por imagem, a atual em vermelho
+      const slides = document.querySelectorAll('.slide'), N = slides.length;
+      slides.forEach((s, idx) => {
+        const r = s.querySelector('.rail');
+        for (let i = 0; i < N; i++) {
+          const d = document.createElement('i');
+          d.style.left = (i / (N - 1)) * 100 + '%';
+          if (i < idx) d.className = 'done';
+          if (i === idx) d.className = 'now';
+          r.appendChild(d);
+        }
+        // a parte da linha já percorrida fica mais clara
+        const p = (idx / (N - 1)) * 100;
+        r.style.background = `linear-gradient(90deg, rgba(242,241,238,0.75) ${p}%, rgba(242,241,238,0.22) ${p}%)`;
+      });
+    </script>
+  </body>
+</html>

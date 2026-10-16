@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Cronomovie: apresentação</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 700; font-display: block; src: url('assets/fonts/BigShouldersDisplay-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 800; font-display: block; src: url('assets/fonts/BigShouldersDisplay-800.woff2') format('woff2'); }
+      @font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 900; font-display: block; src: url('assets/fonts/BigShouldersDisplay-900.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: block; src: url('assets/fonts/Inter-500.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-style: normal; font-weight: 600; font-display: block; src: url('assets/fonts/Inter-600.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-style: normal; font-weight: 700; font-display: block; src: url('assets/fonts/Inter-700.woff2') format('woff2'); }
+      @font-face { font-family: 'Inter'; font-style: normal; font-weight: 800; font-display: block; src: url('assets/fonts/Inter-800.woff2') format('woff2'); }
+
+      :root { --bg: #0b0b0c; --surface: #141416; --ink: #f2f1ee; --muted: rgba(242, 241, 238, 0.66); --red: #e5484d; }
+      html, body { margin: 0; background: var(--bg); }
+      body { color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+      .clip { position: absolute; inset: 0; }
+      .abs { position: absolute; }
+
+      /* fundo liso com um brilho vermelho suave que segue o ponto */
+      #glow { left: 0; top: 0; width: 1400px; height: 1400px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(229, 72, 77, 0.30) 0%, rgba(229, 72, 77, 0.10) 32%, rgba(229, 72, 77, 0) 62%); }
+
+      /* a "tela": começa do tamanho do vídeo e se fecha no celular */
+      #screen { left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; border-radius: 0; }
+      #world { left: 0; top: 0; width: 1080px; height: 1920px; }
+      #bezel { left: 0; top: 0; width: 1080px; height: 1920px; border-radius: 0; box-sizing: border-box;
+        border: 16px solid #1c1c1f; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.07), 0 40px 120px rgba(0, 0, 0, 0.7); }
+
+      /* linha do tempo: a linha da logo, as bolinhas e o ponto vermelho */
+      #railG { left: 0; top: 0; }
+      #railLine { position: absolute; inset: 0; background: var(--ink); opacity: 0.42; border-radius: 99px; }
+      .wdot, .tick { position: absolute; top: 50%; border-radius: 50%; background: var(--ink); }
+      .wdot { width: 27px; height: 27px; margin: -13.5px 0 0 -13.5px; }
+      .tick { width: 10px; height: 10px; margin: -5px 0 0 -5px; }
+      .reddot { border-radius: 50%; background: var(--red); }
+
+      #word { left: 0; top: 0; font: 900 160px/1 'Big Shoulders Display'; letter-spacing: -0.01em; white-space: nowrap; }
+      #word > span { display: inline-block; }
+      #word .movie { color: var(--red); }
+      .mask { overflow: hidden; }
+      .mask > span { display: block; }
+
+      /* contador */
+      #count { left: 590px; top: 740px; width: 470px; }
+      #countN { font: 900 300px/0.86 'Big Shoulders Display'; letter-spacing: -0.03em; }
+      #countL { margin-top: 18px; font: 700 50px/1.1 'Inter'; letter-spacing: -0.02em; color: var(--muted); max-width: 420px; }
+
+      /* cartazes da linha do tempo */
+      .item { position: absolute; width: 280px; }
+      .item img { display: block; width: 280px; height: 420px; object-fit: cover; border-radius: 14px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55); }
+      .item.doom img { box-shadow: 0 0 0 4px var(--red), 0 0 80px rgba(229, 72, 77, 0.55); }
+      .conn { position: absolute; height: 3px; width: 50px; background: rgba(242, 241, 238, 0.42); }
+      .era { position: absolute; width: 360px; font: 700 30px/1.15 'Big Shoulders Display'; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+
+      /* telas reais dentro do celular */
+      .shot { position: absolute; left: 0; top: 0; width: 520px; height: 1125px; display: block; }
+
+      /* textos de cima: cada palavra sobe da sua máscara; a palavra-chave em vermelho */
+      .hl { left: 60px; top: 262px; width: 960px; text-align: center; font: 800 66px/1.12 'Inter'; letter-spacing: -0.03em; }
+      .hl .m { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 2px 10px; margin-bottom: -10px; }
+      .hl .w { display: inline-block; }
+      .hl em { font-style: normal; color: var(--red); }
+      #hook { top: 600px; font-size: 124px; line-height: 1.02; letter-spacing: -0.045em; }
+      #hookSub { left: 60px; top: 1010px; width: 960px; text-align: center; font: 600 46px/1.2 'Inter'; letter-spacing: -0.02em; color: var(--muted); }
+      #scrim { left: 0; top: 0; width: 1080px; height: 720px; background: linear-gradient(180deg, #0b0b0c 0%, #0b0b0c 58%, rgba(11, 11, 12, 0) 100%); }
+
+      /* brilho que passa pelos cartões */
+      .sweep { position: absolute; left: 0; top: -20%; width: 34%; height: 140%; pointer-events: none;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.13) 50%, rgba(255, 255, 255, 0) 100%); transform: skewX(-18deg); }
+
+      /* marcar como visto, progresso */
+      .ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--red); box-sizing: border-box; }
+      #btnFlash { border-radius: 99px; background: #ffffff; }
+      #check { width: 84px; height: 84px; border-radius: 50%; background: var(--red); }
+      #check svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      #card { left: 0; top: 0; width: 900px; height: 500px; border-radius: 40px; background: var(--surface); overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.09); box-shadow: 0 50px 120px rgba(0, 0, 0, 0.65); box-sizing: border-box; }
+      #cardLabel { left: 150px; top: 630px; font: 600 36px/1 'Inter'; color: var(--muted); }
+      #cardNum { left: 146px; top: 690px; font: 800 210px/1 'Inter'; letter-spacing: -0.05em; display: flex; align-items: baseline; gap: 22px; }
+      #cardNum small { font: 600 58px/1 'Inter'; letter-spacing: -0.02em; color: var(--muted); }
+      #track { left: 150px; top: 960px; width: 780px; height: 18px; border-radius: 99px; background: rgba(242, 241, 238, 0.14); }
+      #fill { border-radius: 99px; background: var(--red); }
+
+      /* trilha */
+      #trail { left: 0; top: 0; width: 900px; height: 538px; border-radius: 34px; overflow: hidden; box-shadow: 0 50px 120px rgba(0, 0, 0, 0.65); }
+      #trail img { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+      /* episódios */
+      #eps { left: 0; top: 0; width: 800px; height: 878px; border-radius: 30px; overflow: hidden; background: #18181a;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 50px 120px rgba(0, 0, 0, 0.7); }
+      #eps img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+      #epCk { left: 1.12%; top: 62.6%; width: 5.59%; height: 5.09%; border-radius: 6px; background: #f2f1ee; }
+      #epN { left: 28.86%; top: 4.07%; width: 13.97%; height: 5.43%; background-image: url(assets/recortes/episodios.png); background-size: 715.9% 1843.5%; background-position: 60.61% 4.3%; }
+      #epN span { position: absolute; left: 6%; top: 50%; transform: translateY(-50%); font: 500 37px/1 'Inter'; color: rgba(242, 241, 238, 0.6); white-space: nowrap; }
+      #epCk svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+      /* detalhe: trailer e onde assistir */
+      #trailer { left: 0; top: 0; width: 900px; height: 505px; border-radius: 26px; overflow: hidden; box-shadow: 0 50px 120px rgba(0, 0, 0, 0.7); }
+      #trailer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      #play { width: 150px; height: 150px; border-radius: 50%; background: rgba(0, 0, 0, 0.58); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35); }
+      #play svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      #prov { left: 0; top: 0; width: 396px; height: 158px; }
+      #prov img { width: 100%; height: 100%; display: block; }
+      #provLabel { left: 60px; top: 1350px; width: 960px; text-align: center; font: 600 36px/1.2 'Inter'; color: var(--muted); }
+
+      /* amigos */
+      .avat { width: 200px; height: 200px; border-radius: 50%; background-size: cover; background-position: center; box-shadow: 0 0 0 6px var(--bg), 0 24px 60px rgba(0, 0, 0, 0.6); }
+      .bar { border-radius: 22px 22px 0 0; background: linear-gradient(180deg, #232327, #161618); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+      .bar b { position: absolute; left: 0; right: 0; top: 26px; text-align: center; font: 900 120px/1 'Big Shoulders Display'; color: rgba(242, 241, 238, 0.85); }
+      .who { width: 300px; text-align: center; }
+      .who .n { font: 700 34px/1.1 'Inter'; }
+      .who .v { margin-top: 6px; font: 900 76px/1 'Big Shoulders Display'; }
+      .who .v small { font: 600 26px/1 'Inter'; color: var(--muted); margin-left: 6px; }
+      #heart { width: 120px; height: 120px; }
+      #heart svg { width: 100%; height: 100%; display: block; }
+      #bell { width: 120px; height: 120px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08); }
+      #bell svg { position: absolute; left: 30px; top: 28px; width: 60px; height: 60px; }
+      #badge { left: 74px; top: 6px; min-width: 50px; height: 50px; border-radius: 99px; background: var(--red); color: #fff;
+        font: 800 30px/50px 'Inter'; text-align: center; box-shadow: 0 0 0 5px var(--bg); }
+
+      /* comentário com spoiler escondido */
+      #spo { left: 0; top: 0; width: 900px; height: 485px; border-radius: 30px; overflow: hidden; background: #18181a;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 50px 120px rgba(0, 0, 0, 0.7); }
+      #spo img { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
+
+      /* stories */
+      #story { left: 200px; top: 396px; width: 680px; height: 1209px; border-radius: 34px; overflow: hidden; box-shadow: 0 60px 140px rgba(0, 0, 0, 0.75); }
+      #story img { width: 100%; height: 100%; display: block; }
+
+      /* contagem */
+      #days { left: 0; top: 560px; width: 1080px; text-align: center; }
+      #daysN { font: 900 600px/0.82 'Big Shoulders Display'; letter-spacing: -0.04em; }
+      #daysL { margin-top: 22px; font: 800 110px/1 'Big Shoulders Display'; letter-spacing: 0.18em; padding-left: 0.18em; }
+      #daysS { margin-top: 44px; font: 700 46px/1.2 'Inter'; letter-spacing: -0.02em; }
+      #daysS2 { margin-top: 12px; font: 500 36px/1.2 'Inter'; color: var(--muted); }
+      #flashH { left: 0; top: 0; width: 1080px; height: 8px; border-radius: 99px;
+        background: linear-gradient(90deg, rgba(229, 72, 77, 0) 0%, #ffd9da 50%, rgba(229, 72, 77, 0) 100%); }
+      #burst { width: 300px; height: 300px; border-radius: 50%; border: 8px solid var(--red); box-sizing: border-box; }
+      #flashW { left: 0; top: 0; width: 1080px; height: 1920px; background: #ffffff; }
+
+      /* fecho */
+      #cta { left: 0; top: 1120px; width: 1080px; text-align: center; }
+      #ctaUrl { font: 800 64px/1 'Inter'; letter-spacing: -0.03em; }
+      #ctaSub { margin-top: 22px; font: 500 38px/1.2 'Inter'; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="cronomovie-apresentacao" data-start="0" data-width="1080" data-height="1920" data-duration="33">
+      <div id="stage" class="clip" data-start="0" data-duration="33" data-track-index="0">
+        <div id="glow" class="abs"></div>
+
+        <div id="screen" class="abs">
+          <div id="world" class="abs">
+            <div id="items"></div>
+            <div id="railG" class="abs">
+              <div id="railLine"></div>
+              <div id="ticks"></div>
+              <div id="w1" class="wdot"></div>
+              <div id="w2" class="wdot"></div>
+            </div>
+            <div id="redW" class="abs reddot"></div>
+          </div>
+          <img id="shotGrade" class="shot" src="assets/telas/linha-grade.png" alt="" />
+          <img id="shotTopo" class="shot" src="assets/telas/linha-topo.png" alt="" />
+          <img id="shotTrilha" class="shot" src="assets/telas/trilha-ligada.png" alt="" />
+          <img id="shotDet" class="shot" src="assets/telas/detalhe-topo.png" alt="" />
+          <img id="shotDetT" class="shot" src="assets/telas/detalhe-trailer.png" alt="" />
+        </div>
+        <div id="bezel" class="abs"></div>
+
+        <div id="wordWrap" class="abs mask"><div id="word"><span>Crono<span class="movie">movie</span></span></div></div>
+
+        <div id="count" class="abs">
+          <div id="countN">0</div>
+          <div id="countL">títulos da Marvel, em ordem</div>
+        </div>
+
+        <div id="scrim" class="abs"></div>
+        <div id="hook" class="abs hl">Em que *ordem* assistir à *Marvel?*</div>
+        <div id="hookSub" class="abs">antes de Vingadores: Doutor Destino</div>
+        <div id="h3" class="abs hl">Toda a Marvel na *ordem certa.*</div>
+        <div id="h4" class="abs hl">Filmes, séries e animações, *num lugar só.*</div>
+        <div id="h5" class="abs hl">Marque o que *já viu.*</div>
+        <div id="h6" class="abs hl">Só o que leva a *Doutor Destino.*</div>
+        <div id="h7" class="abs hl">*Episódio* por episódio.</div>
+        <div id="h7b" class="abs hl">Trailer e *onde assistir.*</div>
+        <div id="h8" class="abs hl">Compare com os *amigos.*</div>
+        <div id="h8b" class="abs hl">Comentários *sem spoiler.*</div>
+        <div id="h9" class="abs hl">Mostre a sua *maratona.*</div>
+
+        <div id="btnFlash" class="abs"></div>
+        <div id="ring" class="abs ring"></div>
+        <div id="card" class="abs"><div id="swCard" class="sweep"></div></div>
+        <div id="cardLabel" class="abs">Seu progresso</div>
+        <div id="cardNum" class="abs"><span id="cardN">5</span><small>de 84</small></div>
+        <div id="track" class="abs"></div>
+        <div id="fill" class="abs"></div>
+        <div id="check" class="abs"><svg viewBox="0 0 84 84"><path id="checkPath" d="M24 43 L37 56 L61 30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" /></svg></div>
+
+        <div id="trail" class="abs"><img id="trailOff" src="assets/recortes/trilha-off.png" alt="" /><img id="trailOn" src="assets/recortes/trilha-on.png" alt="" /><div id="swTrail" class="sweep"></div></div>
+
+        <div id="eps" class="abs">
+          <img src="assets/recortes/episodios.png" alt="" />
+          <div id="epCk" class="abs"><svg viewBox="0 0 40 40"><path id="epPath" d="M10 21 L17 28 L30 13" fill="none" stroke="#1a1a1c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg></div>
+          <div id="epN" class="abs"><span>4 de 6</span></div>
+          <div id="swEps" class="sweep"></div>
+        </div>
+        <div id="trailer" class="abs"><img src="assets/recortes/trailer.png" alt="" /><div id="swTrailer" class="sweep"></div></div>
+        <div id="play" class="abs"><svg viewBox="0 0 150 150"><path d="M62 47 L106 75 L62 103 Z" fill="#fff" /></svg></div>
+        <div id="prov" class="abs"><img src="assets/recortes/provedor.png" alt="" /></div>
+        <div id="provLabel" class="abs">Onde assistir no Brasil</div>
+
+        <div id="spo" class="abs"><img id="spoA" src="assets/recortes/spoiler.png" alt="" /><img id="spoB" src="assets/recortes/spoiler-aberto.png" alt="" /></div>
+
+        <div id="podium" class="abs" style="left:0;top:0;width:1080px;height:1920px">
+          <div id="barL" class="abs bar" style="left:110px;width:270px"><b>2</b></div>
+          <div id="barC" class="abs bar" style="left:405px;width:270px"><b>1</b></div>
+          <div id="barR" class="abs bar" style="left:700px;width:270px"><b>3</b></div>
+          <div id="whoL" class="abs who" style="left:95px"><div class="n">Caio</div><div class="v"><span id="vL">0</span><small>vistos</small></div></div>
+          <div id="whoC" class="abs who" style="left:390px"><div class="n">Tércio</div><div class="v"><span id="vC">0</span><small>vistos</small></div></div>
+          <div id="whoR" class="abs who" style="left:685px"><div class="n">Você</div><div class="v"><span id="vR">0</span><small>vistos</small></div></div>
+          <div id="avL" class="abs avat" style="background-image:url(assets/avatares/thor.webp)"></div>
+          <div id="avR" class="abs avat" style="background-image:url(assets/avatares/homem-aranha.webp)"></div>
+          <div id="avC" class="abs avat" style="background-image:url(assets/avatares/loki.webp)"></div>
+          <div id="heart" class="abs"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.8-9.4-9.9C1.5 6.9 3.9 4 7 4c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.1 0 5.5 2.9 4.4 6.6-1.6 5.1-9.4 9.9-9.4 9.9z" fill="#e5484d" /></svg></div>
+          <div id="bell" class="abs"><svg viewBox="0 0 24 24" fill="none" stroke="#f2f1ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z" /><path d="M10 20.5a2.2 2.2 0 004 0" /></svg><div id="badge" class="abs">2</div></div>
+        </div>
+
+        <div id="story" class="abs"><img src="assets/telas/story.jpg" alt="" /><div id="swStory" class="sweep"></div></div>
+
+        <div id="flashH" class="abs"></div>
+        <div id="burst" class="abs"></div>
+        <div id="days" class="abs">
+          <div class="mask"><div id="daysN">62</div></div>
+          <div class="mask"><div id="daysL">DIAS</div></div>
+          <div id="daysS">para Vingadores: Doutor Destino</div>
+          <div id="daysS2">17 de dezembro, nos cinemas</div>
+        </div>
+
+        <div id="cta" class="abs">
+          <div class="mask"><div id="ctaUrl">cronomovie.com</div></div>
+          <div id="ctaSub">Grátis. A Marvel na ordem certa.</div>
+        </div>
+
+        <div id="redO" class="abs reddot"></div>
+        <div id="flashW" class="abs"></div>
+      </div>
+
+      <!-- trilha original (ElevenLabs Music, scripts/trilha.cjs; cortada 0,61 s para o golpe cair no 62) -->
+      <audio id="musica" src="assets/trilha/trilha.wav" data-start="0" data-duration="33" data-track-index="1" data-volume="0.7"></audio>
+      <!-- efeitos sonoros: ElevenLabs (scripts/sons-eleven.cjs) e os tiques dos contadores (scripts/sons.cjs) -->
+      <audio id="s01" src="assets/sons-ai/acende.wav" data-start="1.15" data-duration="1" data-track-index="2" data-volume="0.8"></audio>
+      <audio id="s02" src="assets/sons-ai/whoosh-curto.wav" data-start="0" data-duration="0.6" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s03" src="assets/sons-ai/pop-grave.wav" data-start="0.62" data-duration="0.48" data-track-index="4" data-volume="0.4"></audio>
+      <audio id="s05" src="assets/sons-ai/whoosh-medio.wav" data-start="2.75" data-duration="0.8" data-track-index="3" data-volume="0.6"></audio>
+      <audio id="s06" src="assets/sons/contador-84.wav" data-start="3.5" data-duration="1.4" data-track-index="4" data-volume="0.5"></audio>
+      <audio id="s07" src="assets/sons-ai/whoosh-desce.wav" data-start="5.05" data-duration="1.6" data-track-index="3" data-volume="0.7"></audio>
+      <audio id="s08" src="assets/sons-ai/pop-grave.wav" data-start="7" data-duration="0.48" data-track-index="4" data-volume="0.5"></audio>
+      <audio id="s09" src="assets/sons-ai/whoosh-reverso.wav" data-start="7.3" data-duration="0.54" data-track-index="5" data-volume="0.6"></audio>
+      <audio id="s10" src="assets/sons-ai/whoosh-curto.wav" data-start="9.25" data-duration="0.6" data-track-index="3" data-volume="0.35"></audio>
+      <audio id="s11" src="assets/sons-ai/whoosh-curto.wav" data-start="9.85" data-duration="0.6" data-track-index="5" data-volume="0.4"></audio>
+      <audio id="s12" src="assets/sons-ai/toque.wav" data-start="10.35" data-duration="0.48" data-track-index="4" data-volume="0.8"></audio>
+      <audio id="s13" src="assets/sons-ai/check.wav" data-start="10.58" data-duration="1" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="s14" src="assets/sons-ai/whoosh-curto.wav" data-start="10.95" data-duration="0.6" data-track-index="3" data-volume="0.45"></audio>
+      <audio id="s15" src="assets/sons/contador-progresso.wav" data-start="11.55" data-duration="1.15" data-track-index="4" data-volume="0.45"></audio>
+      <audio id="s16" src="assets/sons-ai/whoosh-medio.wav" data-start="12.55" data-duration="0.8" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s17" src="assets/sons-ai/interruptor.wav" data-start="13.5" data-duration="0.37" data-track-index="4" data-volume="0.85"></audio>
+      <audio id="s18" src="assets/sons-ai/whoosh-curto.wav" data-start="14.2" data-duration="0.6" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="s19" src="assets/sons-ai/whoosh-medio.wav" data-start="14.85" data-duration="0.8" data-track-index="5" data-volume="0.45"></audio>
+      <audio id="s20" src="assets/sons-ai/toque.wav" data-start="15.95" data-duration="0.48" data-track-index="4" data-volume="0.8"></audio>
+      <audio id="s21" src="assets/sons-ai/check.wav" data-start="16.05" data-duration="1" data-track-index="2" data-volume="0.5"></audio>
+      <audio id="s22" src="assets/sons-ai/whoosh-medio.wav" data-start="16.85" data-duration="0.8" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s23" src="assets/sons-ai/pop.wav" data-start="17.45" data-duration="0.47" data-track-index="4" data-volume="0.5"></audio>
+      <audio id="s24" src="assets/sons-ai/whoosh-curto.wav" data-start="17.9" data-duration="0.6" data-track-index="5" data-volume="0.45"></audio>
+      <audio id="s25" src="assets/sons-ai/pop.wav" data-start="18.35" data-duration="0.47" data-track-index="4" data-volume="0.4"></audio>
+      <audio id="s26" src="assets/sons-ai/whoosh-medio.wav" data-start="19.2" data-duration="0.8" data-track-index="3" data-volume="0.55"></audio>
+      <audio id="s27" src="assets/sons-ai/pop.wav" data-start="19.85" data-duration="0.47" data-track-index="4" data-volume="0.4"></audio>
+      <audio id="s28" src="assets/sons-ai/pop.wav" data-start="19.97" data-duration="0.47" data-track-index="5" data-volume="0.35"></audio>
+      <audio id="s29" src="assets/sons/contador-amigos.wav" data-start="20.25" data-duration="1.1" data-track-index="2" data-volume="0.45"></audio>
+      <audio id="s30" src="assets/sons-ai/pop-grave.wav" data-start="20.9" data-duration="0.48" data-track-index="4" data-volume="0.5"></audio>
+      <audio id="s31" src="assets/sons-ai/notificacao.wav" data-start="21.45" data-duration="1" data-track-index="5" data-volume="0.6"></audio>
+      <audio id="s32" src="assets/sons-ai/whoosh-medio.wav" data-start="21.95" data-duration="0.8" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s33" src="assets/sons-ai/toque.wav" data-start="23.15" data-duration="0.48" data-track-index="4" data-volume="0.8"></audio>
+      <audio id="s34" src="assets/sons-ai/whoosh-curto.wav" data-start="23.2" data-duration="0.6" data-track-index="5" data-volume="0.3"></audio>
+      <audio id="s35" src="assets/sons-ai/whoosh-medio.wav" data-start="24.15" data-duration="0.8" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s36" src="assets/sons-ai/subida.wav" data-start="26.18" data-duration="1.29" data-track-index="2" data-volume="0.75"></audio>
+      <audio id="s37" src="assets/sons-ai/whoosh-reverso.wav" data-start="26.5" data-duration="0.54" data-track-index="3" data-volume="0.45"></audio>
+      <audio id="s38" src="assets/sons-ai/impacto.wav" data-start="27.38" data-duration="2.4" data-track-index="4" data-volume="1"></audio>
+      <audio id="s39" src="assets/sons-ai/whoosh-medio.wav" data-start="29.5" data-duration="0.8" data-track-index="3" data-volume="0.5"></audio>
+      <audio id="s40" src="assets/sons-ai/pop.wav" data-start="30.4" data-duration="0.47" data-track-index="5" data-volume="0.4"></audio>
+      <audio id="s41" src="assets/sons-ai/assinatura.wav" data-start="30.5" data-duration="1.28" data-track-index="2" data-volume="0.55"></audio>
+      <audio id="s42" src="assets/sons-ai/acende.wav" data-start="31.45" data-duration="1" data-track-index="4" data-volume="0.45"></audio>
+    </div>
+
+    <script>
+      (function () {
+        const $ = s => document.querySelector(s);
+        // Itens da linha do tempo (ordem cronológica conferida em src/data.ts) e a era de cada um
+        const ITEMS = [
+          ['cap1', 'Capitão América: O Primeiro Vingador', 0], ['capita', 'Capitã Marvel', 0],
+          ['hdf1', 'Homem de Ferro', 1], ['vingadores', 'Os Vingadores', 1], ['gotg1', 'Guardiões da Galáxia', 1],
+          ['guerracivil', 'Capitão América: Guerra Civil', 2], ['guerrainf', 'Vingadores: Guerra Infinita', 2], ['ultimato', 'Vingadores: Ultimato', 2],
+          ['loki1', 'Loki', 3], ['aranha3', 'Homem-Aranha: Sem Volta para Casa', 3],
+          ['deadpool3', 'Deadpool & Wolverine', 4], ['quarteto', 'Quarteto Fantástico: Primeiros Passos', 4], ['doomsday', 'Vingadores: Doutor Destino', 4],
+        ];
+        const FILES = ['00-cap1', '01-capita', '02-hdf1', '03-vingadores', '05-gotg1', '07-guerracivil', '09-guerrainf', '10-ultimato', '11-loki1', '12-aranha3', '14-deadpool3', '16-quarteto', '17-doomsday'];
+        const ERAS = ['Passado', 'Formação dos Vingadores', 'Guerra Civil até Ultimato', 'Depois do Blip', 'Fase 5 até Doutor Destino'];
+
+        // monta os títulos de cima: uma máscara por palavra; *trecho* sai em vermelho
+        document.querySelectorAll('.hl').forEach(h => {
+          const parts = h.textContent.trim().split('*');
+          h.textContent = '';
+          parts.forEach((p, i) => {
+            p.split(' ').filter(Boolean).forEach(word => {
+              if (h.childNodes.length) h.appendChild(document.createTextNode(' '));
+              const m = document.createElement('span'); m.className = 'm';
+              const w = document.createElement(i % 2 ? 'em' : 'span'); w.className = 'w'; w.textContent = word;
+              m.appendChild(w); h.appendChild(m);
+            });
+          });
+        });
+
+        function build() {
+          const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+          const W = 1080, H = 1920, CX = 540;
+
+          // títulos de cima: as palavras sobem uma a uma e saem para cima
+          function headline(sel, tin, tout, st = 0.045) {
+            const ws = gsap.utils.toArray(sel + ' .w');
+            gsap.set(ws, { yPercent: 115 });
+            gsap.set(sel, { opacity: 0 });
+            tl.set(sel, { opacity: 1 }, tin)
+              .to(ws, { yPercent: 0, duration: 0.55, ease: 'expo.out', stagger: st }, tin)
+              .to(ws, { yPercent: -115, duration: 0.32, ease: 'power3.in', stagger: 0.025 }, tout - 0.4)
+              .set(sel, { opacity: 0 }, tout + 0.02);
+          }
+          // desfoque de movimento nos deslocamentos rápidos
+          function mblur(sel, t, d, px = 6) {
+            tl.to(sel, { filter: `blur(${px}px)`, duration: d * 0.45, ease: 'power2.in' }, t)
+              .to(sel, { filter: 'blur(0px)', duration: d * 0.55, ease: 'power2.out' }, t + d * 0.45);
+          }
+          // brilho que atravessa um cartão
+          function sweep(sel, t, d = 0.85) {
+            tl.fromTo(sel, { xPercent: -130, opacity: 1 }, { xPercent: 330, duration: d, ease: 'power2.inOut', immediateRender: false }, t);
+          }
+          gsap.set('.sweep', { xPercent: -130 });
+          gsap.set(['#redO', '#fill', '#trail', '#eps', '#trailer', '#play', '#prov', '#avL', '#avC', '#avR', '#story', '#items', '#spoB'], { filter: 'blur(0px)' });
+
+          /* ---------- geometria da logo ---------- */
+          const S = 3.4; // escala do símbolo (viewBox 64 x 32)
+          const word = $('#word');
+          const wordW = word.getBoundingClientRect().width;
+          const markW = 64 * S, gap = 32, total = markW + gap + wordW;
+          const L = (W - total) / 2, Y0 = 960;
+          const R0x = L + 48 * S, len0 = 40 * S, thick0 = 2 * S, rR = 11 * S;
+          const wordX = L + markW + gap, wordY = Y0 - 80;
+          gsap.set('#wordWrap', { left: wordX, top: wordY - 6, width: wordW + 10, height: 172 });
+          gsap.set('#word', { left: 0, top: 6 });
+          gsap.set('#wordWrap', { opacity: 0 });
+          tl.set('#wordWrap', { opacity: 1 }, 30.45);
+
+          const HY = 1250; // altura do ponto embaixo da pergunta
+          gsap.set('#railG', { x: CX, y: HY - thick0 / 2, width: 0, height: thick0, transformOrigin: '100% 50%' });
+          gsap.set('#w1', { left: '0%', scale: 0 });
+          gsap.set('#w2', { left: '40%', scale: 0 });
+          const redSize = 2 * rR;
+          gsap.set('#redW', { left: CX - rR, top: Y0 - rR, y: HY - Y0, width: redSize, height: redSize, scale: 0 });
+          gsap.set('#glow', { left: CX - 700, top: Y0 - 700, y: HY - Y0, opacity: 0, scale: 0.6 });
+
+          /* ---------- 0 a 2,75 s: a pergunta (o gancho) e o ponto que vai responder ---------- */
+          headline('#hook', 0.0, 3.0, 0.11);
+          gsap.set('#hookSub', { opacity: 0, y: 20 });
+          tl.to('#hookSub', { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, 1.0)
+            .to('#hookSub', { opacity: 0, y: -20, duration: 0.3, ease: 'power3.in' }, 2.65)
+            .to('#redW', { scale: 1.18, duration: 0.4, ease: 'back.out(2.2)' }, 1.15)
+            .to('#redW', { scale: 1, duration: 0.3, ease: 'power2.inOut' }, 1.55)
+            .to('#glow', { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' }, 1.15)
+            .to('#redW', { scale: 1.1, duration: 0.15, ease: 'power2.out', yoyo: true, repeat: 1 }, 2.0);
+
+          /* ---------- 2,75 a 4,8 s: a linha estica, vira a linha do tempo, e o contador sobe ---------- */
+          const RVx = CX, RVy = 1600, top1 = 330, len1 = RVy - top1, th1 = 4;
+          tl.to('#redW', { x: RVx - CX, y: RVy - Y0, scale: 0.75, duration: 0.8, ease: 'expo.inOut' }, 2.85)
+            .to('#glow', { x: 0, y: RVy - Y0, opacity: 0.75, duration: 0.8, ease: 'expo.inOut' }, 2.85)
+            .to('#railG', { x: RVx - len1, y: RVy - th1 / 2, width: len1, height: th1, rotation: 90, duration: 0.8, ease: 'expo.inOut' }, 2.85);
+          const ticks = $('#ticks');
+          const N = 84, tickEls = [];
+          for (let i = 0; i < N; i++) {
+            const d = document.createElement('div');
+            d.className = 'tick';
+            d.style.left = (i / (N - 1)) * 100 + '%';
+            ticks.appendChild(d);
+            tickEls.push(d);
+          }
+          gsap.set(tickEls, { scale: 0 });
+          gsap.set(['#w1', '#w2'], { zIndex: 2 });
+          for (let k = 0; k < N; k++) tl.to(tickEls[N - 1 - k], { scale: 1, duration: 0.22, ease: 'back.out(3)' }, 3.5 + k * 0.012);
+          const counter = { v: 0 };
+          gsap.set('#count', { opacity: 0, x: 40 });
+          tl.to('#count', { opacity: 1, x: 0, duration: 0.5, ease: 'expo.out' }, 3.45)
+            .to(counter, { v: 162, duration: 1.25, ease: 'power2.out', onUpdate: () => { $('#countN').textContent = Math.round(counter.v); } }, 3.5);
+
+          /* ---------- 4,8 a 7,8 s: as bolinhas viram cartazes, em ordem ---------- */
+          const top2 = 400, y0 = 520, step = 290, M = ITEMS.length;
+          const yEnd = y0 + (M - 1) * step; // 4000
+          const len2 = yEnd - top2;
+          const items = $('#items');
+          tl.to('#count', { opacity: 0, x: 60, duration: 0.35, ease: 'power3.in' }, 4.75)
+            .to('#railG', { x: CX - len2, y: yEnd - th1 / 2, width: len2, duration: 0.75, ease: 'expo.inOut' }, 4.95)
+            .to('#redW', { y: yEnd - Y0, duration: 0.75, ease: 'expo.inOut' }, 4.95);
+          tickEls.forEach((el, i) => { tl.to(el, { scale: 0, duration: 0.3, ease: 'power2.in' }, 4.85 + (i % 7) * 0.015); });
+          const dots = ITEMS.map((_, j) => {
+            const d = document.createElement('div');
+            d.className = 'tick';
+            d.style.left = ((y0 + j * step - top2) / len2) * 100 + '%';
+            ticks.appendChild(d);
+            return d;
+          });
+          gsap.set(dots, { scale: 0 });
+          dots.forEach((d, j) => tl.to(d, { scale: 1.6, duration: 0.35, ease: 'back.out(3)' }, 5.4 + j * 0.025));
+          // câmera desce acompanhando o ponto; cada cartaz abre quando chega
+          const camStart = 5.2, camDur = 2.6, camEnd = -3000;
+          gsap.set('#world', { transformOrigin: '0 0' });
+          tl.to('#world', { y: camEnd, duration: camDur, ease: 'power2.inOut' }, camStart);
+          mblur('#items', 5.75, 1.3, 2.5);
+          const ease = gsap.parseEase('power2.inOut');
+          const camAt = t => (t < camStart ? 0 : t > camStart + camDur ? camEnd : camEnd * ease((t - camStart) / camDur));
+          let prevEra = -1;
+          ITEMS.forEach(([id, title, era], i) => {
+            const y = y0 + i * step, left = i % 2 === 0;
+            const it = document.createElement('div');
+            it.className = 'item' + (id === 'doomsday' ? ' doom' : '');
+            it.style.left = (left ? CX - 50 - 280 : CX + 50) + 'px';
+            it.style.top = y - 210 + 'px';
+            it.innerHTML = `<img src="assets/coluna/${FILES[i]}.jpg" alt="${title}">`;
+            items.appendChild(it);
+            const conn = document.createElement('div');
+            conn.className = 'conn';
+            conn.style.left = (left ? CX - 50 : CX) + 'px';
+            conn.style.top = y - 1.5 + 'px';
+            items.appendChild(conn);
+            let tb = camStart;
+            for (let t = 4.95; t <= camStart + camDur; t += 0.02) { if (y + camAt(t) < 1520) { tb = t; break; } }
+            tb = Math.max(5.2 + i * 0.08, tb);
+            gsap.set(it, { scale: 0.04, opacity: 0, transformOrigin: left ? '100% 50%' : '0% 50%' });
+            gsap.set(conn, { scaleX: 0, transformOrigin: left ? '100% 50%' : '0% 50%' });
+            tl.to(conn, { scaleX: 1, duration: 0.22, ease: 'power2.out' }, tb - 0.1)
+              .to(it, { scale: 1, opacity: 1, duration: 0.5, ease: 'expo.out' }, tb);
+            if (era !== prevEra) {
+              prevEra = era;
+              const e = document.createElement('div');
+              e.className = 'era';
+              e.textContent = ERAS[era];
+              e.style.top = y - 34 + 'px';
+              if (left) { e.style.left = CX + 46 + 'px'; e.style.textAlign = 'left'; } else { e.style.left = CX - 46 - 360 + 'px'; e.style.textAlign = 'right'; }
+              items.appendChild(e);
+              gsap.set(e, { opacity: 0, x: left ? -20 : 20 });
+              tl.to(e, { opacity: 1, x: 0, duration: 0.45, ease: 'expo.out' }, tb + 0.1);
+            }
+          });
+          gsap.set('#scrim', { opacity: 0 });
+          tl.to('#scrim', { opacity: 1, duration: 0.4 }, 5.0);
+          headline('#h3', 5.15, 7.7);
+          tl.to('#glow', { y: 1000 - Y0, opacity: 0.55, duration: camDur, ease: 'power2.inOut' }, camStart);
+
+          /* ---------- 7,8 a 9,85 s: a coluna se fecha no celular ---------- */
+          const PX = 280, PY = 447.5, PW = 520, PH = 1125, B = 16;
+          const redScreenY = yEnd + camEnd; // 1000
+          gsap.set('#redO', { left: CX - rR, top: redScreenY - rR, width: redSize, height: redSize, scale: 0.75, opacity: 0 });
+          tl.set('#redO', { opacity: 1 }, 7.78).set('#redW', { opacity: 0 }, 7.78);
+          tl.to('#screen', { x: PX, y: PY, width: PW, height: PH, borderRadius: 58, duration: 0.9, ease: 'expo.inOut' }, 7.8)
+            .fromTo('#bezel', { x: -B, y: -B, width: W + 2 * B, height: H + 2 * B, borderRadius: 0, opacity: 0 },
+              { x: PX - B, y: PY - B, width: PW + 2 * B, height: PH + 2 * B, borderRadius: 74, opacity: 1, duration: 0.9, ease: 'expo.inOut' }, 7.8)
+            .to('#world', { scale: 0.48, x: 1, y: 562 - 3130 * 0.48, duration: 0.9, ease: 'expo.inOut' }, 7.8)
+            .to('#scrim', { opacity: 0, duration: 0.35 }, 7.8)
+            .to('#redO', { x: 0, y: 1530 - redScreenY, scale: 0.34, duration: 0.9, ease: 'expo.inOut' }, 7.8)
+            .to('#glow', { y: 1010 - Y0, opacity: 0.45, duration: 0.9, ease: 'expo.inOut' }, 7.8);
+          gsap.set(['#shotGrade', '#shotTopo', '#shotTrilha', '#shotDet', '#shotDetT'], { opacity: 0 });
+          tl.to('#shotGrade', { opacity: 1, duration: 0.4, ease: 'power2.out' }, 8.45)
+            .to('#world', { opacity: 0, duration: 0.35 }, 8.55);
+          headline('#h4', 8.45, 9.85);
+          tl.set('#shotTopo', { opacity: 1, y: -PH }, 9.25)
+            .to('#shotGrade', { y: PH, duration: 0.55, ease: 'expo.inOut' }, 9.25)
+            .to('#shotTopo', { y: 0, duration: 0.55, ease: 'expo.inOut' }, 9.25);
+
+          /* ---------- 9,85 a 12,55 s: o ponto vira "Marcar como visto", ✓ e a barra de progresso ---------- */
+          const k = PW / 390; // px da tela do site para px do vídeo
+          const bx = PX + (106 + 82) * k, by = PY + (698 + 22) * k; // centro do botão
+          headline('#h5', 9.9, 12.5);
+          tl.to('#redO', { x: bx - CX, duration: 0.5, ease: 'power2.inOut' }, 9.85)
+            .to('#redO', { y: by - redScreenY, duration: 0.5, ease: 'power2.in' }, 9.85);
+          mblur('#redO', 9.85, 0.5, 4);
+          gsap.set('#btnFlash', { left: PX + 106 * k, top: PY + 698 * k, width: 164 * k, height: 44 * k, opacity: 0 });
+          gsap.set('#ring', { left: bx - 60, top: by - 60, scale: 0.3, opacity: 0 });
+          tl.to('#btnFlash', { opacity: 0.35, duration: 0.08 }, 10.35).to('#btnFlash', { opacity: 0, duration: 0.4 }, 10.43)
+            .to('#ring', { opacity: 1, duration: 0.04 }, 10.35).to('#ring', { scale: 2.1, opacity: 0, duration: 0.5, ease: 'power2.out' }, 10.4);
+          gsap.set('#check', { left: bx - 42, top: by - 42, scale: 0.3, opacity: 0 });
+          const cp = $('#checkPath'), cpl = 60;
+          gsap.set(cp, { strokeDasharray: cpl, strokeDashoffset: cpl });
+          tl.to('#redO', { scale: 84 / redSize, duration: 0.25, ease: 'power2.out' }, 10.35)
+            .set('#check', { opacity: 1, scale: 1 }, 10.6).set('#redO', { opacity: 0 }, 10.6)
+            .to(cp, { strokeDashoffset: 0, duration: 0.26, ease: 'power2.out' }, 10.62);
+          gsap.set('#fill', { x: bx - 42, y: by - 42, width: 84, height: 84, opacity: 0 });
+          tl.set('#fill', { opacity: 1 }, 10.95).set('#check', { opacity: 0 }, 10.95)
+            .to('#fill', { x: 150, y: 960, width: 47, height: 18, duration: 0.55, ease: 'expo.inOut' }, 10.95);
+          mblur('#fill', 10.95, 0.55, 5);
+          gsap.set('#card', { x: 90, y: 560, scaleY: 0.03, scaleX: 0.9, opacity: 0, transformOrigin: '50% 80%' });
+          gsap.set('#track', { scaleX: 0, transformOrigin: '0% 50%' });
+          gsap.set(['#cardLabel', '#cardNum'], { opacity: 0, y: 24 });
+          tl.to('#card', { opacity: 1, duration: 0.12 }, 11.3)
+            .to('#card', { scaleY: 1, scaleX: 1, duration: 0.5, ease: 'expo.out' }, 11.3)
+            .to('#track', { scaleX: 1, duration: 0.45, ease: 'power3.out' }, 11.38)
+            .to(['#cardLabel', '#cardNum'], { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out', stagger: 0.05 }, 11.45);
+          const prog = { v: 5 };
+          tl.to(prog, { v: 45, duration: 1.0, ease: 'power2.out', onUpdate: () => { $('#cardN').textContent = Math.round(prog.v); } }, 11.55)
+            .to('#fill', { width: 780 * 45 / 84, duration: 1.0, ease: 'power2.out' }, 11.55);
+          sweep('#swCard', 12.0);
+
+          /* ---------- 12,55 a 14,85 s: a barra vira o interruptor da Trilha Avengers ---------- */
+          const tgx = 90 + 870 * (900 / 1074), tgy = 600 + 42 * (900 / 1074), tgw = 156 * (900 / 1074), tgh = 90 * (900 / 1074);
+          headline('#h6', 12.65, 14.8);
+          tl.to(['#cardLabel', '#cardNum', '#track'], { opacity: 0, duration: 0.25, ease: 'power2.in' }, 12.5)
+            .to('#fill', { x: tgx, y: tgy, width: tgw, height: tgh, duration: 0.55, ease: 'expo.inOut' }, 12.55)
+            .to('#card', { x: 90, y: 600, width: 900, height: 538, borderRadius: 34, duration: 0.55, ease: 'expo.inOut' }, 12.55);
+          mblur('#fill', 12.55, 0.55, 4);
+          gsap.set('#trail', { x: 90, y: 600, opacity: 0 });
+          gsap.set('#trailOn', { opacity: 0 });
+          tl.to('#trail', { opacity: 1, duration: 0.3 }, 13.0)
+            .to('#fill', { backgroundColor: 'rgba(242,241,238,0.25)', duration: 0.25 }, 12.95)
+            .to('#fill', { opacity: 0, duration: 0.18 }, 13.25)
+            .to('#card', { opacity: 0, duration: 0.18 }, 13.25)
+            .to('#trailOn', { opacity: 1, duration: 0.15 }, 13.5)
+            .fromTo('#trail', { scale: 1 }, { scale: 1.04, duration: 0.15, ease: 'power2.out', yoyo: true, repeat: 1 }, 13.5)
+            .to('#glow', { y: 870 - Y0, opacity: 0.95, scale: 1.08, duration: 0.4, ease: 'power2.out' }, 13.48)
+            .to('#shotTrilha', { opacity: 1, duration: 0.01 }, 13.8)
+            .to('#shotTopo', { opacity: 0, duration: 0.01 }, 13.8)
+            .to('#trail', { x: PX + 16 * k, y: PY + 80 * k, width: 358 * k, height: 358 * k * 642 / 1074, borderRadius: 18, duration: 0.65, ease: 'expo.inOut' }, 14.2)
+            .to('#trail', { opacity: 0, duration: 0.2 }, 14.8)
+            .to('#glow', { y: 1010 - Y0, opacity: 0.45, scale: 1, duration: 0.65 }, 14.2);
+          sweep('#swTrail', 13.55, 0.7);
+          mblur('#trail', 14.2, 0.65, 5);
+
+          /* ---------- 14,85 a 16,85 s: um título abre; episódio por episódio ---------- */
+          headline('#h7', 15.0, 16.85);
+          gsap.set('#shotDet', { y: PH });
+          tl.set('#shotDet', { opacity: 1 }, 14.85)
+            .to('#shotDet', { y: 0, duration: 0.5, ease: 'expo.out' }, 14.85);
+          const E0 = { x: PX + 16 * k, y: PY + 420 * k, width: 358 * k, height: 358 * k * 1179 / 1074 };
+          const E1 = { x: 140, y: 560, width: 800, height: 800 * 1179 / 1074 };
+          gsap.set('#eps', { ...E0, opacity: 0, borderRadius: 12 });
+          gsap.set('#epCk', { scale: 0, opacity: 0 });
+          gsap.set('#epN', { opacity: 0 });
+          const ep = $('#epPath');
+          gsap.set(ep, { strokeDasharray: 32, strokeDashoffset: 32 });
+          tl.to('#eps', { opacity: 1, duration: 0.12 }, 15.2)
+            .to('#eps', { ...E1, borderRadius: 30, duration: 0.6, ease: 'expo.out' }, 15.2)
+            .to(['#screen', '#bezel'], { opacity: 0.3, duration: 0.5 }, 15.25);
+          mblur('#eps', 15.2, 0.5, 5);
+          // toque no episódio 4
+          const s = 800 / 1074, ex = 140 + 42 * s, ey = 560 + 768 * s;
+          tl.set('#ring', { left: ex - 60, top: ey - 60, scale: 0.3, opacity: 0 }, 15.9)
+            .to('#ring', { opacity: 1, duration: 0.04 }, 15.95).to('#ring', { scale: 1.6, opacity: 0, duration: 0.5, ease: 'power2.out' }, 16.0)
+            .to('#epCk', { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(2.6)' }, 16.0)
+            .to(ep, { strokeDashoffset: 0, duration: 0.22, ease: 'power2.out' }, 16.08)
+            .to('#epN', { opacity: 1, duration: 0.15 }, 16.1);
+          sweep('#swEps', 16.2, 0.75);
+
+          /* ---------- 16,85 a 19,2 s: a lista vira o trailer; o play vira o "onde assistir" ---------- */
+          headline('#h7b', 17.0, 19.15);
+          const T1 = { x: 90, y: 560, width: 900, height: 505 };
+          tl.set('#shotDetT', { opacity: 1 }, 16.85).to('#shotDet', { opacity: 0, duration: 0.2 }, 16.85)
+            .to(['#screen', '#bezel'], { opacity: 0.14, duration: 0.5 }, 16.9);
+          gsap.set('#trailer', { ...E1, opacity: 0, borderRadius: 30 });
+          tl.to('#eps', { ...T1, borderRadius: 26, duration: 0.6, ease: 'expo.inOut' }, 16.85)
+            .to('#eps', { opacity: 0, duration: 0.25 }, 17.05)
+            .to('#trailer', { ...T1, borderRadius: 26, duration: 0.6, ease: 'expo.inOut' }, 16.85)
+            .to('#trailer', { opacity: 1, duration: 0.25 }, 16.95);
+          mblur(['#eps', '#trailer'], 16.85, 0.6, 5);
+          gsap.set('#play', { x: 540 - 75, y: 560 + 252 - 75, scale: 0.6, opacity: 0 });
+          tl.to('#play', { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, 17.45)
+            .to('#play', { x: 342, y: 1160, width: 396, height: 158, borderRadius: 34, backgroundColor: 'rgba(255,255,255,0.06)', duration: 0.5, ease: 'expo.inOut' }, 17.9)
+            .to('#play svg', { opacity: 0, duration: 0.18 }, 17.9);
+          mblur('#play', 17.9, 0.5, 4);
+          sweep('#swTrailer', 17.15, 0.8);
+          gsap.set('#prov', { x: 342, y: 1160, opacity: 0 });
+          gsap.set('#provLabel', { opacity: 0, y: 16 });
+          tl.to('#prov', { opacity: 1, duration: 0.22 }, 18.3).to('#play', { opacity: 0, duration: 0.22 }, 18.35)
+            .to('#provLabel', { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, 18.38);
+
+          /* ---------- 19,2 a 21,95 s: o selo vira um amigo; ranking, curtida e sino ---------- */
+          headline('#h8', 19.3, 21.9);
+          tl.to(['#trailer', '#provLabel'], { opacity: 0, duration: 0.4, ease: 'power3.in' }, 19.2)
+            .to(['#screen', '#bezel'], { opacity: 0, scale: 0.92, duration: 0.5, ease: 'power3.in', transformOrigin: '50% 50%' }, 19.2)
+            .to('#prov', { x: 440, y: 760, width: 200, height: 200, borderRadius: 100, duration: 0.55, ease: 'expo.inOut' }, 19.2)
+            .to('#prov img', { opacity: 0, duration: 0.25 }, 19.35);
+          mblur('#prov', 19.2, 0.55, 4);
+          gsap.set(['#avL', '#avC', '#avR'], { left: 0, top: 0, x: 440, y: 760, opacity: 0, scale: 1 });
+          gsap.set('#prov', { overflow: 'hidden' });
+          tl.set('#avC', { opacity: 1 }, 19.7).set('#prov', { opacity: 0 }, 19.75)
+            .set(['#avL', '#avR'], { opacity: 1 }, 19.85)
+            .to('#avL', { x: 145, y: 860, duration: 0.6, ease: 'expo.out' }, 19.85)
+            .to('#avR', { x: 735, y: 980, duration: 0.6, ease: 'expo.out' }, 19.85)
+            .to('#avC', { x: 440, y: 700, duration: 0.6, ease: 'expo.out' }, 19.85);
+          mblur(['#avL', '#avR'], 19.85, 0.45, 4);
+          gsap.set('#barC', { top: 1060, height: 610 });
+          gsap.set('#barL', { top: 1220, height: 450 });
+          gsap.set('#barR', { top: 1340, height: 330 });
+          gsap.set(['#barL', '#barC', '#barR'], { scaleY: 0, transformOrigin: '50% 100%' });
+          gsap.set('#whoC', { top: 920 }); gsap.set('#whoL', { top: 1080 }); gsap.set('#whoR', { top: 1200 });
+          gsap.set(['#whoL', '#whoC', '#whoR'], { opacity: 0, y: 20 });
+          tl.to('#barC', { scaleY: 1, duration: 0.6, ease: 'expo.out' }, 20.05)
+            .to('#barL', { scaleY: 1, duration: 0.6, ease: 'expo.out' }, 20.12)
+            .to('#barR', { scaleY: 1, duration: 0.6, ease: 'expo.out' }, 20.2)
+            .to(['#whoC', '#whoL', '#whoR'], { opacity: 1, y: 0, duration: 0.45, ease: 'expo.out', stagger: 0.06 }, 20.2);
+          const vv = { c: 0, l: 0, r: 0 };
+          tl.to(vv, { c: 76, l: 37, r: 5, duration: 0.95, ease: 'power2.out', onUpdate: () => { $('#vC').textContent = Math.round(vv.c); $('#vL').textContent = Math.round(vv.l); $('#vR').textContent = Math.round(vv.r); } }, 20.25);
+          gsap.set('#heart', { left: 600, top: 690, scale: 0, opacity: 1, rotation: -12 });
+          tl.to('#heart', { scale: 1.2, duration: 0.28, ease: 'back.out(3)' }, 20.9)
+            .to('#heart', { scale: 1, duration: 0.18 }, 21.18)
+            .to('#heart', { y: -90, opacity: 0, duration: 0.6, ease: 'power2.in' }, 21.45);
+          gsap.set('#bell', { left: 860, top: 640, scale: 0, opacity: 1 });
+          gsap.set('#badge', { scale: 0 });
+          tl.to('#bell', { scale: 1, duration: 0.4, ease: 'back.out(2.4)' }, 21.15)
+            .to('#badge', { scale: 1, duration: 0.3, ease: 'back.out(3)' }, 21.45)
+            .to('#bell', { rotation: 14, duration: 0.08, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 21.5);
+
+          /* ---------- 21,95 a 24,15 s: as fotos voam para um comentário; o spoiler fica escondido ---------- */
+          headline('#h8b', 22.05, 24.1);
+          tl.to(['#barL', '#barC', '#barR'], { scaleY: 0, duration: 0.35, ease: 'power3.in' }, 21.95)
+            .to(['#whoL', '#whoC', '#whoR'], { opacity: 0, y: 20, duration: 0.25, ease: 'power2.in' }, 21.95)
+            .to('#bell', { scale: 0, duration: 0.3, ease: 'power3.in' }, 21.95)
+            .to('#avR', { scale: 0, opacity: 0, duration: 0.35, ease: 'power3.in' }, 21.95);
+          const sc = 900 / 1074, SY = 760;
+          gsap.set('#spo', { x: 90, y: SY, opacity: 0, scale: 0.97 });
+          gsap.set('#spoB', { opacity: 0, filter: 'blur(12px)' });
+          tl.to('#avL', { x: 90 + 46 * sc - 100, y: SY + 46 * sc - 100, scale: 92 * sc / 200, duration: 0.6, ease: 'expo.inOut' }, 22.0)
+            .to('#avC', { x: 90 + 46 * sc - 100, y: SY + 233 * sc - 100, scale: 92 * sc / 200, duration: 0.6, ease: 'expo.inOut' }, 22.05)
+            .to('#spo', { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' }, 22.45)
+            .to(['#avL', '#avC'], { opacity: 0, duration: 0.2 }, 22.75);
+          mblur(['#avL', '#avC'], 22.0, 0.6, 4);
+          const tx = 90 + 600 * sc, ty = SY + 405 * sc;
+          tl.set('#ring', { left: tx - 60, top: ty - 60, scale: 0.3, opacity: 0 }, 23.1)
+            .to('#ring', { opacity: 1, duration: 0.04 }, 23.15).to('#ring', { scale: 1.8, opacity: 0, duration: 0.5, ease: 'power2.out' }, 23.2)
+            .to('#spoB', { opacity: 1, filter: 'blur(0px)', duration: 0.45, ease: 'power2.out' }, 23.2)
+            .to('#spoA', { opacity: 0, duration: 0.3 }, 23.2)
+            .to('#spo', { height: 525 * sc, duration: 0.4, ease: 'power3.inOut' }, 23.2);
+
+          /* ---------- 24,15 a 26,55 s: o comentário se dobra e vira o cartão dos Stories ---------- */
+          headline('#h9', 24.35, 26.45);
+          tl.to('#spo', { scaleY: 0.02, duration: 0.35, ease: 'power3.in', transformOrigin: '50% 50%' }, 24.15)
+            .to('#spo', { opacity: 0, duration: 0.08 }, 24.48);
+          gsap.set('#story', { scaleY: 0.02, opacity: 0, transformOrigin: '50% 50%' });
+          tl.set('#story', { opacity: 1 }, 24.45)
+            .to('#story', { scaleY: 1, duration: 0.6, ease: 'expo.out' }, 24.45)
+            .fromTo('#story', { scale: 1 }, { scale: 1.035, duration: 1.9, ease: 'none' }, 24.6)
+            .to('#glow', { opacity: 0.7, duration: 0.6 }, 24.45);
+          sweep('#swStory', 25.05, 0.9);
+
+          /* ---------- 26,55 a 29,5 s: o cartão encolhe no ponto, que explode na contagem ---------- */
+          tl.to('#story', { scaleX: 0.04, scaleY: 0.022, borderRadius: 600, duration: 0.45, ease: 'power3.in' }, 26.55)
+            .to('#story', { opacity: 0, duration: 0.08 }, 26.95);
+          mblur('#story', 26.55, 0.45, 6);
+          tl.set('#redO', { x: 0, y: 1010 - redScreenY, scale: 0.4, opacity: 1 }, 26.97)
+            .to('#redO', { scale: 4.4, duration: 0.38, ease: 'expo.in' }, 26.97)
+            .to('#glow', { y: 900 - Y0, opacity: 1, scale: 1.2, duration: 0.45, ease: 'power2.in' }, 26.95);
+          gsap.set('#daysN', { yPercent: 100 });
+          gsap.set('#daysL', { yPercent: 110 });
+          gsap.set(['#daysS', '#daysS2'], { opacity: 0, y: 24 });
+          gsap.set('#days', { opacity: 0 });
+          tl.set('#days', { opacity: 1 }, 27.35);
+          tl.to('#redO', { scale: 0.8, x: 330, y: 1015 - redScreenY, duration: 0.4, ease: 'expo.out' }, 27.36)
+            .to('#daysN', { yPercent: 0, duration: 0.6, ease: 'expo.out' }, 27.38)
+            .to('#daysL', { yPercent: 0, duration: 0.55, ease: 'expo.out' }, 27.6)
+            .to(['#daysS', '#daysS2'], { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out', stagger: 0.08 }, 27.85)
+            .fromTo('#days', { scale: 1.06 }, { scale: 1, duration: 0.9, ease: 'expo.out', transformOrigin: '540px 260px', immediateRender: false }, 27.38);
+          // o impacto: clarão, anel e linha de luz
+          gsap.set('#flashW', { opacity: 0 });
+          gsap.set('#flashH', { y: 800, scaleX: 0, opacity: 0 });
+          gsap.set('#burst', { left: 540 - 150, top: 800 - 150, scale: 0.2, opacity: 0 });
+          tl.to('#flashW', { opacity: 0.22, duration: 0.05 }, 27.38).to('#flashW', { opacity: 0, duration: 0.45, ease: 'power2.out' }, 27.43)
+            .to('#flashH', { scaleX: 1, opacity: 1, duration: 0.25, ease: 'expo.out' }, 27.38).to('#flashH', { opacity: 0, scaleY: 0.3, duration: 0.5, ease: 'power2.out' }, 27.64)
+            .set('#burst', { opacity: 1 }, 27.38).to('#burst', { scale: 4.2, opacity: 0, duration: 0.8, ease: 'expo.out' }, 27.4)
+            .to('#glow', { scale: 1.35, opacity: 1, duration: 0.15, ease: 'power2.out' }, 27.4).to('#glow', { scale: 1.1, opacity: 0.85, duration: 1.2, ease: 'power2.out' }, 27.55);
+
+          /* ---------- 29,5 a 33 s: tudo volta para o ponto, e o ponto vira a logo ---------- */
+          tl.to('#days', { scale: 0.05, opacity: 0, duration: 0.45, ease: 'power3.in', transformOrigin: '540px 520px' }, 29.5)
+            .to('#redO', { x: R0x - CX, y: Y0 - redScreenY - 120, scale: 1, duration: 0.6, ease: 'expo.inOut' }, 29.6)
+            .to('#glow', { x: R0x - CX, y: -120, opacity: 0.9, scale: 1, duration: 0.6, ease: 'expo.inOut' }, 29.6);
+          mblur('#redO', 29.6, 0.6, 4);
+          const LY = Y0 - 120;
+          tl.set('#world', { opacity: 1, x: 0, y: -120, scale: 1 }, 29.6)
+            .set('#railG', { x: R0x, y: Y0 - thick0 / 2, width: 0, height: thick0, rotation: 0 }, 29.6)
+            .set(tickEls, { scale: 0 }, 29.6)
+            .set(dots, { scale: 0 }, 29.6)
+            .set(['#w1', '#w2'], { scale: 0, left: (i) => (i === 0 ? '0%' : '40%') }, 29.6)
+            .set('#items', { opacity: 0 }, 29.6)
+            .set('#screen', { opacity: 1, scale: 1, x: 0, y: 0, width: W, height: H, borderRadius: 0 }, 29.6)
+            .set(['#shotGrade', '#shotTopo', '#shotTrilha', '#shotDet', '#shotDetT'], { opacity: 0 }, 29.6)
+            .to('#railG', { x: R0x - len0, width: len0, duration: 0.45, ease: 'power3.out' }, 30.2)
+            .to('#w2', { scale: 1, duration: 0.38, ease: 'back.out(2.4)' }, 30.35)
+            .to('#w1', { scale: 1, duration: 0.38, ease: 'back.out(2.4)' }, 30.45)
+            .set('#wordWrap', { top: LY - 80 - 6 }, 29.6)
+            .fromTo('#word > span', { yPercent: 110 }, { yPercent: 0, duration: 0.65, ease: 'expo.out', immediateRender: false }, 30.45);
+          gsap.set('#cta', { top: 1050, opacity: 0 });
+          tl.set('#cta', { opacity: 1 }, 30.8);
+          gsap.set('#ctaUrl', { yPercent: 110 });
+          gsap.set('#ctaSub', { opacity: 0, y: 18 });
+          tl.to('#ctaUrl', { yPercent: 0, duration: 0.6, ease: 'expo.out' }, 30.85)
+            .to('#ctaSub', { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }, 31.05)
+            .to('#redO', { scale: 1.14, duration: 0.22, ease: 'power2.out', yoyo: true, repeat: 1 }, 31.45)
+            .to('#glow', { opacity: 1.0, scale: 1.12, duration: 0.45, ease: 'power2.out' }, 31.45);
+
+          window.__timelines = window.__timelines || {};
+          window.__timelines['cronomovie-apresentacao'] = tl;
+        }
+
+        const ready = Promise.all([
+          document.fonts.load("900 160px 'Big Shoulders Display'"),
+          document.fonts.load("800 66px 'Inter'"),
+          document.fonts.load("700 30px 'Big Shoulders Display'"),
+        ]);
+        ready.then(build, build);
+      })();
+    </script>
+  </body>
+</html>
