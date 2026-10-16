@@ -186,12 +186,14 @@ export function startDemo() {
       data.likes[k] = on ? [...list.filter(x => x !== data.me), data.me] : list.filter(x => x !== data.me);
       save(); apply(); emit();
     },
-    // Notificações de exemplo: o pedido do Matheus e o Caio aceitando a amizade
+    // Notificações de exemplo: o pedido do Matheus, o Caio aceitando a amizade e um aviso da contagem
     async notifications() {
       const ago = (h: number) => new Date(Date.now() - h * 3600_000).toISOString();
       const list: Notif[] = [];
-      for (const f of data.friends) if (f.status === 'pending' && f.b === data.me) list.push({ id: list.length + 1, kind: 'request', titleId: null, at: ago(2), read: data.seen, actor: person(f.a) });
-      if (friendsOf(data.me).includes('caio')) list.push({ id: 90, kind: 'accepted', titleId: null, at: ago(26), read: data.seen, actor: person('caio') });
+      for (const f of data.friends) if (f.status === 'pending' && f.b === data.me) list.push({ id: list.length + 1, kind: 'request', titleId: null, at: ago(2), read: data.seen, actor: person(f.a), info: null });
+      if (friendsOf(data.me).includes('caio')) list.push({ id: 90, kind: 'accepted', titleId: null, at: ago(26), read: data.seen, actor: person('caio'), info: null });
+      // aviso do próprio site (no ar, quem cria é a agenda diária do banco)
+      list.push({ id: 91, kind: 'countdown', titleId: 'doomsday', at: ago(5), read: data.seen, actor: null, info: 'Faltam 60 dias para Vingadores: Doutor Destino.' });
       return list;
     },
     async readNotifications() { data.seen = true; save(); apply(); emit(); },

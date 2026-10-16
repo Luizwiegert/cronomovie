@@ -66,3 +66,6 @@ backups
 videos/*/assets/
 videos/*/carrossel/*.png
 videos/*/quadros-de-prova.png
+
+# Último envio ao IndexNow (só neste computador)
+.indexnow.json
